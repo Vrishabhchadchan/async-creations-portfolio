@@ -1,0 +1,8 @@
+node_modules/
+.vercel/
+*.log
+.DS_Store
+Thumbs.db
+
+# Raw, unprocessed originals (35MB+) — not used by the site, kept locally only
+images/work/raw/
