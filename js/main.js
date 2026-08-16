@@ -93,13 +93,74 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { threshold: 0.6 });
   counters.forEach(c => countObserver.observe(c));
 
-  /* ---------- Service card mouse-follow glow ---------- */
-  document.querySelectorAll('.service-card').forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width) * 100 + '%');
-      card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height) * 100 + '%');
-    });
+  /* ---------- Service card video playback & 3D tilt ---------- */
+  const serviceCards = document.querySelectorAll('.service-card');
+  const isTouchDevice = !window.matchMedia('(hover: hover)').matches;
+
+  serviceCards.forEach(card => {
+    const video = card.querySelector('.service-bg-video');
+    let leaveTimeout = null;
+
+    const playVideo = () => {
+      if (!video) return;
+      clearTimeout(leaveTimeout);
+
+      if (!video.src && video.getAttribute('data-src')) {
+        video.src = video.getAttribute('data-src');
+        video.load();
+      }
+
+      video.play().then(() => {
+        video.classList.add('playing');
+      }).catch(() => {
+        // Autoplay policy or unsupported format fallback
+        video.classList.add('playing');
+      });
+    };
+
+    const stopVideo = () => {
+      if (!video) return;
+      video.classList.remove('playing');
+      leaveTimeout = setTimeout(() => {
+        if (!card.matches(':hover')) {
+          video.pause();
+        }
+      }, 500);
+    };
+
+    if (!isTouchDevice) {
+      card.addEventListener('mouseenter', playVideo);
+      card.addEventListener('mouseleave', () => {
+        stopVideo();
+        card.style.transform = '';
+      });
+
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+
+        card.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+        card.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+
+        // Subtle 3D camera parallax tilt (max ±5 degrees)
+        const tiltX = ((y - 0.5) * -8).toFixed(2);
+        const tiltY = ((x - 0.5) * 8).toFixed(2);
+        card.style.transform = `perspective(900px) translateY(-8px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      });
+    } else if (video) {
+      // Mobile touch preview via IntersectionObserver
+      const cardObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            playVideo();
+          } else {
+            stopVideo();
+          }
+        });
+      }, { threshold: 0.6 });
+      cardObserver.observe(card);
+    }
   });
 
   /* ---------- Gallery filter ---------- */
@@ -206,6 +267,24 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => formSuccess.classList.remove('show'), 6000);
     });
   }
+
+  /* ---------- Executive Dossier interactive tabs ---------- */
+  document.querySelectorAll('.dossier-card').forEach(card => {
+    const tabBtns = card.querySelectorAll('.dossier-tab-btn');
+    const panels = card.querySelectorAll('.dossier-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+
+        tabBtns.forEach(b => b.classList.toggle('active', b === btn));
+        panels.forEach(p => {
+          const match = p.getAttribute('data-panel') === targetTab;
+          p.classList.toggle('active', match);
+        });
+      });
+    });
+  });
 
   /* ---------- Footer year ---------- */
   const yearEl = document.getElementById('year');

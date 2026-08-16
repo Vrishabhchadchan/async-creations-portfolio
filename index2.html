@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Async Creations | Photography &amp; Visual Storytelling Studio</title>
+  <meta name="description"
+    content="Async Creations is a photography and visual storytelling studio. We create experiences — not just content, not just videos. Founded by Abhijeet Vorudkar &amp; Ritesh Hatture.">
+
+  <link rel="icon" type="image/png" href="images/icon/favicon-192.png">
+  <link rel="apple-touch-icon" href="images/icon/favicon-192.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <img src="images/icon/logo-icon-128.png" alt="" class="loader-mark">
+  </div>
+
+  <div class="noise-overlay"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <!-- ================= HEADER ================= -->
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-inner">
+      <a href="#home" class="brand">
+        <img src="images/icon/logo-icon-128.png" alt="Async Creations logo">
+        <span class="brand-word"><b>ASYNC</b><span>Creations</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#home" class="active">Home</a>
+        <a href="#about">About</a>
+        <a href="#work">Work</a>
+        <a href="#services">Services</a>
+        <a href="#team">Team</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="#contact" class="btn btn-primary btn-sm nav-cta">Let's Talk</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#work">Work</a>
+    <a href="#services">Services</a>
+    <a href="#team">Team</a>
+    <a href="#contact">Contact</a>
+    <a href="#contact" class="btn btn-primary">Let's Talk</a>
+  </div>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="home">
+    <span class="hero-glow g1"></span>
+    <span class="hero-glow g2"></span>
+    <div class="hero-rings rings-decor">
+      <svg viewBox="0 0 200 200" fill="none">
+        <circle cx="100" cy="100" r="95" stroke="url(#ringGrad1)" stroke-width="2" />
+        <circle cx="100" cy="100" r="78" stroke="url(#ringGrad1)" stroke-width="2" />
+        <circle cx="100" cy="100" r="61" stroke="url(#ringGrad1)" stroke-width="2" />
+        <circle cx="100" cy="100" r="44" stroke="url(#ringGrad1)" stroke-width="2" />
+        <defs>
+          <linearGradient id="ringGrad1" x1="0" y1="0" x2="200" y2="200">
+            <stop offset="0%" stop-color="#4f6bff" />
+            <stop offset="50%" stop-color="#a855f7" />
+            <stop offset="100%" stop-color="#ec4899" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="container hero-inner">
+      <div class="hero-copy reveal in-view">
+        <span class="eyebrow">Photography &amp; Visual Storytelling Studio</span>
+        <h1 class="hero-title">
+          <span class="line serif-line">Not just content. Not just videos.</span>
+          <span class="line">We <span class="grad-text italic-accent">Create Experiences.</span></span>
+        </h1>
+        <p class="hero-desc">Async Creations crafts cinematic photography, brand films and social-first stories for
+          people and businesses who want to be remembered — not just seen.</p>
+        <div class="hero-actions">
+          <a href="#work" class="btn btn-primary">View Our Work</a>
+          <a href="#contact" class="btn btn-ghost">Book a Session</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><b data-count="120">0</b><span>Projects Delivered</span></div>
+          <div class="stat"><b data-count="45">0</b><span>Happy Clients</span></div>
+          <div class="stat"><b data-count="4">0</b><span>Years Crafting Stories</span></div>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal-scale in-view">
+        <div class="frame frame-logo frame-video">
+          <video
+            class="frame-logo-video"
+            autoplay muted loop playsinline
+            poster="images/work/logo-animation-poster.jpg"
+            aria-label="Async Creations animated logo">
+            <source src="images/work/logo-animation.webm" type="video/webm">
+            <source src="images/work/logo-animation.mp4" type="video/mp4">
+          </video>
+          <div class="frame-badge"><span class="dot"></span> Async Creations</div>
+        </div>
+        <div class="float-card">
+          <b class="grad-text">100%</b>
+          <span style="font-size:.72rem;color:var(--text-dim);letter-spacing:.05em;">Client Satisfaction</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-cue"><span>Scroll</span><span class="line"></span></div>
+  </section>
+
+  <!-- ================= MARQUEE ================= -->
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <span>
+        <span><i></i>Photography</span>
+        <span><i></i>Cinematography</span>
+        <span><i></i>Brand Storytelling</span>
+        <span><i></i>Reels &amp; Social Content</span>
+        <span><i></i>Event Coverage</span>
+        <span><i></i>Async Creations</span>
+      </span>
+      <span aria-hidden="true">
+        <span><i></i>Photography</span>
+        <span><i></i>Cinematography</span>
+        <span><i></i>Brand Storytelling</span>
+        <span><i></i>Reels &amp; Social Content</span>
+        <span><i></i>Event Coverage</span>
+        <span><i></i>Async Creations</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="about" id="about">
+    <div class="container about-grid">
+      <div class="about-visual reveal-scale">
+        <div class="ring-frame logo-fill">
+          <div class="frame-logo-lockup">
+            <img src="images/icon/logo-icon-400.png" alt="Async Creations logo" class="frame-logo-icon">
+            <div class="frame-logo-word">
+              <b>ASYNC</b>
+              <span>Creations</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="about-copy reveal">
+        <span class="eyebrow">Who We Are</span>
+        <h2 class="section-title">A studio built on <span class="italic-accent grad-text">one idea</span> — every brand
+          and every face has a story worth telling well.</h2>
+        <p style="margin-top:26px;">Async Creations is an independent photography and visual content studio. We work
+          asynchronously with our clients across timelines and cities, but stay perfectly in sync on one thing: crafting
+          visuals that feel intentional, cinematic and true to who you are.</p>
+        <p>From intimate portraits to full-scale brand campaigns, our team blends technical precision with a documentary
+          eye — so the final frame always feels like a moment, not a set-up.</p>
+        <ul class="about-list">
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 2l2.9 6.3L22 9.3l-5 4.9 1.2 7-6.2-3.3L5.8 21 7 14 2 9.3l7.1-1z" />
+              </svg></span>Cinematic, story-first direction</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg></span>Fast, reliable turnarounds</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 3" />
+              </svg></span>On-time, every time</li>
+          <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+                <circle cx="10" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg></span>A dedicated founder-led team</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SERVICES ================= -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">What We Do</span>
+          <h2 class="section-title">Services crafted around <span class="italic-accent grad-text">your story</span></h2>
+        </div>
+        <p class="section-sub">Every engagement is tailored — from a single portrait shoot to a full brand campaign
+          rollout.</p>
+      </div>
+
+      <div class="services-grid stagger">
+        <!-- 01 Photography -->
+        <div class="service-card reveal" style="--i:0" data-service="photo">
+          <div class="service-media-bg">
+            <img src="images/work/service-photo.jpg" alt="Photography background" class="service-bg-img" loading="lazy">
+            <video class="service-bg-video" loop muted playsinline preload="none" data-src="images/videos/vdo1.MOV"></video>
+            <div class="service-film-grain"></div>
+            <div class="service-dark-veil"></div>
+            <div class="service-lens-flare"></div>
+          </div>
+          <div class="vf-corner tl"></div>
+          <div class="vf-corner tr"></div>
+          <div class="vf-corner bl"></div>
+          <div class="vf-corner br"></div>
+          <div class="service-card-header">
+            <span class="service-tag-mono"><span class="tag-idx">01</span> // 35MM STILLS</span>
+            <span class="service-hud-badge"><span class="hud-dot"></span> RAW</span>
+          </div>
+          <div class="service-lens-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+              <circle cx="12" cy="13" r="1.5" />
+            </svg>
+          </div>
+          <div class="service-content">
+            <h3>Photography</h3>
+            <p>Portraits, editorial fashion, commercial campaigns, and fine art still captures with distinct cinematic depth and organic grain.</p>
+          </div>
+          <div class="service-card-footer">
+            <div class="service-telemetry">
+              <span>f/1.2</span>
+              <span>1/1000s</span>
+              <span>ISO 100</span>
+              <span>50mm</span>
+            </div>
+            <div class="service-action-cue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 Videography & Films -->
+        <div class="service-card reveal" style="--i:1" data-service="cine">
+          <div class="service-media-bg">
+            <img src="images/work/service-cine.jpg" alt="Videography background" class="service-bg-img" loading="lazy">
+            <video class="service-bg-video" loop muted playsinline preload="none" data-src="images/videos/vdo1.MOV"></video>
+            <div class="service-film-grain"></div>
+            <div class="service-dark-veil"></div>
+            <div class="service-lens-flare"></div>
+          </div>
+          <div class="vf-corner tl"></div>
+          <div class="vf-corner tr"></div>
+          <div class="vf-corner bl"></div>
+          <div class="vf-corner br"></div>
+          <div class="service-card-header">
+            <span class="service-tag-mono"><span class="tag-idx">02</span> // 2.39:1 CINEMA</span>
+            <span class="service-hud-badge rec"><span class="hud-dot"></span> REC</span>
+          </div>
+          <div class="service-lens-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="23 7 16 12 23 17 23 7" />
+              <rect x="1" y="5" width="15" height="14" rx="2" />
+              <circle cx="8.5" cy="12" r="2.5" />
+            </svg>
+          </div>
+          <div class="service-content">
+            <h3>Videography &amp; Films</h3>
+            <p>Brand films, wedding cinematography, music videos, and documentary-style storytelling that commands emotion.</p>
+          </div>
+          <div class="service-card-footer">
+            <div class="service-telemetry">
+              <span>24 FPS</span>
+              <span>180° SHUTTER</span>
+              <span>ANAMORPHIC</span>
+            </div>
+            <div class="service-action-cue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 Reels & Social Content -->
+        <div class="service-card reveal" style="--i:2" data-service="reels">
+          <div class="service-media-bg">
+            <img src="images/work/service-reels.jpg" alt="Reels background" class="service-bg-img" loading="lazy">
+            <video class="service-bg-video" loop muted playsinline preload="none" data-src="images/work/logo-animation.mp4"></video>
+            <div class="service-film-grain"></div>
+            <div class="service-dark-veil"></div>
+            <div class="service-lens-flare"></div>
+          </div>
+          <div class="vf-corner tl"></div>
+          <div class="vf-corner tr"></div>
+          <div class="vf-corner bl"></div>
+          <div class="vf-corner br"></div>
+          <div class="service-card-header">
+            <span class="service-tag-mono"><span class="tag-idx">03</span> // 9:16 MOTION</span>
+            <span class="service-hud-badge"><span class="hud-dot"></span> 4K 60P</span>
+          </div>
+          <div class="service-lens-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="3" />
+              <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5" />
+              <polygon points="10 9 15 12 10 15 10 9" fill="currentColor" opacity="0.3" />
+            </svg>
+          </div>
+          <div class="service-content">
+            <h3>Reels &amp; Social Content</h3>
+            <p>High-energy, scroll-stopping short-form edits tailored for Instagram, TikTok, and brand virality without sacrificing visual fidelity.</p>
+          </div>
+          <div class="service-card-footer">
+            <div class="service-telemetry">
+              <span>9:16</span>
+              <span>4K HDR</span>
+              <span>60 FPS</span>
+              <span>VERTICAL</span>
+            </div>
+            <div class="service-action-cue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 Brand Identity Shoots -->
+        <div class="service-card reveal" style="--i:3" data-service="brand">
+          <div class="service-media-bg">
+            <img src="images/work/service-brand.jpg" alt="Brand Shoot background" class="service-bg-img" loading="lazy">
+            <video class="service-bg-video" loop muted playsinline preload="none" data-src="images/videos/vdo1.MOV"></video>
+            <div class="service-film-grain"></div>
+            <div class="service-dark-veil"></div>
+            <div class="service-lens-flare"></div>
+          </div>
+          <div class="vf-corner tl"></div>
+          <div class="vf-corner tr"></div>
+          <div class="vf-corner bl"></div>
+          <div class="vf-corner br"></div>
+          <div class="service-card-header">
+            <span class="service-tag-mono"><span class="tag-idx">04</span> // CAMPAIGN</span>
+            <span class="service-hud-badge"><span class="hud-dot"></span> PRORES HQ</span>
+          </div>
+          <div class="service-lens-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <line x1="3.6" y1="9" x2="20.4" y2="9" />
+              <line x1="3.6" y1="15" x2="20.4" y2="15" />
+              <path d="M11.5 3a17 17 0 0 0 0 18" />
+              <path d="M12.5 3a17 17 0 0 1 0 18" />
+            </svg>
+          </div>
+          <div class="service-content">
+            <h3>Brand Identity Shoots</h3>
+            <p>End-to-end creative direction, conceptual mood boards, high-fashion set styling, and unified visual identity rollouts.</p>
+          </div>
+          <div class="service-card-footer">
+            <div class="service-telemetry">
+              <span>CONCEPT</span>
+              <span>STYLING</span>
+              <span>10-BIT</span>
+            </div>
+            <div class="service-action-cue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 05 Event Coverage -->
+        <div class="service-card reveal" style="--i:4" data-service="events">
+          <div class="service-media-bg">
+            <img src="images/work/service-events.jpg" alt="Event Coverage background" class="service-bg-img" loading="lazy">
+            <video class="service-bg-video" loop muted playsinline preload="none" data-src="images/videos/vdo1.MOV"></video>
+            <div class="service-film-grain"></div>
+            <div class="service-dark-veil"></div>
+            <div class="service-lens-flare"></div>
+          </div>
+          <div class="vf-corner tl"></div>
+          <div class="vf-corner tr"></div>
+          <div class="vf-corner bl"></div>
+          <div class="vf-corner br"></div>
+          <div class="service-card-header">
+            <span class="service-tag-mono"><span class="tag-idx">05</span> // LIVE CAPTURE</span>
+            <span class="service-hud-badge live"><span class="hud-dot"></span> LIVE</span>
+          </div>
+          <div class="service-lens-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </div>
+          <div class="service-content">
+            <h3>Event Coverage</h3>
+            <p>Luxury weddings, product unveilings, fashion galas, and live concerts captured candidly with high-octane atmosphere.</p>
+          </div>
+          <div class="service-card-footer">
+            <div class="service-telemetry">
+              <span>MULTI-CAM</span>
+              <span>LOW-LIGHT</span>
+              <span>CANDID</span>
+            </div>
+            <div class="service-action-cue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 06 Post-Production & Color -->
+        <div class="service-card reveal" style="--i:5" data-service="post">
+          <div class="service-media-bg">
+            <img src="images/work/service-post.jpg" alt="Post Production background" class="service-bg-img" loading="lazy">
+            <video class="service-bg-video" loop muted playsinline preload="none" data-src="images/work/logo-animation.mp4"></video>
+            <div class="service-film-grain"></div>
+            <div class="service-dark-veil"></div>
+            <div class="service-lens-flare"></div>
+          </div>
+          <div class="vf-corner tl"></div>
+          <div class="vf-corner tr"></div>
+          <div class="vf-corner bl"></div>
+          <div class="vf-corner br"></div>
+          <div class="service-card-header">
+            <span class="service-tag-mono"><span class="tag-idx">06</span> // POST &amp; COLOR</span>
+            <span class="service-hud-badge"><span class="hud-dot"></span> ACEScct</span>
+          </div>
+          <div class="service-lens-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 3v18" />
+              <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9" fill="currentColor" opacity="0.2" />
+            </svg>
+          </div>
+          <div class="service-content">
+            <h3>Post-Production &amp; Grading</h3>
+            <p>Precision DaVinci color grading, high-end beauty retouching, sound design, and custom 35mm film emulation workflows.</p>
+          </div>
+          <div class="service-card-footer">
+            <div class="service-telemetry">
+              <span>3D LUT</span>
+              <span>16-BIT EXR</span>
+              <span>FILM GRAIN</span>
+            </div>
+            <div class="service-action-cue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 07 Drone Cinematography -->
+        <div class="service-card reveal service-card-wide" style="--i:6" data-service="drone">
+          <div class="service-media-bg">
+            <img src="images/work/service-drone.jpg" alt="Drone Cinematography background" class="service-bg-img" loading="lazy">
+            <video class="service-bg-video" loop muted playsinline preload="none" data-src="images/videos/vdo1.MOV"></video>
+            <div class="service-film-grain"></div>
+            <div class="service-dark-veil"></div>
+            <div class="service-lens-flare"></div>
+          </div>
+          <div class="vf-corner tl"></div>
+          <div class="vf-corner tr"></div>
+          <div class="vf-corner bl"></div>
+          <div class="vf-corner br"></div>
+          <div class="service-card-header">
+            <span class="service-tag-mono"><span class="tag-idx">07</span> // AERIAL CINEMA</span>
+            <span class="service-hud-badge"><span class="hud-dot"></span> 5.1K PRORES</span>
+          </div>
+          <div class="service-lens-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 9V3M12 21v-6M9 12H3M21 12h-6" />
+              <circle cx="12" cy="12" r="8" stroke-dasharray="2 4" />
+            </svg>
+          </div>
+          <div class="service-content">
+            <h3>Drone Cinematography</h3>
+            <p>Breathtaking aerial perspectives, dynamic high-speed FPV fly-throughs, and sweeping architectural vistas delivered in uncompressed cinema formats.</p>
+          </div>
+          <div class="service-card-footer">
+            <div class="service-telemetry">
+              <span>FPV DYNAMIC</span>
+              <span>120M ALT</span>
+              <span>D-LOG 10-BIT</span>
+              <span>GIMBAL 3-AXIS</span>
+            </div>
+            <div class="service-action-cue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WORK ================= -->
+  <section class="work" id="work">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Selected Work</span>
+          <h2 class="section-title">A glimpse into <span class="italic-accent grad-text">our lens</span></h2>
+        </div>
+        <p class="section-sub">A curated set of recent projects across brand, portrait and campaign work.</p>
+      </div>
+
+      <div class="filter-row reveal">
+        <button class="filter-btn active" data-filter="all">All Work</button>
+        <button class="filter-btn" data-filter="brand">Brand Launch</button>
+        <button class="filter-btn" data-filter="portrait">Portraits</button>
+        <button class="filter-btn" data-filter="wedding">Weddings</button>
+        <button class="filter-btn" data-filter="event">Events</button>
+        <button class="filter-btn" data-filter="fashion">Fashion</button>
+      </div>
+
+      <div class="gallery" id="gallery">
+        <!-- Real project assets -->
+        <div class="gallery-item big" data-cat="brand">
+          <div class="tile-media placeholder-tile ph-6"><svg viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="1.5">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Brand Launch</span><span class="tile-title">Async Creations —
+              Studio Reveal</span></div>
+        </div>
+        <div class="gallery-item tall" data-cat="brand">
+          <div class="tile-media placeholder-tile ph-7"><svg viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="1.5">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Brand Launch</span><span class="tile-title">Coming Soon
+              Campaign</span></div>
+        </div>
+        <div class="gallery-item" data-cat="portrait">
+          <div class="tile-media placeholder-tile ph-1"><svg viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="1.5">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Portraits</span><span class="tile-title">Golden Hour
+              Series</span></div>
+        </div>
+        <div class="gallery-item" data-cat="wedding">
+          <div class="tile-media placeholder-tile ph-2"><svg viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="1.5">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Weddings</span><span class="tile-title">A Monsoon
+              Wedding</span></div>
+        </div>
+        <div class="gallery-item big" data-cat="event">
+          <div class="tile-media" style="background-image:url('images/work/events3.jpg')"></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Events</span><span class="tile-title">Persona Fest —
+              Showstopper Fashion Show</span></div>
+        </div>
+        <div class="gallery-item tall" data-cat="event">
+          <div class="tile-media" style="background-image:url('images/work/events1.jpg')"></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Events</span><span class="tile-title">On-Stage
+              Ensemble</span></div>
+        </div>
+        <div class="gallery-item" data-cat="event">
+          <div class="tile-media" style="background-image:url('images/work/events2.jpg')"></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Events</span><span class="tile-title">Persona Fest
+              2026</span></div>
+        </div>
+        <div class="gallery-item" data-cat="event">
+          <div class="tile-media" style="background-image:url('images/work/events4.jpg')"></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Events</span><span class="tile-title">Spotlight Moment</span>
+          </div>
+        </div>
+        <div class="gallery-item wide" data-cat="event">
+          <div class="tile-media" style="background-image:url('images/work/events5.jpg')"></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Events</span><span class="tile-title">Winning Moment —
+              Closing Ceremony</span></div>
+        </div>
+        <div class="gallery-item" data-cat="fashion">
+          <div class="tile-media placeholder-tile ph-4"><svg viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="1.5">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Fashion</span><span class="tile-title">Studio Edit
+              No.4</span></div>
+        </div>
+        <div class="gallery-item" data-cat="portrait">
+          <div class="tile-media placeholder-tile ph-5"><svg viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="1.5">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Portraits</span><span class="tile-title">Portrait
+              Diaries</span></div>
+        </div>
+        <div class="gallery-item" data-cat="brand">
+          <div class="tile-media placeholder-tile ph-8"><svg viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="1.5">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg></div>
+          <span class="tile-plus"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+              stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg></span>
+          <div class="tile-overlay"><span class="tile-cat">Brand Launch</span><span class="tile-title">We Create
+              Experiences</span></div>
+        </div>
+      </div>
+
+      <div class="work-more reveal">
+        <a href="#contact" class="btn btn-ghost">Want to see the full portfolio? Get in touch</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+        stroke="#fff" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12" />
+      </svg></button>
+    <button class="lightbox-nav prev" id="lightboxPrev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+        stroke="#fff" stroke-width="2">
+        <path d="M15 18l-6-6 6-6" />
+      </svg></button>
+    <div class="lightbox-content">
+      <img src="" alt="" id="lightboxImg">
+      <div class="lightbox-caption">
+        <span class="tile-cat" id="lightboxCat"></span>
+        <h3 id="lightboxTitle"></h3>
+      </div>
+    </div>
+    <button class="lightbox-nav next" id="lightboxNext"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+        stroke="#fff" stroke-width="2">
+        <path d="M9 18l6-6-6-6" />
+      </svg></button>
+  </div>
+
+  <!-- ================= PROCESS ================= -->
+  <section class="process">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">How We Work</span>
+          <h2 class="section-title">From first call to <span class="italic-accent grad-text">final delivery</span></h2>
+        </div>
+      </div>
+      <div class="process-grid stagger">
+        <div class="process-card reveal" style="--i:0">
+          <span class="pnum">01</span>
+          <h3>Discovery Call</h3>
+          <p>We learn your story, goals and vision before a single frame is planned.</p>
+        </div>
+        <div class="process-card reveal" style="--i:1">
+          <span class="pnum">02</span>
+          <h3>Concept &amp; Planning</h3>
+          <p>Mood boards, shot lists and locations — mapped out and shared with you.</p>
+        </div>
+        <div class="process-card reveal" style="--i:2">
+          <span class="pnum">03</span>
+          <h3>The Shoot</h3>
+          <p>Our team captures the moment with intention, precision and zero rush.</p>
+        </div>
+        <div class="process-card reveal" style="--i:3">
+          <span class="pnum">04</span>
+          <h3>Edit &amp; Deliver</h3>
+          <p>Colour-graded, retouched and delivered — ready for you to share.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TEAM / EDITORIAL LEADERSHIP ================= -->
+  <section class="team" id="team">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Studio Leadership</span>
+          <h2 class="section-title">The directors behind <span class="italic-accent grad-text">Async Creations</span></h2>
+        </div>
+        <p class="section-sub">Two specialists, one unified vision — crafting timeless stills and cinema for discerning brands.</p>
+      </div>
+
+      <!-- Unified Editorial Leadership Board -->
+      <div class="editorial-board reveal">
+        <!-- Pillar 1: Abhijeet Vorudkar (Photography) -->
+        <div class="board-pillar pillar-stills">
+          <div class="pillar-top-meta">
+            <span class="pillar-dept-badge">01 // PHOTOGRAPHY &amp; STILLS</span>
+            <span class="pillar-status"><span class="status-dot"></span> Active on Shoots</span>
+          </div>
+
+          <div class="pillar-profile">
+            <div class="pillar-avatar-box">AV</div>
+            <div>
+              <h3 class="pillar-name">Abhijeet Vorudkar</h3>
+              <span class="pillar-role">Co-Founder &amp; Visual Director</span>
+            </div>
+          </div>
+
+          <p class="pillar-bio">Directs the visual soul of Async Creations. Combines 35mm film discipline with high-fashion lighting precision to craft editorial portraits and commercial campaigns.</p>
+
+          <!-- Instagram Badge -->
+          <a href="https://instagram.com/abhijeet.vorudkar" target="_blank" rel="noopener noreferrer" class="pillar-social-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+            <span>@abhijeet.vorudkar</span>
+            <span class="social-followers"><b>28.4K</b> followers</span>
+          </a>
+
+          <!-- Telemetry Stats -->
+          <div class="pillar-stats-row">
+            <div class="p-stat">
+              <b>120+</b>
+              <span>Shoots Done</span>
+            </div>
+            <div class="p-stat">
+              <b>8+ Yrs</b>
+              <span>Experience</span>
+            </div>
+            <div class="p-stat">
+              <b>35mm &amp; Raw</b>
+              <span>Discipline</span>
+            </div>
+          </div>
+
+          <!-- Skills & Gear Tags -->
+          <div class="pillar-tags-section">
+            <span class="pillar-tags-label">Expertise &amp; Primary Rigs:</span>
+            <div class="pillar-tags-wrap">
+              <span class="p-tag">Editorial Portraiture</span>
+              <span class="p-tag">Studio Flash &amp; HSS</span>
+              <span class="p-tag">Sony Alpha 1</span>
+              <span class="p-tag">Hasselblad H6D</span>
+              <span class="p-tag">Capture One Pro</span>
+            </div>
+          </div>
+
+          <!-- Education -->
+          <div class="pillar-edu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <span>B.Des in Visual Communication &amp; Commercial Photography</span>
+          </div>
+
+          <!-- Direct Actions -->
+          <div class="pillar-actions">
+            <a href="https://wa.me/917558320143?text=Hi%20Abhijeet,%20I'd%20like%20to%20discuss%20a%20photography%20project" target="_blank" rel="noopener noreferrer" class="p-btn btn-wa">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              <span>WhatsApp Abhijeet</span>
+            </a>
+            <a href="tel:+917558320143" class="p-btn btn-sec">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Call</span>
+            </a>
+            <a href="mailto:abhijeet@asynccreations.com" class="p-btn btn-sec">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
+              <span>Email</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Center Studio Spine -->
+        <div class="board-spine">
+          <span class="spine-line"></span>
+          <span class="spine-tag">ASYNC CREATIONS</span>
+          <span class="spine-line"></span>
+        </div>
+
+        <!-- Pillar 2: Ritesh Hatture (Cinema & Motion) -->
+        <div class="board-pillar pillar-cinema">
+          <div class="pillar-top-meta">
+            <span class="pillar-dept-badge">02 // CINEMA &amp; DIRECTION</span>
+            <span class="pillar-status live"><span class="status-dot"></span> On Set / Directing</span>
+          </div>
+
+          <div class="pillar-profile">
+            <div class="pillar-avatar-box">RH</div>
+            <div>
+              <h3 class="pillar-name">Ritesh Hatture</h3>
+              <span class="pillar-role">Co-Founder &amp; Head of Production</span>
+            </div>
+          </div>
+
+          <p class="pillar-bio">Drives the motion narrative and commercial cinema production. Leads multi-cam set workflows, anamorphic optical rigs, and 16-bit DaVinci ACES color grading.</p>
+
+          <!-- Instagram Badge -->
+          <a href="https://instagram.com/ritesh.hatture" target="_blank" rel="noopener noreferrer" class="pillar-social-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+            <span>@ritesh.hatture</span>
+            <span class="social-followers"><b>22.1K</b> followers</span>
+          </a>
+
+          <!-- Telemetry Stats -->
+          <div class="pillar-stats-row">
+            <div class="p-stat">
+              <b>85+</b>
+              <span>Films Made</span>
+            </div>
+            <div class="p-stat">
+              <b>6+ Yrs</b>
+              <span>Direction</span>
+            </div>
+            <div class="p-stat">
+              <b>DaVinci Pro</b>
+              <span>Color Science</span>
+            </div>
+          </div>
+
+          <!-- Skills & Gear Tags -->
+          <div class="pillar-tags-section">
+            <span class="pillar-tags-label">Expertise &amp; Primary Rigs:</span>
+            <div class="pillar-tags-wrap">
+              <span class="p-tag">Anamorphic Direction</span>
+              <span class="p-tag">Brand Narrative</span>
+              <span class="p-tag">Sony FX6 Cinema</span>
+              <span class="p-tag">Atlas 2x Glass</span>
+              <span class="p-tag">DJI Ronin 4D</span>
+            </div>
+          </div>
+
+          <!-- Education -->
+          <div class="pillar-edu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <span>B.A. in Film Production &amp; Cinematography</span>
+          </div>
+
+          <!-- Direct Actions -->
+          <div class="pillar-actions">
+            <a href="https://wa.me/918055538888?text=Hi%20Ritesh,%20I'd%20like%20to%20discuss%20a%20cinematography%20project" target="_blank" rel="noopener noreferrer" class="p-btn btn-wa">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              <span>WhatsApp Ritesh</span>
+            </a>
+            <a href="tel:+918055538888" class="p-btn btn-sec">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Call</span>
+            </a>
+            <a href="mailto:ritesh@asynccreations.com" class="p-btn btn-sec">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
+              <span>Email</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TESTIMONIALS ================= -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Kind Words</span>
+          <h2 class="section-title">What our <span class="italic-accent grad-text">clients say</span></h2>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="t-track-wrap reveal">
+        <div class="t-track">
+          <div class="t-card">
+            <div class="t-stars">★★★★★</div>
+            <p>"Async Creations completely understood our brand before we even finished explaining it. The final films
+              looked better than we imagined."</p>
+            <div class="t-person">
+              <div class="t-avatar">NP</div>
+              <div><b>Neha Patil</b><span>Brand Founder</span></div>
+            </div>
+          </div>
+          <div class="t-card">
+            <div class="t-stars">★★★★★</div>
+            <p>"Our wedding photos feel like a movie. Abhijeet and the team were calm, quick and completely unobtrusive
+              on the big day."</p>
+            <div class="t-person">
+              <div class="t-avatar">RS</div>
+              <div><b>Rohan &amp; Sana</b><span>Wedding Clients</span></div>
+            </div>
+          </div>
+          <div class="t-card">
+            <div class="t-stars">★★★★★</div>
+            <p>"Ritesh's direction on set made a huge difference — the reels they produced tripled our engagement in a
+              month."</p>
+            <div class="t-person">
+              <div class="t-avatar">AK</div>
+              <div><b>Aman Kulkarni</b><span>D2C Founder</span></div>
+            </div>
+          </div>
+          <div class="t-card">
+            <div class="t-stars">★★★★★</div>
+            <p>"Professional, prompt, and genuinely creative. Every deliverable was on brand and on time."</p>
+            <div class="t-person">
+              <div class="t-avatar">SM</div>
+              <div><b>Sara Mehta</b><span>Marketing Lead</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA BANNER ================= -->
+  <section>
+    <div class="container">
+      <div class="cta-banner reveal-scale">
+        <div class="rings-decor">
+          <svg viewBox="0 0 200 200" fill="none">
+            <circle cx="100" cy="100" r="95" stroke="url(#ringGrad2)" stroke-width="2" />
+            <circle cx="100" cy="100" r="78" stroke="url(#ringGrad2)" stroke-width="2" />
+            <circle cx="100" cy="100" r="61" stroke="url(#ringGrad2)" stroke-width="2" />
+            <defs>
+              <linearGradient id="ringGrad2" x1="0" y1="0" x2="200" y2="200">
+                <stop offset="0%" stop-color="#4f6bff" />
+                <stop offset="100%" stop-color="#ec4899" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="rings-decor left">
+          <svg viewBox="0 0 200 200" fill="none">
+            <circle cx="100" cy="100" r="95" stroke="url(#ringGrad3)" stroke-width="2" />
+            <circle cx="100" cy="100" r="78" stroke="url(#ringGrad3)" stroke-width="2" />
+            <defs>
+              <linearGradient id="ringGrad3" x1="0" y1="0" x2="200" y2="200">
+                <stop offset="0%" stop-color="#a855f7" />
+                <stop offset="100%" stop-color="#4f6bff" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="eyebrow" style="justify-content:center;">Let's Create Together</span>
+        <h2>Something worth remembering starts with <span class="italic-accent grad-text">one conversation.</span></h2>
+        <p>Tell us about your shoot, your brand, or your big day — we'll take it from there.</p>
+        <div class="hero-actions">
+          <a href="tel:+917558320143" class="btn btn-primary">Call Abhijeet — 75583 20143</a>
+          <a href="tel:+918055538888" class="btn btn-ghost">Call Ritesh — 80555 38888</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Get In Touch</span>
+          <h2 class="section-title">Let's plan your <span class="italic-accent grad-text">next shoot</span></h2>
+        </div>
+        <p class="section-sub">Fill out the form or reach out directly — we usually reply within a day.</p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="reveal">
+          <div class="contact-info-list">
+            <div class="info-row">
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg></span>
+              <div><b>Abhijeet Vorudkar — Founder</b><a href="tel:+917558320143">+91 75583 20143</a></div>
+            </div>
+            <div class="info-row">
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg></span>
+              <div><b>Ritesh Hatture — Co-Founder</b><a href="tel:+918055538888">+91 80555 38888</a></div>
+            </div>
+            <div class="info-row">
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M22 6l-10 7L2 6" />
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                </svg></span>
+              <div><b>Email</b><a href="mailto:hello@asynccreations.com">hello@asynccreations.com</a></div>
+            </div>
+            <div class="info-row">
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg></span>
+              <div><b>Studio</b><span>Based in India — available for shoots nationwide</span></div>
+            </div>
+          </div>
+          <div class="social-row">
+            <a href="#" class="social-btn" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg></a>
+            <a href="#" class="social-btn" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
+                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+              </svg></a>
+            <a href="#" class="social-btn" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg></a>
+            <a href="#" class="social-btn" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                <rect x="2" y="9" width="4" height="12" />
+                <circle cx="4" cy="4" r="2" />
+              </svg></a>
+          </div>
+        </div>
+
+        <form class="contact-form reveal" id="contactForm">
+          <div class="form-row">
+            <div class="field">
+              <label for="cf-name">Full Name</label>
+              <input type="text" id="cf-name" name="name" placeholder="Your name" required>
+            </div>
+            <div class="field">
+              <label for="cf-phone">Phone</label>
+              <input type="tel" id="cf-phone" name="phone" placeholder="+91 00000 00000" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="cf-email">Email</label>
+            <input type="email" id="cf-email" name="email" placeholder="you@example.com" required>
+          </div>
+          <div class="field">
+            <label for="cf-service">I'm interested in</label>
+            <select id="cf-service" name="service">
+              <option>Photography</option>
+              <option>Videography &amp; Films</option>
+              <option>Reels &amp; Social Content</option>
+              <option>Brand Identity Shoot</option>
+              <option>Event Coverage</option>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cf-message">Your Message</label>
+            <textarea id="cf-message" name="message"
+              placeholder="Tell us a bit about your project, date and location..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Send Message</button>
+          <div class="form-success" id="formSuccess">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+            Thanks! Your message has been noted — we'll reach out shortly.
+          </div>
+          <p class="form-note">This form is currently front-end only — connect it to an email or CRM service to start
+            receiving submissions.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#home" class="brand">
+            <img src="images/icon/logo-icon-128.png" alt="Async Creations logo">
+            <span class="brand-word"><b>ASYNC</b><span>Creations</span></span>
+          </a>
+          <p>A photography &amp; visual storytelling studio. Not just content, not just videos — we create experiences.
+          </p>
+          <div class="social-row" style="margin-top:0;">
+            <a href="#" class="social-btn" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg></a>
+            <a href="#" class="social-btn" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
+                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+              </svg></a>
+            <a href="#" class="social-btn" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#work">Work</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#team">Team</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="#services">Photography</a></li>
+            <li><a href="#services">Videography</a></li>
+            <li><a href="#services">Reels &amp; Social</a></li>
+            <li><a href="#services">Event Coverage</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="tel:+917558320143">Abhijeet — 75583 20143</a></li>
+            <li><a href="tel:+918055538888">Ritesh — 80555 38888</a></li>
+            <li><a href="mailto:hello@asynccreations.com">hello@asynccreations.com</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; <span id="year"></span> Async Creations. All rights reserved.</span>
+        <span>Designed with intention.</span>
+      </div>
+    </div>
+  </footer>
+
+  <button class="to-top" id="toTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 15l-6-6-6 6" />
+    </svg>
+  </button>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>
