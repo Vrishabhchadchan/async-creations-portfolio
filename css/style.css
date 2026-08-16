@@ -1474,6 +1474,71 @@ section {
   z-index: 1;
 }
 
+.team-highlights {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--panel-border);
+  position: relative;
+  z-index: 1;
+}
+
+.highlight-stat b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.highlight-stat span {
+  font-size: .72rem;
+  letter-spacing: .04em;
+  color: var(--text-faint);
+}
+
+.team-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.skill-tag {
+  font-size: .74rem;
+  font-weight: 500;
+  letter-spacing: .02em;
+  color: var(--text-dim);
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, .03);
+}
+
+.team-award {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .82rem;
+  color: var(--gold);
+  margin-bottom: 22px;
+  position: relative;
+  z-index: 1;
+}
+
+.team-award svg {
+  width: 17px;
+  height: 17px;
+  stroke: var(--gold);
+  flex: none;
+}
+
 .team-contacts {
   display: flex;
   flex-wrap: wrap;
