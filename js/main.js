@@ -93,31 +93,80 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { threshold: 0.6 });
   counters.forEach(c => countObserver.observe(c));
 
-  /* ---------- Service card mouse-follow glow ---------- */
-  document.querySelectorAll('.service-card').forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width) * 100 + '%');
-      card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height) * 100 + '%');
-    });
-  });
+  /* ---------- Service card video playback & 3D tilt ---------- */
+  const serviceCards = document.querySelectorAll('.service-card');
+  const isTouchDevice = !window.matchMedia('(hover: hover)').matches;
 
-  /* ---------- Gallery filter ---------- */
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const galleryItems = document.querySelectorAll('.gallery-item');
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.getAttribute('data-filter');
-      galleryItems.forEach(item => {
-        const match = filter === 'all' || item.getAttribute('data-cat') === filter;
-        item.classList.toggle('hide', !match);
+  serviceCards.forEach(card => {
+    const video = card.querySelector('.service-bg-video');
+    let leaveTimeout = null;
+
+    const playVideo = () => {
+      if (!video) return;
+      clearTimeout(leaveTimeout);
+
+      if (!video.src && video.getAttribute('data-src')) {
+        video.src = video.getAttribute('data-src');
+        video.load();
+      }
+
+      video.play().then(() => {
+        video.classList.add('playing');
+      }).catch(() => {
+        // Autoplay policy or unsupported format fallback
+        video.classList.add('playing');
       });
-    });
+    };
+
+    const stopVideo = () => {
+      if (!video) return;
+      video.classList.remove('playing');
+      leaveTimeout = setTimeout(() => {
+        if (!card.matches(':hover')) {
+          video.pause();
+        }
+      }, 500);
+    };
+
+    if (!isTouchDevice) {
+      card.addEventListener('mouseenter', playVideo);
+      card.addEventListener('mouseleave', () => {
+        stopVideo();
+        card.style.transform = '';
+      });
+
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+
+        card.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+        card.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+
+        // Subtle 3D camera parallax tilt (max ±5 degrees)
+        const tiltX = ((y - 0.5) * -8).toFixed(2);
+        const tiltY = ((x - 0.5) * 8).toFixed(2);
+        card.style.transform = `perspective(900px) translateY(-8px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      });
+    } else if (video) {
+      // Mobile touch preview via IntersectionObserver
+      const cardObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            playVideo();
+          } else {
+            stopVideo();
+          }
+        });
+      }, { threshold: 0.6 });
+      cardObserver.observe(card);
+    }
   });
 
-  /* ---------- Lightbox ---------- */
+  /* ---------- Gallery: fetched live from the team portal's manifest ---------- */
+  const galleryEl = document.getElementById('gallery');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
   const lightboxCat = document.getElementById('lightboxCat');
@@ -136,7 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const openLightbox = (index) => {
-    visibleItems = Array.from(galleryItems).filter(i => !i.classList.contains('hide'));
+    const items = Array.from(galleryEl.querySelectorAll('.gallery-item')).filter(i => !i.classList.contains('hide'));
+    visibleItems = items;
     const item = visibleItems[index];
     if (!item) return;
     currentIndex = index;
@@ -154,14 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = '';
   };
 
-  galleryItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      visibleItems = Array.from(galleryItems).filter(i => !i.classList.contains('hide'));
-      const idx = visibleItems.indexOf(item);
-      openLightbox(idx);
-    });
-  });
-
   lightboxClose.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
   lightboxPrev.addEventListener('click', () => openLightbox((currentIndex - 1 + visibleItems.length) % visibleItems.length));
@@ -172,6 +214,49 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'ArrowLeft') openLightbox((currentIndex - 1 + visibleItems.length) % visibleItems.length);
     if (e.key === 'ArrowRight') openLightbox((currentIndex + 1) % visibleItems.length);
   });
+
+  const activeFilter = () => document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+
+  const applyFilter = () => {
+    const filter = activeFilter();
+    galleryEl.querySelectorAll('.gallery-item').forEach(item => {
+      const match = filter === 'all' || item.getAttribute('data-cat') === filter;
+      item.classList.toggle('hide', !match);
+    });
+  };
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilter();
+    });
+  });
+
+  const bindGalleryClicks = () => {
+    galleryEl.querySelectorAll('.gallery-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        const items = Array.from(galleryEl.querySelectorAll('.gallery-item')).filter(i => !i.classList.contains('hide'));
+        const idx = items.indexOf(item);
+        openLightbox(idx);
+      });
+    });
+  };
+
+  fetch('/api/gallery')
+    .then((r) => { if (!r.ok) throw new Error('Request failed'); return r.json(); })
+    .then(({ items }) => {
+      if (!Array.isArray(items) || !items.length) {
+        galleryEl.innerHTML = '<div class="gallery-loading">Our work is on its way — check back soon.</div>';
+        return;
+      }
+      galleryEl.innerHTML = items.map((item) => window.GalleryShared.galleryTileHTML(item)).join('');
+      applyFilter();
+      bindGalleryClicks();
+    })
+    .catch(() => {
+      galleryEl.innerHTML = '<div class="gallery-loading">Couldn\'t load the gallery right now — please refresh.</div>';
+    });
 
   /* ---------- Testimonial auto-scroll marquee ---------- */
   const tTrack = document.querySelector('.t-track');
@@ -206,6 +291,24 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => formSuccess.classList.remove('show'), 6000);
     });
   }
+
+  /* ---------- Executive Dossier interactive tabs ---------- */
+  document.querySelectorAll('.dossier-card').forEach(card => {
+    const tabBtns = card.querySelectorAll('.dossier-tab-btn');
+    const panels = card.querySelectorAll('.dossier-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+
+        tabBtns.forEach(b => b.classList.toggle('active', b === btn));
+        panels.forEach(p => {
+          const match = p.getAttribute('data-panel') === targetTab;
+          p.classList.toggle('active', match);
+        });
+      });
+    });
+  });
 
   /* ---------- Footer year ---------- */
   const yearEl = document.getElementById('year');

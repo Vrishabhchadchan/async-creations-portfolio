@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Portal | Async Creations</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+
+<link rel="icon" type="image/png" href="../images/icon/favicon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="portal-body">
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div class="portal-login" id="loginScreen">
+  <div class="portal-login-card">
+    <img src="../images/icon/logo-icon-128.png" alt="Async Creations" class="portal-login-logo">
+    <span class="brand-word portal-login-word"><b>ASYNC</b><span>Creations</span></span>
+    <p class="portal-login-tag">Team Portal &mdash; internal use only</p>
+
+    <form id="loginForm" class="portal-login-form">
+      <label for="passcode">Team Passcode</label>
+      <input type="password" id="passcode" name="passcode" placeholder="Enter passcode" autocomplete="current-password" required>
+      <button type="submit" class="btn btn-primary" id="loginBtn" style="width:100%;justify-content:center;">Enter Portal</button>
+      <p class="portal-login-error" id="loginError"></p>
+    </form>
+    <a href="../index.html" class="portal-back-link">&larr; Back to the public site</a>
+  </div>
+</div>
+
+<!-- ============ PORTAL (MANAGER) ============ -->
+<div class="portal-app" id="portalApp" hidden>
+  <header class="portal-header">
+    <div class="portal-header-inner">
+      <div class="brand">
+        <img src="../images/icon/logo-icon-128.png" alt="Async Creations logo">
+        <span class="brand-word"><b>ASYNC</b><span>Creations</span></span>
+      </div>
+      <div class="portal-header-title">
+        <span class="eyebrow" style="margin:0;">Team Portal</span>
+      </div>
+      <div class="portal-header-actions">
+        <a href="../index.html" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">View Live Site</a>
+        <button type="button" class="btn btn-ghost btn-sm" id="logoutBtn">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="portal-main">
+    <div class="container">
+      <div class="portal-intro">
+        <h1 class="section-title">Manage the <span class="italic-accent grad-text">Work gallery</span></h1>
+        <p class="section-sub">Add or remove photos here and they go live on the public site immediately &mdash; no redeploy needed. Every teammate with the passcode sees the same list below.</p>
+      </div>
+
+      <div class="filter-row" id="portalFilterRow">
+        <button type="button" class="filter-btn active" data-filter="all">All Work</button>
+        <button type="button" class="filter-btn" data-filter="brand">Brand Launch</button>
+        <button type="button" class="filter-btn" data-filter="portrait">Portraits</button>
+        <button type="button" class="filter-btn" data-filter="wedding">Weddings</button>
+        <button type="button" class="filter-btn" data-filter="event">Events</button>
+        <button type="button" class="filter-btn" data-filter="fashion">Fashion</button>
+      </div>
+
+      <div class="portal-toast" id="portalToast"></div>
+
+      <div class="gallery" id="portalGallery">
+        <button type="button" class="gallery-item add-tile" id="addTileBtn">
+          <span class="add-tile-plus">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+          <span class="add-tile-label">Add Photo</span>
+        </button>
+        <div class="gallery-loading">Loading current gallery&hellip;</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ UPLOAD MODAL ============ -->
+<div class="portal-modal" id="uploadModal">
+  <div class="portal-modal-card">
+    <button type="button" class="portal-modal-close" id="closeModalBtn" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <h3>Add a photo</h3>
+
+    <form id="uploadForm">
+      <div class="field">
+        <label for="photoFile">Photo</label>
+        <input type="file" id="photoFile" name="photoFile" accept="image/*" required>
+        <div class="upload-preview" id="uploadPreview" hidden><img id="uploadPreviewImg" alt=""></div>
+      </div>
+
+      <div class="field">
+        <label for="photoCategory">Category</label>
+        <select id="photoCategory" name="category" required>
+          <option value="brand">Brand Launch</option>
+          <option value="portrait">Portraits</option>
+          <option value="wedding">Weddings</option>
+          <option value="event">Events</option>
+          <option value="fashion">Fashion</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="photoTitle">Title</label>
+        <input type="text" id="photoTitle" name="title" placeholder="e.g. Golden Hour Series" maxlength="120" required>
+      </div>
+
+      <div class="field">
+        <label for="photoSize">Tile Size</label>
+        <select id="photoSize" name="size">
+          <option value="normal">Normal</option>
+          <option value="big">Big (2&times;2)</option>
+          <option value="tall">Tall</option>
+          <option value="wide">Wide</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="uploadSubmitBtn" style="width:100%;justify-content:center;">Upload &amp; Publish</button>
+      <p class="portal-modal-error" id="uploadError"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ CONFIRM MODAL ============ -->
+<div class="portal-modal" id="confirmModal">
+  <div class="portal-confirm-card">
+    <div class="portal-confirm-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16z"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+    </div>
+    <h3 id="confirmTitle">Remove this photo?</h3>
+    <p id="confirmBody">It'll disappear from the live site right away. This can't be undone.</p>
+    <div class="portal-confirm-actions">
+      <button type="button" class="btn btn-ghost" id="confirmNoBtn">Cancel</button>
+      <button type="button" class="btn portal-confirm-yes" id="confirmYesBtn">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/gallery-shared.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
