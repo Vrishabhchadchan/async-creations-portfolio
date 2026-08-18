@@ -1,6 +1,6 @@
 const { del } = require('@vercel/blob');
 const { getSession } = require('./_lib/auth');
-const { getManifest, saveManifest } = require('./_lib/manifest');
+const { getManifest, updateManifest } = require('./_lib/manifest');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -34,8 +34,14 @@ module.exports = async (req, res) => {
     }
   }
 
-  const updated = items.filter((item) => item.id !== id);
-  await saveManifest(updated);
-
-  return res.status(200).json({ items: updated });
+  try {
+    const updated = await updateManifest(
+      (current) => current.filter((item) => item.id !== id),
+      (check) => !check.some((item) => item.id === id)
+    );
+    return res.status(200).json({ items: updated });
+  } catch (err) {
+    console.error('gallery-delete.js', err);
+    return res.status(409).json({ error: err.message || 'Could not delete photo. Please try again.' });
+  }
 };

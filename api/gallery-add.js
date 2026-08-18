@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const { getSession } = require('./_lib/auth');
-const { getManifest, saveManifest, categoryLabel, CATEGORY_LABELS } = require('./_lib/manifest');
+const { updateManifest, categoryLabel, CATEGORY_LABELS } = require('./_lib/manifest');
 
 const VALID_SIZES = new Set(['normal', 'big', 'tall', 'wide']);
 
@@ -29,7 +29,6 @@ module.exports = async (req, res) => {
   }
   const cleanSize = VALID_SIZES.has(size) ? size : 'normal';
 
-  const items = await getManifest();
   const newItem = {
     id: crypto.randomUUID(),
     category,
@@ -40,8 +39,14 @@ module.exports = async (req, res) => {
     createdAt: Date.now(),
   };
 
-  const updated = [...items, newItem];
-  await saveManifest(updated);
-
-  return res.status(200).json({ items: updated });
+  try {
+    const items = await updateManifest(
+      (current) => [...current, newItem],
+      (check) => check.some((item) => item.id === newItem.id)
+    );
+    return res.status(200).json({ items });
+  } catch (err) {
+    console.error('gallery-add.js', err);
+    return res.status(409).json({ error: err.message || 'Could not save photo. Please try again.' });
+  }
 };
