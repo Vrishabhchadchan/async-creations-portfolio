@@ -6,6 +6,7 @@ Thumbs.db
 
 # Raw, unprocessed originals (35MB+) — not used by the site, kept locally only
 images/work/raw/
+images/videos/raw/
 
 .vercel
 .env*.local
