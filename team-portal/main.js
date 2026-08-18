@@ -18,6 +18,37 @@ const uploadError = document.getElementById('uploadError');
 const photoFile = document.getElementById('photoFile');
 const uploadPreview = document.getElementById('uploadPreview');
 const uploadPreviewImg = document.getElementById('uploadPreviewImg');
+const portalFilterRow = document.getElementById('portalFilterRow');
+const filterBtns = portalFilterRow.querySelectorAll('.filter-btn');
+
+const confirmModal = document.getElementById('confirmModal');
+const confirmYesBtn = document.getElementById('confirmYesBtn');
+const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+let currentItems = [];
+let confirmResolver = null;
+
+function askConfirm() {
+  confirmModal.classList.add('open');
+  return new Promise((resolve) => {
+    confirmResolver = resolve;
+  });
+}
+
+function settleConfirm(result) {
+  confirmModal.classList.remove('open');
+  if (confirmResolver) {
+    confirmResolver(result);
+    confirmResolver = null;
+  }
+}
+
+confirmYesBtn.addEventListener('click', () => settleConfirm(true));
+confirmNoBtn.addEventListener('click', () => settleConfirm(false));
+confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) settleConfirm(false); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && confirmModal.classList.contains('open')) settleConfirm(false);
+});
 
 const ADD_TILE_HTML = `<button type="button" class="gallery-item add-tile" id="addTileBtn">
   <span class="add-tile-plus">
@@ -84,7 +115,28 @@ logoutBtn.addEventListener('click', async () => {
   showLogin();
 });
 
+function activeFilter() {
+  return portalFilterRow.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+}
+
+function applyFilter() {
+  const filter = activeFilter();
+  portalGallery.querySelectorAll('.gallery-item:not(.add-tile)').forEach((item) => {
+    const match = filter === 'all' || item.getAttribute('data-cat') === filter;
+    item.classList.toggle('hide', !match);
+  });
+}
+
+filterBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilter();
+  });
+});
+
 function renderGallery(items) {
+  currentItems = items;
   const tiles = items.map((item) => window.GalleryShared.galleryTileHTML(item, { editable: true })).join('');
   portalGallery.innerHTML = ADD_TILE_HTML + tiles;
   document.getElementById('addTileBtn').addEventListener('click', openModal);
@@ -94,6 +146,7 @@ function renderGallery(items) {
       handleDelete(btn.getAttribute('data-id'));
     });
   });
+  applyFilter();
 }
 
 async function loadGallery() {
@@ -110,7 +163,8 @@ async function loadGallery() {
 
 async function handleDelete(id) {
   if (!id) return;
-  if (!window.confirm('Remove this photo from the live site?')) return;
+  const confirmed = await askConfirm();
+  if (!confirmed) return;
   try {
     const res = await fetch('/api/gallery-delete', {
       method: 'POST',
@@ -132,6 +186,10 @@ function openModal() {
   uploadError.textContent = '';
   uploadPreview.hidden = true;
   uploadPreviewImg.src = '';
+  const filter = activeFilter();
+  if (filter !== 'all') {
+    document.getElementById('photoCategory').value = filter;
+  }
   uploadModal.classList.add('open');
 }
 

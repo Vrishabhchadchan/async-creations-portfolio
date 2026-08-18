@@ -2401,6 +2401,15 @@ section {
   min-height: 110px;
 }
 
+.field select {
+  color-scheme: dark;
+}
+
+.field select option {
+  background: var(--bg-alt);
+  color: var(--text);
+}
+
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
