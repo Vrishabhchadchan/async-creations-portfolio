@@ -1910,6 +1910,14 @@ section {
   box-shadow: 0 8px 20px -4px rgba(2, 132, 199, 0.45);
 }
 
+.pillar-avatar-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 15px;
+  display: block;
+}
+
 .pillar-name {
   font-size: 1.4rem;
   font-weight: 700;
@@ -2059,6 +2067,25 @@ section {
   width: 15px;
   height: 15px;
   stroke: var(--purple);
+  flex: none;
+}
+
+.pillar-award {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--gold);
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(242, 193, 78, 0.06);
+  border: 1px solid rgba(242, 193, 78, 0.18);
+}
+
+.pillar-award svg {
+  width: 15px;
+  height: 15px;
+  stroke: var(--gold);
   flex: none;
 }
 
