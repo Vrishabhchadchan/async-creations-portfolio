@@ -163,22 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* ---------- Gallery filter ---------- */
+  /* ---------- Gallery: fetched live from the team portal's manifest ---------- */
+  const galleryEl = document.getElementById('gallery');
   const filterBtns = document.querySelectorAll('.filter-btn');
-  const galleryItems = document.querySelectorAll('.gallery-item');
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.getAttribute('data-filter');
-      galleryItems.forEach(item => {
-        const match = filter === 'all' || item.getAttribute('data-cat') === filter;
-        item.classList.toggle('hide', !match);
-      });
-    });
-  });
 
-  /* ---------- Lightbox ---------- */
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
   const lightboxCat = document.getElementById('lightboxCat');
@@ -197,7 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const openLightbox = (index) => {
-    visibleItems = Array.from(galleryItems).filter(i => !i.classList.contains('hide'));
+    const items = Array.from(galleryEl.querySelectorAll('.gallery-item')).filter(i => !i.classList.contains('hide'));
+    visibleItems = items;
     const item = visibleItems[index];
     if (!item) return;
     currentIndex = index;
@@ -215,14 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = '';
   };
 
-  galleryItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      visibleItems = Array.from(galleryItems).filter(i => !i.classList.contains('hide'));
-      const idx = visibleItems.indexOf(item);
-      openLightbox(idx);
-    });
-  });
-
   lightboxClose.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
   lightboxPrev.addEventListener('click', () => openLightbox((currentIndex - 1 + visibleItems.length) % visibleItems.length));
@@ -233,6 +214,49 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'ArrowLeft') openLightbox((currentIndex - 1 + visibleItems.length) % visibleItems.length);
     if (e.key === 'ArrowRight') openLightbox((currentIndex + 1) % visibleItems.length);
   });
+
+  const activeFilter = () => document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+
+  const applyFilter = () => {
+    const filter = activeFilter();
+    galleryEl.querySelectorAll('.gallery-item').forEach(item => {
+      const match = filter === 'all' || item.getAttribute('data-cat') === filter;
+      item.classList.toggle('hide', !match);
+    });
+  };
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilter();
+    });
+  });
+
+  const bindGalleryClicks = () => {
+    galleryEl.querySelectorAll('.gallery-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        const items = Array.from(galleryEl.querySelectorAll('.gallery-item')).filter(i => !i.classList.contains('hide'));
+        const idx = items.indexOf(item);
+        openLightbox(idx);
+      });
+    });
+  };
+
+  fetch('/api/gallery')
+    .then((r) => { if (!r.ok) throw new Error('Request failed'); return r.json(); })
+    .then(({ items }) => {
+      if (!Array.isArray(items) || !items.length) {
+        galleryEl.innerHTML = '<div class="gallery-loading">Our work is on its way — check back soon.</div>';
+        return;
+      }
+      galleryEl.innerHTML = items.map((item) => window.GalleryShared.galleryTileHTML(item)).join('');
+      applyFilter();
+      bindGalleryClicks();
+    })
+    .catch(() => {
+      galleryEl.innerHTML = '<div class="gallery-loading">Couldn\'t load the gallery right now — please refresh.</div>';
+    });
 
   /* ---------- Testimonial auto-scroll marquee ---------- */
   const tTrack = document.querySelector('.t-track');
