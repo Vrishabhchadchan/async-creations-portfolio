@@ -310,6 +310,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ---------- About card video: play on scroll into view + mute toggle ---------- */
+  const aboutVideo = document.getElementById('aboutVideo');
+  const aboutVideoFrame = document.getElementById('aboutVideoFrame');
+  const aboutMuteBtn = document.getElementById('aboutMuteBtn');
+
+  if (aboutVideo && aboutVideoFrame && aboutMuteBtn) {
+    const iconMute = aboutMuteBtn.querySelector('.icon-vol-mute');
+    const iconOn = aboutMuteBtn.querySelector('.icon-vol-on');
+    const labelMuted = aboutMuteBtn.querySelector('.mute-label-muted');
+    const labelOn = aboutMuteBtn.querySelector('.mute-label-on');
+
+    const videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          aboutVideo.play().catch(() => {});
+        } else {
+          aboutVideo.pause();
+        }
+      });
+    }, { threshold: 0.4 });
+    videoObserver.observe(aboutVideoFrame);
+
+    aboutMuteBtn.addEventListener('click', () => {
+      aboutVideo.muted = !aboutVideo.muted;
+      const unmuted = !aboutVideo.muted;
+      aboutMuteBtn.classList.toggle('is-unmuted', unmuted);
+      aboutMuteBtn.setAttribute('aria-pressed', String(unmuted));
+      aboutMuteBtn.setAttribute('aria-label', unmuted ? 'Mute video' : 'Unmute video');
+      // Toggling the `.hidden` property doesn't reliably reflect to the
+      // attribute on inline <svg> elements in all browsers, so set it
+      // explicitly instead of relying on the property alone.
+      const setHidden = (el, isHidden) => {
+        if (isHidden) el.setAttribute('hidden', '');
+        else el.removeAttribute('hidden');
+      };
+      setHidden(iconMute, unmuted);
+      setHidden(iconOn, !unmuted);
+      setHidden(labelMuted, unmuted);
+      setHidden(labelOn, !unmuted);
+      if (unmuted) aboutVideo.play().catch(() => {});
+    });
+  }
+
   /* ---------- Footer year ---------- */
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();

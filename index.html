@@ -152,14 +152,26 @@
   <section class="about" id="about">
     <div class="container about-grid">
       <div class="about-visual reveal-scale">
-        <div class="ring-frame logo-fill">
-          <div class="frame-logo-lockup">
-            <img src="images/icon/logo-icon-400.png" alt="Async Creations logo" class="frame-logo-icon">
-            <div class="frame-logo-word">
-              <b>ASYNC</b>
-              <span>Creations</span>
-            </div>
-          </div>
+        <div class="ring-frame video-frame" id="aboutVideoFrame">
+          <video class="about-video" id="aboutVideo" muted loop playsinline preload="metadata"
+            poster="images/work/about-card-video-poster.jpg">
+            <source src="images/work/about-card-video.mp4" type="video/mp4">
+          </video>
+          <button type="button" class="video-mute-btn" id="aboutMuteBtn" aria-label="Unmute video" aria-pressed="false">
+            <svg class="icon-vol-mute" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5L6 9H2v6h4l5 4V5z" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
+            </svg>
+            <svg class="icon-vol-on" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" hidden>
+              <path d="M11 5L6 9H2v6h4l5 4V5z" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+            <span class="mute-label-muted">Tap for sound</span>
+            <span class="mute-label-on" hidden>Sound on</span>
+          </button>
         </div>
       </div>
       <div class="about-copy reveal">
