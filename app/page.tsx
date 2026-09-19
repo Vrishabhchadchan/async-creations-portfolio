@@ -36,22 +36,26 @@ export default async function HomePage() {
         <HeroCanvas />
         <div className="shell hero-inner">
           <div className="hero-copy">
-            <p className="t-label hero-eyebrow">
+            <p className="t-label hero-eyebrow" data-reveal>
               {site.role} · {site.city}
             </p>
             <h1 className="t-display hero-title">
-              <span className="ln">We Create.</span>
-              <span className="ln italic-serif">You Grow.</span>
+              <span className="ln" data-split="chars">
+                We Create.
+              </span>
+              <span className="ln t-outline" data-split="chars">
+                You Grow.
+              </span>
             </h1>
-            <p className="t-lead hero-desc">
+            <p className="t-lead hero-desc" data-split="lines">
               Async Creation is a photography, videography and branding studio in {site.city}. We shoot it, cut it,
               design it and run the campaign — so your brand shows up everywhere looking like it means it.
             </p>
-            <div className="hero-actions">
-              <Link href="/portfolio" className="btn btn-primary">
+            <div className="hero-actions" data-reveal>
+              <Link href="/portfolio" className="btn btn-primary" data-magnetic>
                 See our work
               </Link>
-              <Link href="/contact" className="btn btn-ghost">
+              <Link href="/contact" className="btn btn-ghost" data-magnetic>
                 Get a quote
               </Link>
             </div>
@@ -72,7 +76,7 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- MARQUEE ---------------- */}
-      <div className="strip">
+      <div className="strip" data-marquee="-100">
         <div className="marquee">
           {[0, 1].map((dup) => (
             <div className="marquee-track" key={dup} aria-hidden={dup === 1}>
@@ -85,11 +89,14 @@ export default async function HomePage() {
       </div>
 
       {/* ---------------- 2. ABOUT ---------------- */}
-      <section className="section" id="about">
+      <section className="section" id="about" data-bg="sand">
         <div className="shell lede-grid">
-          <div data-reveal>
-            <span className="t-label">About the studio</span>
-            <h2 className="t-h2" style={{ marginTop: '1rem' }}>
+          <div>
+            <span className="t-label" data-reveal>
+              About the studio
+            </span>
+            <span className="label-rule" data-draw aria-hidden="true" />
+            <h2 className="t-h2" data-split="lines">
               A content studio that thinks like a <span className="italic-serif">brand partner</span>
             </h2>
           </div>
@@ -120,9 +127,10 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- 3. SERVICES ---------------- */}
-      <section className="section on-ink" id="services">
+      <section className="section on-ink hsection" id="services" data-hscroll>
         <div className="shell">
           <SectionHead
+            chapter="01"
             label="Services"
             title={
               <>
@@ -131,29 +139,35 @@ export default async function HomePage() {
             }
             lede="From the first strategy call to the final published reel — every part of the process is handled in-house."
           />
+        </div>
 
-          <div className="grid-3" data-reveal-stagger>
+        <div className="htrack-wrap">
+          <div className="htrack">
             {services.map((s, i) => (
-              <Link key={s.slug} href={`/services#${s.slug}`} className="card svc">
+              <Link key={s.slug} href={`/services#${s.slug}`} className="card svc hcard">
                 <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>
                 <h3>{s.title}</h3>
                 <p>{s.short}</p>
+                <span className="hcard-go" aria-hidden="true">
+                  →
+                </span>
               </Link>
             ))}
-          </div>
-
-          <div style={{ marginTop: '3rem' }} data-reveal>
-            <Link href="/services" className="btn btn-primary">
-              Explore all services
+            <Link href="/services" className="card hcard hcard-cta">
+              <h3>
+                See every <span className="italic-serif">service</span>
+              </h3>
+              <span className="btn btn-primary">Explore all services</span>
             </Link>
           </div>
         </div>
       </section>
 
       {/* ---------------- 4. PORTFOLIO ---------------- */}
-      <section className="section" id="work">
+      <section className="section" id="work" data-bg="cream">
         <div className="shell">
           <SectionHead
+            chapter="02"
             label="Portfolio"
             title={
               <>
@@ -207,9 +221,10 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- 6. SOCIAL & INFLUENCER ---------------- */}
-      <section className="section" id="social">
+      <section className="section" id="social" data-bg="blush">
         <div className="shell">
           <SectionHead
+            chapter="03"
             label="Social Media & Influencer"
             title={
               <>
@@ -262,6 +277,7 @@ export default async function HomePage() {
       <section className="section on-ink" id="why">
         <div className="shell">
           <SectionHead
+            chapter="04"
             label="Why Async Creation"
             title={
               <>
@@ -283,9 +299,10 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- PROCESS ---------------- */}
-      <section className="section">
+      <section className="section" data-bg="moss">
         <div className="shell">
           <SectionHead
+            chapter="05"
             label="How we work"
             title={
               <>
@@ -294,12 +311,12 @@ export default async function HomePage() {
             }
             lede="Five stages, agreed upfront, with a preview at the end of each one."
           />
-          <div data-reveal-stagger>
+          <div data-stack className="stack">
             {steps.map((s) => (
-              <article key={s.step} className="step" style={{ borderColor: 'var(--color-line)' }}>
-                <span className="svc-num">{s.step}</span>
-                <h3>{s.title}</h3>
-                <p style={{ color: 'var(--color-muted)' }}>{s.body}</p>
+              <article key={s.step} className="card stack-card">
+                <span className="stack-num">{s.step}</span>
+                <h3 className="t-h3">{s.title}</h3>
+                <p>{s.body}</p>
               </article>
             ))}
           </div>
@@ -310,6 +327,7 @@ export default async function HomePage() {
       <section className="section on-ink" id="packages">
         <div className="shell">
           <SectionHead
+            chapter="06"
             label="Packages"
             title={
               <>
@@ -336,6 +354,7 @@ export default async function HomePage() {
       <section className="section">
         <div className="shell">
           <SectionHead
+            chapter="07"
             label="FAQ"
             title={
               <>

@@ -18,9 +18,9 @@ export default function GalleryGrid({ items }: { items: GalleryItem[] }) {
   }
 
   return (
-    <div className="gal" data-reveal-stagger>
+    <div className="gal">
       {shown.map((item, i) => (
-        <figure key={item.id} className={`gal-item${item.size === 'wide' ? ' is-wide' : ''}`}>
+        <figure key={item.id} className={`gal-item${item.size === 'wide' ? ' is-wide' : ''}`} data-clip>
           <Image
             src={item.imageUrl as string}
             alt={`${item.title} — ${item.categoryLabel} photography by Async Creation, Pune`}

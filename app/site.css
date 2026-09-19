@@ -367,8 +367,40 @@
   flex-shrink: 0;
 }
 
+/* ---------------- Custom cursor ---------------- */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  border-radius: 50%;
+  mix-blend-mode: difference;
+}
+
+.cursor-dot {
+  width: 7px;
+  height: 7px;
+  background: #f5f0e8;
+}
+
+.cursor-ring {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(245, 240, 232, 0.65);
+}
+
+@media (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+}
+
 /* ---------------- Section heads ---------------- */
 .sec-head {
+  position: relative;
   display: grid;
   gap: 1.5rem;
   margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
@@ -384,7 +416,15 @@
 
 .sec-head .t-label {
   display: block;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.label-rule {
+  display: block;
+  width: 72px;
+  height: 1px;
+  background: var(--color-clay);
+  margin-bottom: 1.5rem;
 }
 
 /* ---------------- Grids ---------------- */
@@ -413,6 +453,123 @@
   }
   .grid-4 {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ---------------- Horizontal pinned track ---------------- */
+.hsection {
+  overflow: hidden;
+}
+
+.htrack-wrap {
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+}
+
+.htrack {
+  display: grid;
+  grid-auto-flow: row;
+  gap: 1.25rem;
+  padding-inline: 20px;
+}
+
+@media (min-width: 700px) {
+  .htrack {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(300px, 340px);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
+  }
+
+  .hcard {
+    scroll-snap-align: start;
+  }
+}
+
+/* From the pin breakpoint up, GSAP drives the x position, so the track
+   must not scroll on its own. */
+@media (min-width: 1024px) {
+  .hsection {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+  }
+
+  .htrack {
+    overflow: visible;
+    scroll-snap-type: none;
+    padding-left: 56px;
+    grid-auto-columns: 360px;
+    gap: 1.75rem;
+  }
+}
+
+.hcard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-height: 300px;
+  position: relative;
+}
+
+.hcard-go {
+  margin-top: auto;
+  font-size: 1.5rem;
+  color: var(--color-clay-light);
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.hcard:hover .hcard-go {
+  transform: translateX(10px);
+}
+
+.hcard-cta {
+  justify-content: center;
+  gap: 1.75rem;
+  background: rgba(224, 138, 79, 0.1);
+  border-color: var(--color-clay);
+}
+
+.hcard-cta h3 {
+  font-size: 1.7rem;
+}
+
+/* ---------------- Stacking cards ---------------- */
+.stack {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.stack-card {
+  position: sticky;
+  top: calc(var(--header-h) + 4rem);
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.75rem, 4vw, 3rem);
+  background: rgba(22, 18, 14, 0.055);
+  backdrop-filter: blur(6px);
+  will-change: transform;
+}
+
+.stack-card p {
+  margin: 0;
+  color: var(--color-muted);
+  max-width: 60ch;
+}
+
+.stack-num {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-style: italic;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-clay);
+}
+
+@supports not (-webkit-text-stroke: 1px black) {
+  .stack-num {
+    color: var(--color-clay);
   }
 }
 
@@ -795,6 +952,31 @@
   gap: 0.85rem;
   justify-content: center;
   margin-top: 2.5rem;
+}
+
+.cta-marquee {
+  margin-top: clamp(3.5rem, 8vw, 6rem);
+  overflow: hidden;
+}
+
+.cta-marquee .marquee-track {
+  gap: 3rem;
+  padding-right: 3rem;
+}
+
+.cta-marquee span {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 11vw, 10rem);
+  font-style: italic;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-bone);
+}
+
+/* Must outrank the rule above, which would otherwise fill the glyphs. */
+.cta-marquee span.t-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-bone);
 }
 
 /* ---------------- Gallery ---------------- */

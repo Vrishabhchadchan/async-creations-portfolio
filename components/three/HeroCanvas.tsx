@@ -2,6 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // Three.js stays out of the initial bundle and off the server render —
 // the hero copy paints and is crawlable long before the 3D arrives.
@@ -19,7 +21,7 @@ export default function HeroCanvas() {
     mq.addEventListener('change', onChange);
 
     // Defer past first paint so the 3D never competes with LCP.
-    const timer = window.setTimeout(() => setMounted(true), 600);
+    const timer = window.setTimeout(() => setMounted(true), 500);
 
     return () => {
       mq.removeEventListener('change', onChange);
@@ -27,9 +29,32 @@ export default function HeroCanvas() {
     };
   }, []);
 
+  // Feed hero scroll progress to the scene so the lens is driven by the
+  // wheel rather than running its own disconnected loop.
+  useEffect(() => {
+    if (!mounted) return;
+    let trigger: ScrollTrigger | undefined;
+
+    import('./Aperture').then(({ scrollState }) => {
+      gsap.registerPlugin(ScrollTrigger);
+      trigger = ScrollTrigger.create({
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+        onUpdate: (self) => {
+          scrollState.p = self.progress;
+          scrollState.v = self.getVelocity();
+        },
+      });
+    });
+
+    return () => trigger?.kill();
+  }, [mounted]);
+
   return (
     <div className="hero-canvas" aria-hidden="true">
-      {/* Warm bloom sits behind the canvas and stands in for it while loading */}
+      {/* Warm bloom sits behind the canvas and stands in while it loads */}
       <span className="hero-bloom" />
       {mounted && <Aperture reduced={reduced} />}
     </div>
