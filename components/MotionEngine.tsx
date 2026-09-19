@@ -23,6 +23,14 @@ import { CustomEase } from 'gsap/CustomEase';
  *   data-magnetic                   pointer-attracted control
  *   data-count="150"                count up
  *   data-draw                       draw an SVG line
+ *   data-cards                      grid: 3D entrance, per-column drift
+ *                                   and pointer tilt on its children
+ *   data-from="left|right|top"      arrive from an edge
+ *   data-highlight                  light a passage word by word
+ *   data-kenburns                   slow scale push on contained media
+ *   data-hscroll                    pin and travel a .htrack sideways
+ *   data-stack                      scale back .stack-card as the next
+ *                                   one covers it
  */
 export default function MotionEngine() {
   useEffect(() => {
@@ -286,6 +294,89 @@ export default function MotionEngine() {
             scrollTrigger: { trigger: el, start: 'top 92%', once: true },
           }
         );
+      });
+
+      /* ---------------- Card grids ----------------
+         A one-shot fade leaves a grid frozen for the rest of the page.
+         Each grid gets three layers instead: a staggered 3D entrance,
+         a permanent per-column drift so it keeps breathing while it is
+         on screen, and pointer tilt on desktop. */
+      gsap.utils.toArray<HTMLElement>('[data-cards]').forEach((grid) => {
+        const cards = Array.from(grid.children) as HTMLElement[];
+        if (!cards.length) return;
+
+        gsap.from(cards, {
+          y: 64,
+          rotateX: -11,
+          scale: 0.96,
+          opacity: 0,
+          duration: 0.9,
+          stagger: 0.08,
+          ease: 'swift',
+          scrollTrigger: { trigger: grid, start: 'top 86%', once: true },
+        });
+
+        // Columns drift at different rates, so the block never reads as
+        // one flat slab sliding past.
+        const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length || 1;
+        const DRIFT = [-6, 3.5, -2.5, 5];
+        cards.forEach((card, i) => {
+          gsap.to(card, {
+            yPercent: DRIFT[i % cols % DRIFT.length],
+            ease: 'none',
+            scrollTrigger: { trigger: grid, start: 'top bottom', end: 'bottom top', scrub: 1.1 },
+          });
+        });
+
+        if (window.matchMedia('(pointer: fine)').matches) {
+          cards.forEach((card) => {
+            const rx = gsap.quickTo(card, 'rotateX', { duration: 0.5, ease: 'power3.out' });
+            const ry = gsap.quickTo(card, 'rotateY', { duration: 0.5, ease: 'power3.out' });
+
+            card.addEventListener('mousemove', (e) => {
+              const r = card.getBoundingClientRect();
+              rx((((e as MouseEvent).clientY - r.top) / r.height - 0.5) * -8);
+              ry((((e as MouseEvent).clientX - r.left) / r.width - 0.5) * 8);
+            });
+            card.addEventListener('mouseleave', () => {
+              rx(0);
+              ry(0);
+            });
+          });
+        }
+      });
+
+      /* ---------------- Accordion ----------------
+         Native <details> snaps open. Driving it with GSAP keeps the FAQ
+         consistent with the rest of the page; the open state still lives
+         on the element, so semantics and keyboard support are unchanged. */
+      gsap.utils.toArray<HTMLDetailsElement>('.faq details').forEach((d) => {
+        const summary = d.querySelector('summary');
+        const panel = d.querySelector('p');
+        if (!summary || !panel) return;
+
+        summary.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (d.open) {
+            gsap.to(panel, {
+              height: 0,
+              opacity: 0,
+              duration: 0.32,
+              ease: 'power2.inOut',
+              onComplete: () => {
+                d.open = false;
+                gsap.set(panel, { height: 'auto' });
+              },
+            });
+          } else {
+            d.open = true;
+            gsap.fromTo(
+              panel,
+              { height: 0, opacity: 0 },
+              { height: 'auto', opacity: 1, duration: 0.42, ease: 'swift' }
+            );
+          }
+        });
       });
 
       /* ---------------- Pinned horizontal track ----------------

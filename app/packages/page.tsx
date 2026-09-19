@@ -119,7 +119,7 @@ export default function PackagesPage() {
             }
             lede="For brands that need a specific piece of work rather than an ongoing retainer."
           />
-          <div className="grid-3" data-reveal-stagger>
+          <div className="grid-3" data-cards>
             {projectRates.map((r) => (
               <article key={r.name} className="card svc">
                 <h3>{r.name}</h3>

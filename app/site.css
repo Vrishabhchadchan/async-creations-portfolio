@@ -512,6 +512,17 @@
   }
 }
 
+/* ---------------- Animated card grids ---------------- */
+[data-cards] {
+  perspective: 1900px;
+}
+
+/* No will-change here on purpose: with this many cards it would promote
+   dozens of permanent layers. GSAP manages promotion per tween. */
+[data-cards] > * {
+  transform-style: preserve-3d;
+}
+
 /* ---------------- Statement ---------------- */
 .statement {
   text-align: center;
@@ -1019,6 +1030,7 @@
   padding-bottom: 1.75rem;
   color: var(--color-muted);
   max-width: 78ch;
+  overflow: hidden;
 }
 
 /* ---------------- CTA band ---------------- */

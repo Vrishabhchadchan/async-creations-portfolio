@@ -101,7 +101,7 @@ export default function AboutPage() {
             lede="Two specialists, one vision — and the same two people you will meet on your shoot day."
           />
 
-          <div className="grid-2" data-reveal-stagger>
+          <div className="grid-2" data-cards>
             {team.map((m) => (
               <article key={m.name} className="card">
                 <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -181,7 +181,7 @@ export default function AboutPage() {
               </>
             }
           />
-          <div className="grid-3" data-reveal-stagger>
+          <div className="grid-3" data-cards>
             {whyAsync.map((w, i) => (
               <article key={w.title} className="card svc">
                 <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>

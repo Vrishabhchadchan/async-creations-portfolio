@@ -3,7 +3,7 @@ import { packages } from '@/lib/site';
 
 export default function PackagesGrid() {
   return (
-    <div className="grid-3" data-reveal-stagger>
+    <div className="grid-3" data-cards>
       {packages.map((p) => (
         <div key={p.name} className="pkg-wrap">
           {p.featured && <span className="pkg-badge">{p.cta}</span>}

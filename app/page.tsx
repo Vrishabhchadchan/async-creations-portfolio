@@ -316,7 +316,7 @@ export default async function HomePage() {
             }
             lede="What actually changes when one studio owns the whole pipeline instead of three vendors owning a third each."
           />
-          <div className="grid-3" data-reveal-stagger>
+          <div className="grid-3" data-cards>
             {whyAsync.map((w, i) => (
               <article key={w.title} className="card svc">
                 <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>

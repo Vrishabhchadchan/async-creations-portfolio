@@ -136,7 +136,7 @@ export default function RealEstatePage() {
             }
             lede="Booked as a complete launch package or as individual shoots, depending on where your project is in its cycle."
           />
-          <div className="grid-3" data-reveal-stagger>
+          <div className="grid-3" data-cards>
             {offerings.map((o, i) => (
               <article key={o.title} className="card svc">
                 <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>

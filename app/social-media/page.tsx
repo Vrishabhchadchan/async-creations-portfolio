@@ -119,7 +119,7 @@ export default function SocialMediaPage() {
             }
             lede="Everything below runs on a monthly cycle, with the calendar approved before the month begins."
           />
-          <div className="grid-3" data-reveal-stagger>
+          <div className="grid-3" data-cards>
             {socialScope.map((s, i) => (
               <article key={s.title} className="card svc">
                 <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>
@@ -142,7 +142,7 @@ export default function SocialMediaPage() {
             }
             lede="Creator marketing fails when it is bought by follower count. We buy audience fit and report what each collaboration actually returned."
           />
-          <div className="grid-3" data-reveal-stagger>
+          <div className="grid-3" data-cards>
             {influencerScope.map((s, i) => (
               <article key={s.title} className="card svc">
                 <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>

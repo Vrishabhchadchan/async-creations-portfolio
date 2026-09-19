@@ -15,7 +15,7 @@ export default function Testimonials() {
           lede="Results from builders, restaurants and consumer brands we have shot, edited and marketed for."
         />
 
-        <div className="grid-2" data-reveal-stagger>
+        <div className="grid-2" data-cards>
           {testimonials.map((t) => (
             <figure key={t.name} className="card quote">
               <blockquote className="t-quote">&ldquo;{t.quote}&rdquo;</blockquote>
