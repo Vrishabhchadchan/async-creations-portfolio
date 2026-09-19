@@ -197,6 +197,26 @@ export default function MotionEngine() {
         });
       });
 
+      /* ---------------- Slow push on media ----------------
+         The image drifts in scale across its whole pass, so a gallery
+         keeps moving instead of freezing once it has revealed. */
+      gsap.utils.toArray<HTMLElement>('[data-kenburns] img').forEach((img) => {
+        gsap.fromTo(
+          img,
+          { scale: 1.16 },
+          {
+            scale: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: img.parentElement as HTMLElement,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.2,
+            },
+          }
+        );
+      });
+
       /* ---------------- Clip-path media reveals ---------------- */
       gsap.utils.toArray<HTMLElement>('[data-clip]').forEach((el) => {
         gsap.fromTo(

@@ -20,7 +20,15 @@ export default function GalleryGrid({ items }: { items: GalleryItem[] }) {
   return (
     <div className="gal">
       {shown.map((item, i) => (
-        <figure key={item.id} className={`gal-item${item.size === 'wide' ? ' is-wide' : ''}`} data-clip>
+        <figure
+          key={item.id}
+          className={`gal-item${item.size === 'wide' ? ' is-wide' : ''}`}
+          data-clip
+          data-kenburns
+          // Alternating drift speeds keep the grid alive while scrolling
+          // rather than locking into a static block after the reveal.
+          data-parallax={i % 3 === 0 ? '-7' : i % 3 === 1 ? '5' : '-3'}
+        >
           <Image
             src={item.imageUrl as string}
             alt={`${item.title} — ${item.categoryLabel} photography by Async Creation, Pune`}

@@ -222,7 +222,7 @@ export default async function HomePage() {
             <h2 className="t-h2" style={{ marginTop: '1rem' }}>
               Properties sell faster when they <span className="italic-serif">photograph honestly</span>
             </h2>
-            <p className="t-lead" style={{ marginTop: '1.5rem' }}>
+            <p className="t-lead" data-highlight style={{ marginTop: '1.5rem' }}>
               A dedicated vertical for builders, developers, architects and agents in Pune — interiors, exteriors, drone
               aerials, cinematic walkthroughs and every launch creative that carries them to market.
             </p>
@@ -262,8 +262,8 @@ export default async function HomePage() {
             }
             lede="Managed social media, campaign planning and creator-led collaborations — briefed properly and measured honestly."
           />
-          <div className="grid-2" data-reveal-stagger>
-            <article className="card svc">
+          <div className="grid-2">
+            <article className="card svc" data-from="left" data-from-distance="80">
               <span className="svc-num">01</span>
               <h3>Social Media Management</h3>
               <p>
@@ -278,7 +278,7 @@ export default async function HomePage() {
                 )}
               </ul>
             </article>
-            <article className="card svc">
+            <article className="card svc" data-from="right" data-from-distance="80">
               <span className="svc-num">02</span>
               <h3>Influencer & Creator Management</h3>
               <p>
@@ -367,7 +367,7 @@ export default async function HomePage() {
             lede="Transparent starting points. Every package is adjusted to your shoot volume and deliverables after a discovery call."
           />
           <PackagesGrid />
-          <p className="t-lead" style={{ marginTop: '2.5rem' }} data-reveal>
+          <p className="t-lead" style={{ marginTop: '2.5rem' }} data-from="bottom">
             Need something outside these tiers?{' '}
             <Link href="/contact" style={{ textDecoration: 'underline' }}>
               Ask for a custom quote

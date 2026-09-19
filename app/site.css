@@ -634,8 +634,9 @@
   display: grid;
   gap: 1rem;
   padding: clamp(1.75rem, 4vw, 3rem);
-  background: rgba(22, 18, 14, 0.055);
-  backdrop-filter: blur(6px);
+  /* Opaque rather than blurred: backdrop-filter on a sticky element is
+     re-evaluated every scroll frame and was a major source of jank. */
+  background: #e7ddcc;
   will-change: transform;
 }
 

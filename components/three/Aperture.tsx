@@ -34,14 +34,14 @@ function bladeGeometry() {
     bevelSize: 0.01,
     bevelThickness: 0.008,
     bevelSegments: 3,
-    curveSegments: 24,
+    curveSegments: 14,
   });
   geo.translate(0, 0, -0.018);
   return geo;
 }
 
 /** Knurled grip band — the detail that makes a barrel read as machined. */
-function Knurl({ radius, z, count = 96 }: { radius: number; z: number; count?: number }) {
+function Knurl({ radius, z, count = 64 }: { radius: number; z: number; count?: number }) {
   const ref = useRef<THREE.InstancedMesh>(null);
 
   useLayoutEffect(() => {
@@ -68,7 +68,7 @@ function Knurl({ radius, z, count = 96 }: { radius: number; z: number; count?: n
 function Dust() {
   const pts = useRef<THREE.Points>(null);
   const geo = useMemo(() => {
-    const n = 160;
+    const n = 90;
     const pos = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 12;
@@ -93,8 +93,67 @@ function Dust() {
   );
 }
 
+/** Engraved distance-scale ticks around the focus ring. */
+function Ticks({ radius, z, count = 48 }: { radius: number; z: number; count?: number }) {
+  const ref = useRef<THREE.InstancedMesh>(null);
+
+  useLayoutEffect(() => {
+    if (!ref.current) return;
+    const dummy = new THREE.Object3D();
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      // Every fourth tick is a long one, like a real distance scale.
+      const long = i % 4 === 0;
+      dummy.position.set(Math.cos(a) * radius, Math.sin(a) * radius, z);
+      dummy.rotation.set(0, 0, a);
+      dummy.scale.set(long ? 1.9 : 1, 1, 1);
+      dummy.updateMatrix();
+      ref.current.setMatrixAt(i, dummy.matrix);
+    }
+    ref.current.instanceMatrix.needsUpdate = true;
+  }, [radius, z, count]);
+
+  return (
+    <instancedMesh ref={ref} args={[undefined, undefined, count]}>
+      <boxGeometry args={[0.1, 0.018, 0.02]} />
+      <meshStandardMaterial color="#f2dcc2" metalness={0.5} roughness={0.4} />
+    </instancedMesh>
+  );
+}
+
+/** Additive streaks catching the key light across the front element. */
+function Flare() {
+  const ref = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    if (!ref.current) return;
+    const t = state.clock.elapsedTime;
+    ref.current.rotation.z = t * 0.16;
+    const pulse = 0.5 + Math.sin(t * 0.8) * 0.25;
+    ref.current.scale.setScalar(0.9 + pulse * 0.3);
+  });
+
+  return (
+    <group ref={ref} position={[0, 0, 0.55]}>
+      {[0, Math.PI / 2, Math.PI / 4, -Math.PI / 4].map((rot, i) => (
+        <mesh key={i} rotation={[0, 0, rot]}>
+          <planeGeometry args={[i < 2 ? 3.8 : 2.4, 0.04]} />
+          <meshBasicMaterial
+            color="#ffd9a3"
+            transparent
+            opacity={i < 2 ? 0.11 : 0.06}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 function Lens() {
   const group = useRef<THREE.Group>(null);
+  const focusRing = useRef<THREE.Group>(null);
   const blades = useRef<THREE.Mesh[]>([]);
   const glow = useRef<THREE.Mesh>(null);
   const geo = useMemo(() => bladeGeometry(), []);
@@ -126,6 +185,11 @@ function Lens() {
       if (b) b.rotation.z = THREE.MathUtils.lerp(b.rotation.z, swing, Math.min(1, delta * 6));
     });
 
+    if (focusRing.current) {
+      // Counter-rotating against the barrel, plus a hard pull on scroll.
+      focusRing.current.rotation.z = -t * 0.22 - p * Math.PI * 1.6;
+    }
+
     if (glow.current) {
       const s = 0.85 + breathe * 0.2 + p * 0.9;
       glow.current.scale.setScalar(s);
@@ -137,29 +201,40 @@ function Lens() {
       {/* --- Barrel: an open cylinder running back in Z gives the whole
               object its depth and catches a long specular highlight. --- */}
       <mesh position={[0, 0, -0.95]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[1.98, 2.12, 1.9, 72, 1, true]} />
+        <cylinderGeometry args={[1.98, 2.12, 1.9, 48, 1, true]} />
         <meshStandardMaterial color={STEEL} metalness={0.92} roughness={0.3} side={THREE.DoubleSide} />
       </mesh>
 
       {/* Front bezel */}
       <mesh position={[0, 0, 0.02]}>
-        <torusGeometry args={[2.0, 0.085, 20, 96]} />
+        <torusGeometry args={[2.0, 0.085, 14, 64]} />
         <meshStandardMaterial color={BRONZE} metalness={0.96} roughness={0.18} />
       </mesh>
 
       {/* Engraved trim rings */}
       <mesh position={[0, 0, -0.12]}>
-        <torusGeometry args={[2.16, 0.02, 12, 96]} />
+        <torusGeometry args={[2.16, 0.02, 8, 64]} />
         <meshStandardMaterial color={CLAY} metalness={0.9} roughness={0.35} />
       </mesh>
       <mesh position={[0, 0, -1.85]}>
-        <torusGeometry args={[2.1, 0.05, 16, 96]} />
+        <torusGeometry args={[2.1, 0.05, 10, 64]} />
         <meshStandardMaterial color={BRONZE} metalness={0.95} roughness={0.28} />
       </mesh>
 
-      {/* Knurled focus and zoom bands */}
-      <Knurl radius={2.09} z={-0.62} />
+      {/* Knurled zoom band, fixed to the barrel */}
       <Knurl radius={2.11} z={-1.34} />
+
+      {/* Focus ring: turns against the barrel on its own axis, and the
+          scroll drives it further — the detail that makes the lens read
+          as being operated rather than just spun. */}
+      <group ref={focusRing}>
+        <Knurl radius={2.09} z={-0.62} />
+        <Ticks radius={2.2} z={-0.62} />
+        <mesh position={[0, 0, -0.62]}>
+          <torusGeometry args={[2.17, 0.014, 8, 64]} />
+          <meshStandardMaterial color="#f2dcc2" metalness={0.5} roughness={0.45} />
+        </mesh>
+      </group>
 
       {/* --- Aperture blades --- */}
       <group position={[0, 0, -0.1]}>
@@ -173,15 +248,10 @@ function Lens() {
               position={[HINGE_RADIUS, 0, i * 0.012]}
               rotation={[0, 0, 0.5]}
             >
-              <meshPhysicalMaterial
+              <meshStandardMaterial
                 color="#b4501d"
-                metalness={0.42}
-                roughness={0.33}
-                iridescence={0.55}
-                iridescenceIOR={1.45}
-                iridescenceThicknessRange={[140, 460]}
-                clearcoat={0.45}
-                clearcoatRoughness={0.28}
+                metalness={0.45}
+                roughness={0.3}
                 side={THREE.DoubleSide}
               />
             </mesh>
@@ -193,7 +263,7 @@ function Lens() {
               mirroring it flat. The cap is built around +Y, so it has to
               be rotated to face the camera down +Z. --- */}
       <mesh position={[0, 0, 0.12]} rotation={[-Math.PI / 2, 0, 0]}>
-        <sphereGeometry args={[3.4, 56, 24, 0, Math.PI * 2, 0, 0.36]} />
+        <sphereGeometry args={[3.4, 40, 16, 0, Math.PI * 2, 0, 0.36]} />
         <meshPhysicalMaterial
           color="#2a1a10"
           metalness={0.35}
@@ -233,30 +303,30 @@ function Rig() {
   return null;
 }
 
-export default function Aperture({ reduced = false }: { reduced?: boolean }) {
+export default function Aperture({ reduced = false, paused = false }: { reduced?: boolean; paused?: boolean }) {
   return (
     <Canvas
       camera={{ position: [0, 0, 7.2], fov: 38 }}
-      dpr={[1, 1.75]}
-      gl={{ antialias: true, alpha: true }}
-      frameloop={reduced ? 'demand' : 'always'}
+      dpr={[1, 1.5]}
+      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      frameloop={reduced || paused ? 'demand' : 'always'}
       style={{ pointerEvents: 'none' }}
     >
       <ambientLight intensity={0.42} />
       <directionalLight position={[5, 6, 7]} intensity={1.9} color="#ffe2bd" />
       <directionalLight position={[-6, -2, 4]} intensity={1.1} color="#c2612f" />
-      <spotLight position={[-4, 6, 5]} angle={0.5} penumbra={1} intensity={11} color="#fff1dc" />
 
       {!reduced && <Rig />}
       {!reduced && <Dust />}
 
       <Float speed={reduced ? 0 : 0.9} rotationIntensity={reduced ? 0 : 0.08} floatIntensity={reduced ? 0 : 0.3}>
         <Lens />
+        {!reduced && <Flare />}
       </Float>
 
       {/* Built in-scene: drei's presets fetch an HDRI from a third-party
           CDN and suspend the scene behind that request. */}
-      <Environment resolution={192}>
+      <Environment resolution={96}>
         <Lightformer intensity={4} position={[0, 4, -3]} scale={[12, 3, 1]} color="#fff3e2" />
         <Lightformer intensity={2.2} position={[-5, 1, -2]} scale={[7, 7, 1]} color="#e08a4f" />
         <Lightformer intensity={1.4} position={[5, -1, -2]} scale={[7, 7, 1]} color="#c2612f" />

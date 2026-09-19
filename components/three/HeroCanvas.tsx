@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -12,6 +12,21 @@ const Aperture = dynamic(() => import('./Aperture'), { ssr: false });
 export default function HeroCanvas() {
   const [mounted, setMounted] = useState(false);
   const [reduced, setReduced] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const hostRef = useRef<HTMLDivElement>(null);
+
+  // Once the hero has scrolled away the scene is still rendering every
+  // frame behind the rest of the page. Stopping it there is the single
+  // biggest win for scroll smoothness further down.
+  useEffect(() => {
+    const el = hostRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
+      rootMargin: '120px',
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -53,10 +68,10 @@ export default function HeroCanvas() {
   }, [mounted]);
 
   return (
-    <div className="hero-canvas" aria-hidden="true">
+    <div className="hero-canvas" aria-hidden="true" ref={hostRef}>
       {/* Warm bloom sits behind the canvas and stands in while it loads */}
       <span className="hero-bloom" />
-      {mounted && <Aperture reduced={reduced} />}
+      {mounted && <Aperture reduced={reduced} paused={!visible} />}
     </div>
   );
 }

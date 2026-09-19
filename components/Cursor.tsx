@@ -28,10 +28,12 @@ export default function Cursor() {
 
     gsap.set([w, d], { xPercent: -50, yPercent: -50, opacity: 0 });
 
-    const wx = gsap.quickTo(w, 'x', { duration: 0.42, ease: 'power3.out' });
-    const wy = gsap.quickTo(w, 'y', { duration: 0.42, ease: 'power3.out' });
-    const dx = gsap.quickTo(d, 'x', { duration: 0.1, ease: 'power3.out' });
-    const dy = gsap.quickTo(d, 'y', { duration: 0.1, ease: 'power3.out' });
+    // Short enough to feel attached to the hand. Above ~0.2s the reticle
+    // reads as lag rather than smoothing.
+    const wx = gsap.quickTo(w, 'x', { duration: 0.16, ease: 'power2.out' });
+    const wy = gsap.quickTo(w, 'y', { duration: 0.16, ease: 'power2.out' });
+    const dx = gsap.quickTo(d, 'x', { duration: 0.05, ease: 'none' });
+    const dy = gsap.quickTo(d, 'y', { duration: 0.05, ease: 'none' });
 
     let shown = false;
     const move = (e: MouseEvent) => {
