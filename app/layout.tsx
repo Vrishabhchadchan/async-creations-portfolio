@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Fraunces, Archivo, JetBrains_Mono } from 'next/font/google';
+import { Fraunces, Archivo, JetBrains_Mono, Syne, Instrument_Serif } from 'next/font/google';
 import './globals.css';
 import './site.css';
 import Header from '@/components/Header';
@@ -30,6 +30,24 @@ const mono = JetBrains_Mono({
   display: 'swap',
   weight: ['400', '500'],
   variable: '--font-jetbrains',
+});
+
+// Syne carries the structural headings — geometric and slightly odd, it
+// reads as designed where a neutral grotesk reads as default.
+const syne = Syne({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['600', '700', '800'],
+  variable: '--font-syne',
+});
+
+// High-contrast serif reserved for pull quotes and statement moments.
+const instrument = Instrument_Serif({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  variable: '--font-instrument',
 });
 
 export const viewport: Viewport = {
@@ -80,7 +98,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-IN" className={`${fraunces.variable} ${archivo.variable} ${mono.variable}`}>
+    <html
+      lang="en-IN"
+      className={`${fraunces.variable} ${archivo.variable} ${mono.variable} ${syne.variable} ${instrument.variable}`}
+    >
       <body>
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
         <div id="backdrop" aria-hidden="true" />

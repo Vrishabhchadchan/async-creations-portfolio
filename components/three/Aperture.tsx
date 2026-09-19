@@ -1,51 +1,78 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, Lightformer, Float } from '@react-three/drei';
 import * as THREE from 'three';
 
-const BLADES = 8;
-const HINGE_RADIUS = 1.62;
+const BLADES = 9;
+const HINGE_RADIUS = 1.5;
 const CLAY = '#c2612f';
-const BRONZE = '#7d5130';
+const BRONZE = '#6f4526';
+const STEEL = '#2a211b';
 
 /** Scroll progress through the hero, 0 → 1. Written by HeroCanvas. */
 export const scrollState = { p: 0, v: 0 };
 
 /**
- * One aperture blade. The shape's origin is the hinge pin and the body
- * extends inward along -X, so rotating the mesh about its own origin
- * opens and closes the iris the way a real one works.
+ * An aperture blade with a curved inner edge. The profile's origin is
+ * the hinge pin and the body sweeps inward along -X, so rotating the
+ * mesh about its own origin opens and closes the iris.
  */
 function bladeGeometry() {
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
-  shape.lineTo(-1.08, 0.2);
-  shape.lineTo(-0.98, 0.78);
-  shape.lineTo(0.06, 1.34);
+  // Curved leading edge — a straight one reads as a paper cut-out.
+  shape.quadraticCurveTo(-0.65, 0.02, -1.12, 0.26);
+  shape.lineTo(-1.02, 0.72);
+  shape.quadraticCurveTo(-0.5, 0.95, 0.06, 1.2);
   shape.closePath();
 
   const geo = new THREE.ExtrudeGeometry(shape, {
-    depth: 0.06,
+    depth: 0.035,
     bevelEnabled: true,
-    bevelSize: 0.012,
-    bevelThickness: 0.012,
-    bevelSegments: 2,
+    bevelSize: 0.01,
+    bevelThickness: 0.008,
+    bevelSegments: 3,
+    curveSegments: 24,
   });
-  geo.translate(0, 0, -0.03);
+  geo.translate(0, 0, -0.018);
   return geo;
 }
 
-/** Slow drifting dust, lit from the key light — gives the lens air around it. */
+/** Knurled grip band — the detail that makes a barrel read as machined. */
+function Knurl({ radius, z, count = 96 }: { radius: number; z: number; count?: number }) {
+  const ref = useRef<THREE.InstancedMesh>(null);
+
+  useLayoutEffect(() => {
+    if (!ref.current) return;
+    const dummy = new THREE.Object3D();
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      dummy.position.set(Math.cos(a) * radius, Math.sin(a) * radius, z);
+      dummy.rotation.set(0, 0, a);
+      dummy.updateMatrix();
+      ref.current.setMatrixAt(i, dummy.matrix);
+    }
+    ref.current.instanceMatrix.needsUpdate = true;
+  }, [radius, z, count]);
+
+  return (
+    <instancedMesh ref={ref} args={[undefined, undefined, count]}>
+      <boxGeometry args={[0.07, 0.035, 0.46]} />
+      <meshStandardMaterial color={BRONZE} metalness={0.95} roughness={0.32} />
+    </instancedMesh>
+  );
+}
+
 function Dust() {
   const pts = useRef<THREE.Points>(null);
   const geo = useMemo(() => {
-    const n = 140;
+    const n = 160;
     const pos = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 11;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 8;
+      pos[i * 3] = (Math.random() - 0.5) * 12;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 9;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 6 - 1;
     }
     const g = new THREE.BufferGeometry();
@@ -54,22 +81,22 @@ function Dust() {
   }, []);
 
   useFrame((state) => {
-    if (pts.current) {
-      pts.current.rotation.y = state.clock.elapsedTime * 0.03;
-      pts.current.rotation.x = state.clock.elapsedTime * 0.014;
-    }
+    if (!pts.current) return;
+    pts.current.rotation.y = state.clock.elapsedTime * 0.03;
+    pts.current.rotation.x = state.clock.elapsedTime * 0.014;
   });
 
   return (
     <points ref={pts} geometry={geo}>
-      <pointsMaterial size={0.035} color="#e0a878" transparent opacity={0.55} sizeAttenuation />
+      <pointsMaterial size={0.032} color="#e8b98c" transparent opacity={0.5} sizeAttenuation />
     </points>
   );
 }
 
-function Iris() {
+function Lens() {
   const group = useRef<THREE.Group>(null);
   const blades = useRef<THREE.Mesh[]>([]);
+  const glow = useRef<THREE.Mesh>(null);
   const geo = useMemo(() => bladeGeometry(), []);
 
   useFrame((state, delta) => {
@@ -77,96 +104,130 @@ function Iris() {
     const p = scrollState.p;
 
     if (group.current) {
-      // Scroll drives a quarter turn and a push toward the viewer, so the
-      // lens reads as a mechanism being operated rather than a spinning prop.
-      group.current.rotation.z = t * 0.06 + p * Math.PI * 0.7;
-      group.current.position.z = p * 3.4;
+      // Held at a three-quarter angle so the barrel's depth is visible —
+      // dead-on it flattens into a disc no matter how detailed it is.
       group.current.rotation.x = THREE.MathUtils.lerp(
         group.current.rotation.x,
-        -state.pointer.y * 0.22 + p * 0.25,
+        -0.42 - state.pointer.y * 0.16 + p * 0.34,
         0.05
       );
       group.current.rotation.y = THREE.MathUtils.lerp(
         group.current.rotation.y,
-        state.pointer.x * 0.22,
+        0.58 + state.pointer.x * 0.18 - p * 0.6,
         0.05
       );
-      const s = 0.94 + p * 0.5;
-      group.current.scale.setScalar(THREE.MathUtils.lerp(group.current.scale.x, s, 0.1));
+      group.current.rotation.z = t * 0.045 + p * Math.PI * 0.4;
+      group.current.position.z = p * 3;
     }
 
-    // Idle breathing, overridden by scroll: the iris opens as you descend.
     const breathe = (Math.sin(t * 0.3) + 1) / 2;
-    const swing = 0.28 + breathe * 0.22 + p * 0.85;
-    blades.current.forEach((b, i) => {
-      if (!b) return;
-      b.rotation.z = THREE.MathUtils.lerp(b.rotation.z, swing, Math.min(1, delta * 6));
-      b.position.z = i * 0.014;
+    const swing = 0.3 + breathe * 0.2 + p * 0.8;
+    blades.current.forEach((b) => {
+      if (b) b.rotation.z = THREE.MathUtils.lerp(b.rotation.z, swing, Math.min(1, delta * 6));
     });
+
+    if (glow.current) {
+      const s = 0.85 + breathe * 0.2 + p * 0.9;
+      glow.current.scale.setScalar(s);
+    }
   });
 
   return (
-    <group ref={group} scale={0.94}>
-      {Array.from({ length: BLADES }).map((_, i) => (
-        <group key={i} rotation={[0, 0, (i / BLADES) * Math.PI * 2]}>
-          <mesh
-            ref={(el) => {
-              if (el) blades.current[i] = el;
-            }}
-            geometry={geo}
-            position={[HINGE_RADIUS, 0, i * 0.014]}
-            rotation={[0, 0, 0.5]}
-          >
-            <meshPhysicalMaterial
-              color={CLAY}
-              metalness={0.55}
-              roughness={0.28}
-              iridescence={0.9}
-              iridescenceIOR={1.6}
-              iridescenceThicknessRange={[100, 560]}
-              clearcoat={0.6}
-              clearcoatRoughness={0.25}
-              side={THREE.DoubleSide}
-            />
-          </mesh>
-        </group>
-      ))}
-
-      {/* Lens barrel rings */}
-      <mesh>
-        <torusGeometry args={[2.05, 0.055, 16, 96]} />
-        <meshStandardMaterial color={BRONZE} metalness={0.9} roughness={0.25} />
-      </mesh>
-      <mesh>
-        <torusGeometry args={[2.28, 0.024, 12, 96]} />
-        <meshStandardMaterial color={BRONZE} metalness={0.9} roughness={0.38} />
-      </mesh>
-      <mesh rotation={[0, 0, 0.4]}>
-        <torusGeometry args={[2.52, 0.012, 8, 96]} />
-        <meshStandardMaterial color={CLAY} metalness={0.8} roughness={0.5} />
+    <group ref={group} scale={0.86}>
+      {/* --- Barrel: an open cylinder running back in Z gives the whole
+              object its depth and catches a long specular highlight. --- */}
+      <mesh position={[0, 0, -0.95]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[1.98, 2.12, 1.9, 72, 1, true]} />
+        <meshStandardMaterial color={STEEL} metalness={0.92} roughness={0.3} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* Glass element behind the blades */}
-      <mesh position={[0, 0, -0.2]}>
-        <circleGeometry args={[2.0, 64]} />
+      {/* Front bezel */}
+      <mesh position={[0, 0, 0.02]}>
+        <torusGeometry args={[2.0, 0.085, 20, 96]} />
+        <meshStandardMaterial color={BRONZE} metalness={0.96} roughness={0.18} />
+      </mesh>
+
+      {/* Engraved trim rings */}
+      <mesh position={[0, 0, -0.12]}>
+        <torusGeometry args={[2.16, 0.02, 12, 96]} />
+        <meshStandardMaterial color={CLAY} metalness={0.9} roughness={0.35} />
+      </mesh>
+      <mesh position={[0, 0, -1.85]}>
+        <torusGeometry args={[2.1, 0.05, 16, 96]} />
+        <meshStandardMaterial color={BRONZE} metalness={0.95} roughness={0.28} />
+      </mesh>
+
+      {/* Knurled focus and zoom bands */}
+      <Knurl radius={2.09} z={-0.62} />
+      <Knurl radius={2.11} z={-1.34} />
+
+      {/* --- Aperture blades --- */}
+      <group position={[0, 0, -0.1]}>
+        {Array.from({ length: BLADES }).map((_, i) => (
+          <group key={i} rotation={[0, 0, (i / BLADES) * Math.PI * 2]}>
+            <mesh
+              ref={(el) => {
+                if (el) blades.current[i] = el;
+              }}
+              geometry={geo}
+              position={[HINGE_RADIUS, 0, i * 0.012]}
+              rotation={[0, 0, 0.5]}
+            >
+              <meshPhysicalMaterial
+                color="#b4501d"
+                metalness={0.42}
+                roughness={0.33}
+                iridescence={0.55}
+                iridescenceIOR={1.45}
+                iridescenceThicknessRange={[140, 460]}
+                clearcoat={0.45}
+                clearcoatRoughness={0.28}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+          </group>
+        ))}
+      </group>
+
+      {/* --- Front glass: a shallow dome bends the reflection instead of
+              mirroring it flat. The cap is built around +Y, so it has to
+              be rotated to face the camera down +Z. --- */}
+      <mesh position={[0, 0, 0.12]} rotation={[-Math.PI / 2, 0, 0]}>
+        <sphereGeometry args={[3.4, 56, 24, 0, Math.PI * 2, 0, 0.36]} />
         <meshPhysicalMaterial
-          color="#5c3722"
-          metalness={0.5}
-          roughness={0.28}
+          color="#2a1a10"
+          metalness={0.35}
+          roughness={0.06}
           iridescence={1}
-          iridescenceIOR={1.9}
+          iridescenceIOR={2.2}
           iridescenceThicknessRange={[200, 900]}
+          clearcoat={1}
+          clearcoatRoughness={0.04}
+          transparent
+          opacity={0.16}
+          side={THREE.DoubleSide}
         />
       </mesh>
+
+      {/* Light coming up through the barrel */}
+      <mesh ref={glow} position={[0, 0, -1.45]}>
+        <circleGeometry args={[0.9, 48]} />
+        <meshBasicMaterial
+          color="#ffd9a3"
+          transparent
+          opacity={0.95}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
+      <pointLight position={[0, 0, -1.1]} intensity={14} distance={8} color="#ffb877" />
     </group>
   );
 }
 
 function Rig() {
   useFrame((state) => {
-    // Camera eases toward the lens as the hero scrolls away, so the
-    // section exits by travelling into the aperture.
-    const target = 7 - scrollState.p * 2.6;
+    const target = 7.2 - scrollState.p * 2.8;
     state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, target, 0.08);
   });
   return null;
@@ -175,31 +236,32 @@ function Rig() {
 export default function Aperture({ reduced = false }: { reduced?: boolean }) {
   return (
     <Canvas
-      camera={{ position: [0, 0, 7], fov: 40 }}
+      camera={{ position: [0, 0, 7.2], fov: 38 }}
       dpr={[1, 1.75]}
       gl={{ antialias: true, alpha: true }}
       frameloop={reduced ? 'demand' : 'always'}
       style={{ pointerEvents: 'none' }}
     >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[4, 5, 6]} intensity={2.2} color="#ffd9b0" />
-      <directionalLight position={[-5, -2, 3]} intensity={0.9} color="#c2612f" />
-      <pointLight position={[0, 0, 3]} intensity={12} distance={9} color="#ffb877" />
+      <ambientLight intensity={0.42} />
+      <directionalLight position={[5, 6, 7]} intensity={1.9} color="#ffe2bd" />
+      <directionalLight position={[-6, -2, 4]} intensity={1.1} color="#c2612f" />
+      <spotLight position={[-4, 6, 5]} angle={0.5} penumbra={1} intensity={11} color="#fff1dc" />
 
       {!reduced && <Rig />}
       {!reduced && <Dust />}
 
-      <Float speed={reduced ? 0 : 1} rotationIntensity={reduced ? 0 : 0.1} floatIntensity={reduced ? 0 : 0.35}>
-        <Iris />
+      <Float speed={reduced ? 0 : 0.9} rotationIntensity={reduced ? 0 : 0.08} floatIntensity={reduced ? 0 : 0.3}>
+        <Lens />
       </Float>
 
       {/* Built in-scene: drei's presets fetch an HDRI from a third-party
           CDN and suspend the scene behind that request. */}
-      <Environment resolution={128}>
-        <Lightformer intensity={3.2} position={[0, 3, -4]} scale={[10, 3, 1]} color="#fff0dc" />
-        <Lightformer intensity={1.8} position={[-4, 0, -2]} scale={[6, 6, 1]} color="#e08a4f" />
-        <Lightformer intensity={1.2} position={[4, -1, -2]} scale={[6, 6, 1]} color="#c2612f" />
-        <Lightformer intensity={0.8} position={[0, -4, 2]} scale={[10, 3, 1]} color="#f5f0e8" />
+      <Environment resolution={192}>
+        <Lightformer intensity={4} position={[0, 4, -3]} scale={[12, 3, 1]} color="#fff3e2" />
+        <Lightformer intensity={2.2} position={[-5, 1, -2]} scale={[7, 7, 1]} color="#e08a4f" />
+        <Lightformer intensity={1.4} position={[5, -1, -2]} scale={[7, 7, 1]} color="#c2612f" />
+        <Lightformer intensity={2.6} form="ring" position={[0, 0, 5]} scale={[5, 5, 1]} color="#fff8ef" />
+        <Lightformer intensity={0.9} position={[0, -4, 2]} scale={[12, 3, 1]} color="#f5f0e8" />
       </Environment>
     </Canvas>
   );

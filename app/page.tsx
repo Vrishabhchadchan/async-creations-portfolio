@@ -101,7 +101,7 @@ export default async function HomePage() {
             </h2>
           </div>
           <div data-reveal>
-            <p className="t-lead">
+            <p className="t-lead" data-highlight>
               Most brands do not have a content problem. They have a consistency problem — a great shoot in January and
               silence until June.
             </p>
@@ -126,11 +126,40 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ---------------- STATEMENT ---------------- */}
+      <section className="section statement" data-bg="bone">
+        <div className="shell">
+          <p className="t-label" data-reveal>
+            The belief
+          </p>
+          <p className="statement-text t-quote" data-highlight>
+            A brand is not what you say about yourself. It is what people remember after the scroll — the one frame that
+            stayed, the film that made them call, the feed that finally looked like it meant something. We make the
+            things worth remembering.
+          </p>
+          <div className="statement-marks" aria-hidden="true">
+            <span data-from="left" data-from-distance="90">
+              Shoot
+            </span>
+            <span data-from="bottom" data-from-distance="70">
+              Edit
+            </span>
+            <span data-from="top" data-from-distance="70">
+              Design
+            </span>
+            <span data-from="right" data-from-distance="90">
+              Publish
+            </span>
+          </div>
+        </div>
+      </section>
+
       {/* ---------------- 3. SERVICES ---------------- */}
       <section className="section on-ink hsection" id="services" data-hscroll>
         <div className="shell">
           <SectionHead
             chapter="01"
+            variant="alt"
             label="Services"
             title={
               <>
@@ -188,7 +217,7 @@ export default async function HomePage() {
       {/* ---------------- 5. REAL ESTATE ---------------- */}
       <section className="section on-ink" id="real-estate">
         <div className="shell lede-grid">
-          <div data-reveal>
+          <div data-from="left">
             <span className="t-label">Real Estate Solutions</span>
             <h2 className="t-h2" style={{ marginTop: '1rem' }}>
               Properties sell faster when they <span className="italic-serif">photograph honestly</span>
@@ -203,7 +232,7 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          <ul className="svc-list" data-reveal style={{ gap: '1rem' }}>
+          <ul className="svc-list" data-from="right" style={{ gap: '1rem' }}>
             {[
               'Interior and exterior property photography',
               '4K drone aerials and site reveal shots',
@@ -278,6 +307,7 @@ export default async function HomePage() {
         <div className="shell">
           <SectionHead
             chapter="04"
+            variant="alt"
             label="Why Async Creation"
             title={
               <>

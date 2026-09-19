@@ -18,7 +18,7 @@ export default function Testimonials() {
         <div className="grid-2" data-reveal-stagger>
           {testimonials.map((t) => (
             <figure key={t.name} className="card quote">
-              <blockquote>&ldquo;{t.quote}&rdquo;</blockquote>
+              <blockquote className="t-quote">&ldquo;{t.quote}&rdquo;</blockquote>
               <footer>
                 <cite>{t.name}</cite>
                 <span className="role">{t.role}</span>

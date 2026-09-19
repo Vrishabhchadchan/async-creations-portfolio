@@ -367,33 +367,89 @@
   flex-shrink: 0;
 }
 
-/* ---------------- Custom cursor ---------------- */
-.cursor-dot,
-.cursor-ring {
+/* ---------------- Viewfinder reticle cursor ---------------- */
+.reticle,
+.reticle-dot {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 9999;
   pointer-events: none;
+}
+
+.reticle-dot {
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  mix-blend-mode: difference;
+  background: var(--color-clay);
 }
 
-.cursor-dot {
-  width: 7px;
-  height: 7px;
-  background: #f5f0e8;
+.reticle-box {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  border: 1px solid transparent;
+  transition: none;
 }
 
-.cursor-ring {
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(245, 240, 232, 0.65);
+.reticle-corner {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  padding: 5px;
+  border-color: var(--color-ink);
+  border-style: solid;
+  border-width: 0;
+}
+
+.on-ink .reticle-corner {
+  border-color: var(--color-bone);
+}
+
+.reticle-corner.tl {
+  top: 0;
+  left: 0;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.reticle-corner.tr {
+  top: 0;
+  right: 0;
+  border-top-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.reticle-corner.bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.reticle-corner.br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.reticle-label {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  color: var(--color-clay-deep);
+  opacity: 0;
+  white-space: nowrap;
 }
 
 @media (pointer: coarse) {
-  .cursor-dot,
-  .cursor-ring {
+  .reticle,
+  .reticle-dot {
     display: none;
   }
 }
@@ -454,6 +510,37 @@
   .grid-4 {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+
+/* ---------------- Statement ---------------- */
+.statement {
+  text-align: center;
+}
+
+.statement-text {
+  font-size: clamp(1.75rem, 4.6vw, 4rem);
+  max-width: 20ch;
+  margin: 2rem auto 0;
+  text-wrap: balance;
+}
+
+.statement-marks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2.5rem;
+  margin-top: clamp(3rem, 7vw, 5rem);
+}
+
+.statement-marks span {
+  font-family: var(--font-alt);
+  font-weight: 700;
+  font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.6rem;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
 }
 
 /* ---------------- Horizontal pinned track ---------------- */
@@ -760,10 +847,8 @@
 
 .quote blockquote {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 1.7vw, 1.28rem);
-  line-height: 1.5;
-  font-style: italic;
+  font-size: clamp(1.25rem, 2.1vw, 1.65rem);
+  line-height: 1.28;
 }
 
 .quote footer {

@@ -141,6 +141,53 @@ export default function MotionEngine() {
         });
       });
 
+      /* ---------------- Directional arrivals ----------------
+         Elements travel in from an edge and settle at their place, so a
+         section assembles itself rather than appearing all at once. */
+      gsap.utils.toArray<HTMLElement>('[data-from]').forEach((el) => {
+        const dir = el.dataset.from || 'bottom';
+        const dist = parseFloat(el.dataset.fromDistance || '120');
+        const vec =
+          dir === 'left'
+            ? { x: -dist }
+            : dir === 'right'
+              ? { x: dist }
+              : dir === 'top'
+                ? { y: -dist }
+                : { y: dist };
+
+        gsap.from(el, {
+          ...vec,
+          opacity: 0,
+          rotate: dir === 'left' ? -3 : dir === 'right' ? 3 : 0,
+          duration: 1.15,
+          ease: 'swift',
+          scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+        });
+      });
+
+      /* ---------------- Word-by-word fill ----------------
+         The paragraph is dim on arrival and each word lights as it
+         crosses the middle of the screen, scrubbed to the wheel. */
+      gsap.utils.toArray<HTMLElement>('[data-highlight]').forEach((el) => {
+        const split = new SplitText(el, { type: 'words' });
+        splits.push(split);
+        // Dim, not invisible: if a trigger position ever went stale the
+        // copy still has to be readable where it sits.
+        gsap.set(split.words, { opacity: 0.25 });
+        gsap.to(split.words, {
+          opacity: 1,
+          ease: 'none',
+          stagger: 0.4,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 78%',
+            end: 'bottom 52%',
+            scrub: 0.7,
+          },
+        });
+      });
+
       /* ---------------- Parallax ---------------- */
       gsap.utils.toArray<HTMLElement>('[data-parallax]').forEach((el) => {
         gsap.to(el, {

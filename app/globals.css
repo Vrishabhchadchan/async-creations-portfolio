@@ -26,6 +26,8 @@
   --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-alt: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-quote: var(--font-instrument), ui-serif, Georgia, serif;
 
   --radius-card: 4px;
 
@@ -55,6 +57,10 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* `clip` rather than `hidden`: elements flying in from off-screen must
+     not widen the document, but `hidden` would create a scroll container
+     and break the sticky process cards. */
+  overflow-x: clip;
 }
 
 :root {
@@ -70,7 +76,7 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* The backdrop is a single fixed plane whose colour the scroll engine
@@ -279,6 +285,24 @@ canvas {
 
 .on-ink .italic-serif {
   color: var(--color-clay-light);
+}
+
+/* Syne: tight, geometric, slightly odd. Used where a section needs to
+   read structural rather than editorial. */
+.t-alt {
+  font-family: var(--font-alt);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+/* Instrument Serif: high contrast, reserved for quotes and statements. */
+.t-quote {
+  font-family: var(--font-quote);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.12;
 }
 
 /* Outlined display type — the counterweight to the solid serif, and the

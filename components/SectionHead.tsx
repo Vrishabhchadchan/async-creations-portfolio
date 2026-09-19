@@ -8,9 +8,18 @@ type Props = {
   as?: 'h1' | 'h2';
   /** Oversized outlined numeral behind the head. */
   chapter?: string;
+  /** Typeface for the heading: editorial serif, or structural Syne. */
+  variant?: 'serif' | 'alt';
 };
 
-export default function SectionHead({ label, title, lede, as: Tag = 'h2', chapter }: Props) {
+export default function SectionHead({
+  label,
+  title,
+  lede,
+  as: Tag = 'h2',
+  chapter,
+  variant = 'serif',
+}: Props) {
   return (
     <div className="sec-head">
       {chapter && (
@@ -23,7 +32,10 @@ export default function SectionHead({ label, title, lede, as: Tag = 'h2', chapte
           {label}
         </span>
         <span className="label-rule" data-draw aria-hidden="true" />
-        <Tag className={Tag === 'h1' ? 't-h1' : 't-h2'} data-split="lines">
+        <Tag
+          className={`${Tag === 'h1' ? 't-h1' : 't-h2'}${variant === 'alt' ? ' t-alt' : ''}`}
+          data-split="lines"
+        >
           {title}
         </Tag>
       </div>
