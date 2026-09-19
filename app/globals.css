@@ -82,71 +82,12 @@ body {
 /* The backdrop is a single fixed plane whose colour the scroll engine
    morphs between section palettes, so the page reads as one continuous
    surface changing colour rather than stacked coloured boxes. */
-/* The backdrop carries the morphing colour, the drifting warm light and
-   the halftone plate in one fixed layer, so the page composites a single
-   background surface rather than stacking several full-screen overlays. */
 #backdrop {
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-color: var(--color-bone);
-  background-image: radial-gradient(circle at center, rgba(22, 18, 14, 0.5) 0.6px, transparent 0.7px);
-  background-size: 6px 6px;
-  overflow: hidden;
-}
-
-/* Slow warm light drifting behind the page. Transform-only, so these
-   stay on the compositor and never trigger repaint while scrolling. */
-.glowfield {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  will-change: transform;
-}
-
-.glowfield.a {
-  top: -22vh;
-  left: -12vw;
-  width: 62vw;
-  height: 62vw;
-  background: radial-gradient(circle, rgba(194, 97, 47, 0.3), transparent 68%);
-  animation: drift-a 26s ease-in-out infinite alternate;
-}
-
-.glowfield.b {
-  bottom: -28vh;
-  right: -14vw;
-  width: 70vw;
-  height: 70vw;
-  background: radial-gradient(circle, rgba(217, 199, 168, 0.5), transparent 66%);
-  animation: drift-b 34s ease-in-out infinite alternate;
-}
-
-.glowfield.c {
-  top: 32vh;
-  right: 18vw;
-  width: 38vw;
-  height: 38vw;
-  background: radial-gradient(circle, rgba(224, 138, 79, 0.2), transparent 70%);
-  animation: drift-c 30s ease-in-out infinite alternate;
-}
-
-@keyframes drift-a {
-  to {
-    transform: translate3d(16vw, 12vh, 0) scale(1.18);
-  }
-}
-
-@keyframes drift-b {
-  to {
-    transform: translate3d(-14vw, -10vh, 0) scale(1.12);
-  }
-}
-
-@keyframes drift-c {
-  to {
-    transform: translate3d(-10vw, 14vh, 0) scale(0.86);
-  }
+  background: var(--color-bone);
+  transition: background-color 0.1s linear;
 }
 
 /* Film grain. Stepped rather than smooth — real grain resamples per
@@ -183,6 +124,18 @@ body::before {
   100% {
     transform: translate3d(0, 0, 0);
   }
+}
+
+/* Fine halftone screen over everything, like a printed plate. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: radial-gradient(circle at center, var(--page-fg) 0.7px, transparent 0.8px);
+  background-size: 5px 5px;
 }
 
 h1,

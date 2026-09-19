@@ -104,11 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body>
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
-        <div id="backdrop" aria-hidden="true">
-          <span className="glowfield a" />
-          <span className="glowfield b" />
-          <span className="glowfield c" />
-        </div>
+        <div id="backdrop" aria-hidden="true" />
         <a href="#main" className="skip-link">
           Skip to main content
         </a>
