@@ -35,24 +35,26 @@ export default async function HomePage() {
       <section className="hero">
         <HeroCanvas />
         <div className="shell hero-inner">
-          <p className="t-label hero-eyebrow">
-            {site.role} · {site.city}
-          </p>
-          <h1 className="t-display hero-title">
-            <span className="ln">We Create.</span>
-            <span className="ln italic-serif">You Grow.</span>
-          </h1>
-          <p className="t-lead hero-desc">
-            Async Creation is a photography, videography and branding studio in {site.city}. We shoot it, cut it, design
-            it and run the campaign — so your brand shows up everywhere looking like it means it.
-          </p>
-          <div className="hero-actions">
-            <Link href="/portfolio" className="btn btn-primary">
-              See our work
-            </Link>
-            <Link href="/contact" className="btn btn-ghost">
-              Get a quote
-            </Link>
+          <div className="hero-copy">
+            <p className="t-label hero-eyebrow">
+              {site.role} · {site.city}
+            </p>
+            <h1 className="t-display hero-title">
+              <span className="ln">We Create.</span>
+              <span className="ln italic-serif">You Grow.</span>
+            </h1>
+            <p className="t-lead hero-desc">
+              Async Creation is a photography, videography and branding studio in {site.city}. We shoot it, cut it,
+              design it and run the campaign — so your brand shows up everywhere looking like it means it.
+            </p>
+            <div className="hero-actions">
+              <Link href="/portfolio" className="btn btn-primary">
+                See our work
+              </Link>
+              <Link href="/contact" className="btn btn-ghost">
+                Get a quote
+              </Link>
+            </div>
           </div>
 
           <div className="hero-meta">
@@ -66,11 +68,6 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="scroll-cue" aria-hidden="true">
-          <span>Scroll</span>
-          <i />
         </div>
       </section>
 

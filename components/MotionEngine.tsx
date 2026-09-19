@@ -70,7 +70,17 @@ export default function MotionEngine() {
       });
     });
 
-    return () => ctx.revert();
+    // Reveals hide their target until the trigger fires, so a stale
+    // trigger position would leave a whole section invisible. Recompute
+    // once fonts and media have settled the layout.
+    const refresh = () => ScrollTrigger.refresh();
+    document.fonts?.ready.then(refresh);
+    window.addEventListener('load', refresh);
+
+    return () => {
+      window.removeEventListener('load', refresh);
+      ctx.revert();
+    };
   }, []);
 
   return null;

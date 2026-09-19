@@ -31,6 +31,7 @@
   align-items: center;
   gap: 0.6rem;
   flex-shrink: 0;
+  min-height: 44px;
 }
 
 .brand-mark {
@@ -74,10 +75,12 @@
 
 .nav-link {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--color-ink-3);
-  padding-block: 0.4rem;
   transition: color 0.25s var(--ease-out-soft);
 }
 
@@ -210,11 +213,26 @@
   overflow: hidden;
 }
 
+/* On small screens the 3D is a faint wash behind the copy; from the
+   desktop breakpoint it moves into its own column beside the text and
+   never overlaps it. */
 .hero-canvas {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  opacity: 0.12;
+  mask-image: radial-gradient(circle at center, #000 45%, transparent 76%);
+}
+
+@media (min-width: 1024px) {
+  .hero-canvas {
+    left: 52%;
+    right: 0;
+    top: 0;
+    bottom: 170px;
+    opacity: 1;
+  }
 }
 
 .hero-canvas canvas {
@@ -242,6 +260,17 @@
   position: relative;
   z-index: 2;
   width: 100%;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 2;
+}
+
+@media (min-width: 1024px) {
+  .hero-copy {
+    max-width: 48%;
+  }
 }
 
 .hero-eyebrow {
@@ -299,42 +328,15 @@
   line-height: 1;
 }
 
-.hero-meta span {
+/* Direct child only — the count-up <span> lives inside <b> and must keep
+   the display face, not the label's mono styling. */
+.hero-meta div > span {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-muted);
   margin-top: 0.5rem;
-}
-
-.scroll-cue {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-}
-
-@media (min-width: 768px) {
-  .scroll-cue {
-    display: flex;
-  }
-}
-
-.scroll-cue i {
-  width: 1px;
-  height: 52px;
-  background: linear-gradient(to bottom, var(--color-clay), transparent);
 }
 
 /* ---------------- Marquee strip ---------------- */
@@ -577,7 +579,7 @@
   display: block;
 }
 
-.stat span {
+.stat > span {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.16em;
@@ -587,7 +589,7 @@
   margin-top: 0.75rem;
 }
 
-.on-ink .stat span {
+.on-ink .stat > span {
   color: var(--color-muted-dark);
 }
 
@@ -664,6 +666,18 @@
 .pkg.is-featured .btn-ghost:hover {
   border-color: var(--color-bone);
   background: rgba(245, 240, 232, 0.08);
+}
+
+/* This card is ink-on-light, so the default dark primary button would
+   disappear into it. Invert it the way .on-ink sections do. */
+.pkg.is-featured .btn-primary {
+  background: var(--color-bone);
+  color: var(--color-ink);
+}
+
+.pkg.is-featured .btn-primary:hover {
+  background: var(--color-clay-light);
+  color: var(--color-ink);
 }
 
 .pkg-badge {
@@ -885,6 +899,14 @@
   font-size: 1.2rem;
 }
 
+/* Calling or emailing is the point of this page — give those a full
+   touch target rather than the text's natural line box. */
+.info-row a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
 .info-row a:hover {
   color: var(--color-clay-deep);
 }
@@ -1050,7 +1072,14 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.75rem;
+}
+
+/* Tap area comes from the link's own height rather than list gaps, so
+   each row is comfortably tappable without stretching the footer. */
+.footer-col a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .footer-col a,
@@ -1058,6 +1087,11 @@
   font-size: 0.92rem;
   color: var(--color-muted-dark);
   transition: color 0.25s var(--ease-out-soft);
+}
+
+.footer-addr {
+  display: block;
+  padding-block: 0.6rem;
 }
 
 .footer-col a:hover {
@@ -1072,13 +1106,15 @@
 }
 
 .footer-social {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted-dark);
   border-bottom: 1px solid var(--color-line-dark);
-  padding-bottom: 0.25rem;
   transition: color 0.25s, border-color 0.25s;
 }
 
@@ -1119,6 +1155,13 @@
   padding: 0;
 }
 
+.crumbs a,
+.crumbs span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+}
+
 .crumbs a:hover {
   color: var(--color-clay-deep);
 }
@@ -1140,6 +1183,15 @@
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
   }
+
+  /* The heading column is much shorter than the prose beside it, which
+     left a large dead void. Pinning it keeps the pair visually related
+     while the longer column scrolls. */
+  .lede-grid > :first-child {
+    position: sticky;
+    top: calc(var(--header-h) + 3rem);
+    align-self: start;
+  }
 }
 
 .pill-row {
@@ -1150,12 +1202,24 @@
 }
 
 .pill {
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   padding: 0.5rem 0.9rem;
   border: 1px solid var(--color-line);
   border-radius: 999px;
+}
+
+a.pill {
+  min-height: 44px;
+  transition: border-color 0.25s var(--ease-out-soft), color 0.25s var(--ease-out-soft);
+}
+
+a.pill:hover {
+  border-color: var(--color-clay);
+  color: var(--color-clay-deep);
 }
 
 .on-ink .pill {
