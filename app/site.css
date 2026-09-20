@@ -672,27 +672,187 @@
   }
 }
 
-/* ---------------- Service cards ---------------- */
+/* ---------------- Service cards ----------------
+   A lit-glass surface with a pointer-following spotlight and viewfinder
+   brackets that pull outward on hover. The previous fill was within a
+   hair of the section background on dark chapters, so the cards read as
+   empty outlines rather than objects.
+
+   Structure is title / accent rule / body, top-aligned on a locked
+   grid — the numbered corner badge and the staggered column offsets
+   that used to sit here both read as noise. */
 .svc {
+  --mx: 50%;
+  --my: 0%;
+  --shine: 220%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  align-items: flex-start;
+  gap: 1.1rem;
   min-height: 100%;
+  padding: clamp(1.9rem, 3.1vw, 2.6rem);
+  background: linear-gradient(158deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.14) 60%);
+  border-color: rgba(22, 18, 14, 0.13);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 22px 44px -28px rgba(72, 40, 16, 0.4);
+  transition:
+    border-color 0.4s var(--ease-out-soft),
+    box-shadow 0.5s var(--ease-out-soft),
+    translate 0.5s var(--ease-out-expo);
 }
 
-.svc-num {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  color: var(--color-clay-deep);
+.on-ink .svc {
+  background: linear-gradient(158deg, rgba(245, 240, 232, 0.1), rgba(245, 240, 232, 0.025) 62%);
+  border-color: rgba(245, 240, 232, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(245, 240, 232, 0.09),
+    0 26px 50px -30px rgba(0, 0, 0, 0.75);
 }
 
-.on-ink .svc-num {
-  color: var(--color-clay-light);
+/* Spotlight tracks the pointer (--mx/--my are set by the motion engine). */
+.svc::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(340px circle at var(--mx) var(--my), rgba(224, 138, 79, 0.24), transparent 62%);
+  transition: opacity 0.45s var(--ease-out-soft);
+}
+
+/* A glint that sweeps across once when the card lands. */
+.svc::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(104deg, transparent 38%, rgba(255, 236, 214, 0.2) 50%, transparent 62%);
+  background-size: 260% 100%;
+  background-repeat: no-repeat;
+  background-position: var(--shine) 0;
+}
+
+.svc:hover {
+  translate: 0 -7px;
+  border-color: var(--color-clay);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 34px 56px -26px rgba(194, 97, 47, 0.42);
+}
+
+.on-ink .svc:hover {
+  border-color: var(--color-clay-light);
+  box-shadow:
+    inset 0 1px 0 rgba(245, 240, 232, 0.14),
+    0 34px 60px -26px rgba(224, 138, 79, 0.34);
+}
+
+.svc:hover::before {
+  opacity: 1;
+}
+
+/* Content sits above the spotlight. */
+.svc > :not(.card-corner) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Viewfinder brackets. Resting inset is tucked inside the padding; on
+   hover they pull out toward the edges like a focus frame expanding. */
+.card-corner {
+  position: absolute;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
+  border: 0 solid var(--color-clay);
+  opacity: 0.55;
+  pointer-events: none;
+  transition:
+    transform 0.5s var(--ease-out-expo),
+    opacity 0.35s var(--ease-out-soft);
+}
+
+.on-ink .card-corner {
+  border-color: var(--color-clay-light);
+}
+
+.card-corner.tl {
+  top: 12px;
+  left: 12px;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.card-corner.tr {
+  top: 12px;
+  right: 12px;
+  border-top-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.card-corner.bl {
+  bottom: 12px;
+  left: 12px;
+  border-bottom-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.card-corner.br {
+  bottom: 12px;
+  right: 12px;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.svc:hover .card-corner {
+  opacity: 1;
+}
+
+.svc:hover .card-corner.tl {
+  transform: translate(-5px, -5px) scale(1.25);
+}
+
+.svc:hover .card-corner.tr {
+  transform: translate(5px, -5px) scale(1.25);
+}
+
+.svc:hover .card-corner.bl {
+  transform: translate(-5px, 5px) scale(1.25);
+}
+
+.svc:hover .card-corner.br {
+  transform: translate(5px, 5px) scale(1.25);
 }
 
 .svc h3 {
   font-size: 1.32rem;
+  max-width: 22ch;
+}
+
+/* A short accent rule does the job the numeral was doing — marking the
+   top of the card — without competing with the heading. */
+.svc h3::after {
+  content: '';
+  display: block;
+  width: 34px;
+  height: 2px;
+  margin-top: 1.1rem;
+  background: var(--color-clay);
+  transition: width 0.5s var(--ease-out-expo);
+}
+
+.on-ink .svc h3::after {
+  background: var(--color-clay-light);
+}
+
+.svc:hover h3::after {
+  width: 64px;
 }
 
 .svc p {

@@ -316,17 +316,44 @@ export default function MotionEngine() {
           scrollTrigger: { trigger: grid, start: 'top 86%', once: true },
         });
 
-        // Columns drift at different rates, so the block never reads as
-        // one flat slab sliding past.
-        const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length || 1;
-        const DRIFT = [-6, 3.5, -2.5, 5];
+        // Second beat: once a card has landed, its viewfinder brackets
+        // snap on and a glint crosses it. Sequencing it after the tip-in
+        // keeps the two moves from competing. clearProps hands the
+        // transform back to CSS so the hover pull-out still works.
         cards.forEach((card, i) => {
-          gsap.to(card, {
-            yPercent: DRIFT[i % cols % DRIFT.length],
-            ease: 'none',
-            scrollTrigger: { trigger: grid, start: 'top bottom', end: 'bottom top', scrub: 1.1 },
-          });
+          const at = 0.5 + i * 0.085;
+          const corners = card.querySelectorAll('.card-corner');
+          if (corners.length) {
+            gsap.from(corners, {
+              scale: 0,
+              opacity: 0,
+              duration: 0.55,
+              delay: at,
+              stagger: 0.06,
+              ease: 'back.out(2.6)',
+              clearProps: 'transform,opacity',
+              scrollTrigger: { trigger: grid, start: 'top 86%', once: true },
+            });
+          }
+          if (card.classList.contains('svc')) {
+            gsap.fromTo(
+              card,
+              { '--shine': '220%' },
+              {
+                '--shine': '-120%',
+                duration: 1.4,
+                delay: at + 0.15,
+                ease: 'power2.inOut',
+                scrollTrigger: { trigger: grid, start: 'top 86%', once: true },
+              }
+            );
+          }
         });
+
+        // No per-column drift here. Offsetting the columns broke the
+        // grid's alignment and read as a layout bug rather than motion;
+        // the rows stay locked and the life comes from the entrance,
+        // the brackets and the hover instead.
 
         if (window.matchMedia('(pointer: fine)').matches) {
           cards.forEach((card) => {
@@ -345,6 +372,20 @@ export default function MotionEngine() {
           });
         }
       });
+
+      /* ---------------- Card spotlight ----------------
+         Feeds the pointer position to CSS, which paints a warm radial
+         highlight under the cursor. Separate from the grid handler so it
+         also covers cards that arrive via data-from or the pinned track. */
+      if (window.matchMedia('(pointer: fine)').matches) {
+        gsap.utils.toArray<HTMLElement>('.svc').forEach((card) => {
+          card.addEventListener('mousemove', (e) => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mx', `${(e as MouseEvent).clientX - r.left}px`);
+            card.style.setProperty('--my', `${(e as MouseEvent).clientY - r.top}px`);
+          });
+        });
+      }
 
       /* ---------------- Accordion ----------------
          Native <details> snaps open. Driving it with GSAP keeps the FAQ

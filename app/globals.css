@@ -491,14 +491,14 @@ canvas {
   border-color: var(--color-line-dark);
 }
 
-a.card:hover,
+a.card:not(.svc):hover,
 .card-hover:hover {
   border-color: var(--color-clay);
   background: rgba(194, 97, 47, 0.1);
   transform: translateY(-5px);
 }
 
-.on-ink a.card:hover,
+.on-ink a.card:not(.svc):hover,
 .on-ink .card-hover:hover {
   background: var(--color-ink-3);
   border-color: var(--color-clay-light);

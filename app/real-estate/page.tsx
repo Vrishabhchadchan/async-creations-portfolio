@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import SectionHead from '@/components/SectionHead';
+import CardCorners from '@/components/CardCorners';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import CtaBand from '@/components/CtaBand';
 import FaqList from '@/components/FaqList';
@@ -139,7 +140,7 @@ export default function RealEstatePage() {
           <div className="grid-3" data-cards>
             {offerings.map((o, i) => (
               <article key={o.title} className="card svc">
-                <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>
+                <CardCorners />
                 <h3>{o.title}</h3>
                 <p>{o.body}</p>
               </article>

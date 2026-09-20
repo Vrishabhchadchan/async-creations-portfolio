@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import SectionHead from '@/components/SectionHead';
+import CardCorners from '@/components/CardCorners';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import CtaBand from '@/components/CtaBand';
 import PackagesGrid from '@/components/PackagesGrid';
@@ -122,6 +123,7 @@ export default function PackagesPage() {
           <div className="grid-3" data-cards>
             {projectRates.map((r) => (
               <article key={r.name} className="card svc">
+                <CardCorners />
                 <h3>{r.name}</h3>
                 <p>{r.detail}</p>
                 <span className="pkg-price tnum" style={{ fontSize: '1.5rem', marginTop: 'auto' }}>

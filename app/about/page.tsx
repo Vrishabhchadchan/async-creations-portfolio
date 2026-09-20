@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import SectionHead from '@/components/SectionHead';
+import CardCorners from '@/components/CardCorners';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import CtaBand from '@/components/CtaBand';
 import JsonLd from '@/components/JsonLd';
@@ -184,7 +185,7 @@ export default function AboutPage() {
           <div className="grid-3" data-cards>
             {whyAsync.map((w, i) => (
               <article key={w.title} className="card svc">
-                <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>
+                <CardCorners />
                 <h3>{w.title}</h3>
                 <p>{w.body}</p>
               </article>

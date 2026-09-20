@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import HeroCanvas from '@/components/three/HeroCanvas';
 import SectionHead from '@/components/SectionHead';
+import CardCorners from '@/components/CardCorners';
 import CtaBand from '@/components/CtaBand';
 import FaqList from '@/components/FaqList';
 import Testimonials from '@/components/Testimonials';
@@ -174,7 +175,7 @@ export default async function HomePage() {
           <div className="htrack">
             {services.map((s, i) => (
               <Link key={s.slug} href={`/services#${s.slug}`} className="card svc hcard">
-                <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>
+                <CardCorners />
                 <h3>{s.title}</h3>
                 <p>{s.short}</p>
                 <span className="hcard-go" aria-hidden="true">
@@ -264,7 +265,7 @@ export default async function HomePage() {
           />
           <div className="grid-2">
             <article className="card svc" data-from="left" data-from-distance="80">
-              <span className="svc-num">01</span>
+              <CardCorners />
               <h3>Social Media Management</h3>
               <p>
                 Monthly calendars, shoot days, design, copywriting, scheduling and community replies — with reporting at
@@ -279,7 +280,7 @@ export default async function HomePage() {
               </ul>
             </article>
             <article className="card svc" data-from="right" data-from-distance="80">
-              <span className="svc-num">02</span>
+              <CardCorners />
               <h3>Influencer & Creator Management</h3>
               <p>
                 We match creators to your audience rather than their follower count, and report on what each one
@@ -319,7 +320,7 @@ export default async function HomePage() {
           <div className="grid-3" data-cards>
             {whyAsync.map((w, i) => (
               <article key={w.title} className="card svc">
-                <span className="svc-num">{String(i + 1).padStart(2, '0')}</span>
+                <CardCorners />
                 <h3>{w.title}</h3>
                 <p>{w.body}</p>
               </article>
