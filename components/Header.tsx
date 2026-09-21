@@ -59,6 +59,11 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
+                // Without this the App Router only prefetches as far as the
+                // nearest loading boundary, so each click still waits on the
+                // route payload. These pages are static and small, and the
+                // header is always on screen — fetch them up front.
+                prefetch
                 className={`nav-link${active ? ' is-active' : ''}`}
                 aria-current={active ? 'page' : undefined}
               >
@@ -69,7 +74,7 @@ export default function Header() {
         </nav>
 
         <div className="header-cta">
-          <Link href="/contact" className="btn btn-primary btn-sm">
+          <Link href="/contact" prefetch className="btn btn-primary btn-sm">
             Get a Quote
           </Link>
           <button
@@ -90,15 +95,15 @@ export default function Header() {
 
       <div id="mobile-nav" className={`mobile-nav${open ? ' is-open' : ''}`} hidden={!open}>
         <nav className="shell mobile-nav-inner" aria-label="Mobile">
-          <Link href="/" className="mobile-link">
+          <Link href="/" prefetch className="mobile-link">
             Home
           </Link>
           {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="mobile-link">
+            <Link key={item.href} href={item.href} prefetch className="mobile-link">
               {item.label}
             </Link>
           ))}
-          <Link href="/contact" className="mobile-link">
+          <Link href="/contact" prefetch className="mobile-link">
             Contact
           </Link>
           <a href={site.whatsapp} className="btn btn-primary mobile-cta" target="_blank" rel="noopener noreferrer">
