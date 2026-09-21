@@ -367,6 +367,39 @@
   flex-shrink: 0;
 }
 
+/* ---------------- Route progress ---------------- */
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  width: 100%;
+  height: 2px;
+  background: var(--color-clay);
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Creeps toward the end without reaching it — the bar is showing that
+   work is happening, not claiming to know how long it will take. */
+.nav-progress.is-loading {
+  opacity: 1;
+  transform: scaleX(0.9);
+  transition:
+    transform 3.2s cubic-bezier(0.1, 0.85, 0.2, 1),
+    opacity 0.1s linear;
+}
+
+.nav-progress.is-done {
+  opacity: 0;
+  transform: scaleX(1);
+  transition:
+    transform 0.18s ease-out,
+    opacity 0.28s ease-out 0.1s;
+}
+
 /* ---------------- Viewfinder reticle cursor ---------------- */
 .reticle,
 .reticle-dot {
