@@ -156,39 +156,46 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- 3. SERVICES ---------------- */}
-      <section className="section on-ink hsection" id="services" data-hscroll>
-        <div className="shell">
-          <SectionHead
-            chapter="01"
-            variant="alt"
-            label="Services"
-            title={
-              <>
-                Ten services, <span className="italic-serif">one pipeline</span>
-              </>
-            }
-            lede="From the first strategy call to the final published reel — every part of the process is handled in-house."
-          />
-        </div>
+      {/* ScrollTrigger's pin wraps its target in a .pin-spacer div. If the
+          target were this <section> — a direct child of <main> — React
+          would later try to remove it from <main> and fail, because its
+          real parent had become the spacer. Pinning the inner wrapper
+          keeps that reparenting inside a subtree React removes wholesale. */}
+      <section className="section on-ink hsection" id="services">
+        <div className="hsection-inner" data-hscroll>
+          <div className="shell">
+            <SectionHead
+              chapter="01"
+              variant="alt"
+              label="Services"
+              title={
+                <>
+                  Ten services, <span className="italic-serif">one pipeline</span>
+                </>
+              }
+              lede="From the first strategy call to the final published reel — every part of the process is handled in-house."
+            />
+          </div>
 
-        <div className="htrack-wrap">
-          <div className="htrack">
-            {services.map((s, i) => (
-              <Link key={s.slug} href={`/services#${s.slug}`} className="card svc hcard">
-                <CardCorners />
-                <h3>{s.title}</h3>
-                <p>{s.short}</p>
-                <span className="hcard-go" aria-hidden="true">
-                  →
-                </span>
+          <div className="htrack-wrap">
+            <div className="htrack">
+              {services.map((s) => (
+                <Link key={s.slug} href={`/services#${s.slug}`} className="card svc hcard">
+                  <CardCorners />
+                  <h3>{s.title}</h3>
+                  <p>{s.short}</p>
+                  <span className="hcard-go" aria-hidden="true">
+                    →
+                  </span>
+                </Link>
+              ))}
+              <Link href="/services" className="card hcard hcard-cta">
+                <h3>
+                  See every <span className="italic-serif">service</span>
+                </h3>
+                <span className="btn btn-primary">Explore all services</span>
               </Link>
-            ))}
-            <Link href="/services" className="card hcard hcard-cta">
-              <h3>
-                See every <span className="italic-serif">service</span>
-              </h3>
-              <span className="btn btn-primary">Explore all services</span>
-            </Link>
+            </div>
           </div>
         </div>
       </section>

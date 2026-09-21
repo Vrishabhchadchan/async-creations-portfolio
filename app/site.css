@@ -587,7 +587,8 @@
 /* From the pin breakpoint up, GSAP drives the x position, so the track
    must not scroll on its own. */
 @media (min-width: 1024px) {
-  .hsection {
+  /* The inner wrapper is what gets pinned, so it carries the layout. */
+  .hsection-inner {
     display: flex;
     flex-direction: column;
     justify-content: center;

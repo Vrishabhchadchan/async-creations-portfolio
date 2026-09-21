@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { gsap } from 'gsap';
 
 /**
@@ -11,6 +12,9 @@ import { gsap } from 'gsap';
  * visible underneath, so nothing depends on this rendering.
  */
 export default function Cursor() {
+  // Hover targets are collected once per route; without this the reticle
+  // stops reacting to anything on every page after the first.
+  const pathname = usePathname();
   const wrap = useRef<HTMLDivElement>(null);
   const box = useRef<HTMLDivElement>(null);
   const dot = useRef<HTMLDivElement>(null);
@@ -83,7 +87,7 @@ export default function Cursor() {
         t.removeEventListener('mouseleave', release);
       });
     };
-  }, []);
+  }, [pathname]);
 
   return (
     <div aria-hidden="true">

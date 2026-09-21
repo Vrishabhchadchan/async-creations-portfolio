@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
@@ -33,6 +34,11 @@ import { CustomEase } from 'gsap/CustomEase';
  *                                   one covers it
  */
 export default function MotionEngine() {
+  // This lives in the root layout, so without a route key it would set up
+  // once and never again — every page after the first would arrive with
+  // no animation at all.
+  const pathname = usePathname();
+
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase);
 
@@ -507,13 +513,16 @@ export default function MotionEngine() {
     const refresh = () => ScrollTrigger.refresh();
     document.fonts?.ready.then(refresh);
     window.addEventListener('load', refresh);
+    // 'load' never fires again on a client-side navigation.
+    const settle = window.setTimeout(refresh, 260);
 
     return () => {
       window.removeEventListener('load', refresh);
+      window.clearTimeout(settle);
       splits.forEach((s) => s.revert());
       ctx.revert();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }
