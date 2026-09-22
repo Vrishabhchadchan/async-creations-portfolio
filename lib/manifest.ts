@@ -2,14 +2,46 @@ import { put, list, del } from '@vercel/blob';
 
 const MANIFEST_PREFIX = 'gallery/manifest-';
 
+/**
+ * Display order for the portfolio filters. Legacy keys stay in the map
+ * below so photos uploaded under the old taxonomy keep a proper label
+ * instead of falling back to their raw slug.
+ */
+export const CATEGORY_ORDER = [
+  'photography',
+  'wedding',
+  'prewedding',
+  'drone',
+  'corporate',
+  'event',
+  'film',
+  'institutional',
+  'travel',
+  'social',
+  'realestate',
+  'product',
+  'portrait',
+  'fashion',
+  'brand',
+] as const;
+
 export const CATEGORY_LABELS: Record<string, string> = {
-  brand: 'Brand Launch',
-  portrait: 'Portraits',
+  photography: 'Photography',
   wedding: 'Weddings',
-  event: 'Events',
-  fashion: 'Fashion',
+  prewedding: 'Pre-Weddings',
+  drone: 'Drone & Aerial',
+  corporate: 'Corporate & Commercial',
+  event: 'Events & Concerts',
+  film: 'Cinematic Films & Reels',
+  institutional: 'Institutional & Education',
+  travel: 'Travel & Lifestyle',
+  social: 'Social Media & Brand Content',
   realestate: 'Real Estate',
   product: 'Product & Food',
+  // Legacy values — still accepted, still labelled.
+  portrait: 'Portraits',
+  fashion: 'Fashion',
+  brand: 'Brand Launch',
 };
 
 export type GalleryItem = {
@@ -25,16 +57,16 @@ export type GalleryItem = {
 
 const SEED_ITEMS: GalleryItem[] = (
   [
-    { id: 'seed-1', category: 'brand', title: 'Viksit Bharat — Team On Stage', size: 'big', imageUrl: '/images/work/brand-launch-4.jpg' },
-    { id: 'seed-2', category: 'brand', title: 'Live Event Coverage', size: 'tall', imageUrl: '/images/work/brand-launch-5.jpg' },
+    { id: 'seed-1', category: 'corporate', title: 'Viksit Bharat — Team On Stage', size: 'big', imageUrl: '/images/work/brand-launch-4.jpg' },
+    { id: 'seed-2', category: 'event', title: 'Live Event Coverage', size: 'tall', imageUrl: '/images/work/brand-launch-5.jpg' },
     { id: 'seed-5', category: 'event', title: 'Persona Fest — Showstopper Fashion Show', size: 'big', imageUrl: '/images/work/events3.jpg' },
     { id: 'seed-6', category: 'event', title: 'On-Stage Ensemble', size: 'tall', imageUrl: '/images/work/events1.jpg' },
     { id: 'seed-7', category: 'event', title: 'Persona Fest 2026', size: 'normal', imageUrl: '/images/work/events2.jpg' },
     { id: 'seed-8', category: 'event', title: 'Spotlight Moment', size: 'normal', imageUrl: '/images/work/events4.jpg' },
     { id: 'seed-9', category: 'event', title: 'Winning Moment — Closing Ceremony', size: 'wide', imageUrl: '/images/work/events5.jpg' },
-    { id: 'seed-13', category: 'brand', title: 'Brand Launch Coverage', size: 'normal', imageUrl: '/images/work/brand-launch-1.jpg' },
-    { id: 'seed-14', category: 'brand', title: 'Stage & Audience', size: 'normal', imageUrl: '/images/work/brand-launch-2.jpg' },
-    { id: 'seed-15', category: 'brand', title: 'Event Documentation', size: 'normal', imageUrl: '/images/work/brand-launch-3.jpg' },
+    { id: 'seed-13', category: 'corporate', title: 'Brand Launch Coverage', size: 'normal', imageUrl: '/images/work/brand-launch-1.jpg' },
+    { id: 'seed-14', category: 'event', title: 'Stage & Audience', size: 'normal', imageUrl: '/images/work/brand-launch-2.jpg' },
+    { id: 'seed-15', category: 'corporate', title: 'Event Documentation', size: 'normal', imageUrl: '/images/work/brand-launch-3.jpg' },
   ] as const
 ).map((item) => ({
   ...item,

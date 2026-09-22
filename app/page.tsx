@@ -6,7 +6,7 @@ import CtaBand from '@/components/CtaBand';
 import FaqList from '@/components/FaqList';
 import Testimonials from '@/components/Testimonials';
 import PackagesGrid from '@/components/PackagesGrid';
-import GalleryGrid from '@/components/GalleryGrid';
+import GalleryEditorial from '@/components/GalleryEditorial';
 import JsonLd from '@/components/JsonLd';
 import { faqSchema } from '@/lib/seo';
 import { getManifest } from '@/lib/manifest';
@@ -213,7 +213,7 @@ export default async function HomePage() {
             }
             lede="Event coverage, brand launches and campaign photography shot across Pune and Maharashtra."
           />
-          <GalleryGrid items={items.slice(0, 8)} />
+          <GalleryEditorial items={items.slice(0, 7)} />
           <div style={{ marginTop: '3rem' }} data-reveal>
             <Link href="/portfolio" className="btn btn-ghost">
               View the full portfolio

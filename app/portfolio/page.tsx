@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 import SectionHead from '@/components/SectionHead';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import CtaBand from '@/components/CtaBand';
-import GalleryGrid from '@/components/GalleryGrid';
+import PortfolioGallery from '@/components/PortfolioGallery';
 import JsonLd from '@/components/JsonLd';
 import { pageMetadata } from '@/lib/seo';
-import { getManifest } from '@/lib/manifest';
+import { getManifest, CATEGORY_ORDER, categoryLabel } from '@/lib/manifest';
 import { SITE_URL, site } from '@/lib/site';
 
 export const metadata: Metadata = pageMetadata({
@@ -29,7 +29,21 @@ export default async function PortfolioPage() {
   const items = await getManifest();
   const withImages = items.filter((i) => i.imageUrl);
 
-  const categories = Array.from(new Set(withImages.map((i) => i.categoryLabel)));
+  // Only offer a filter for categories that actually hold photographs,
+  // ordered by the taxonomy rather than by upload order.
+  const counts = withImages.reduce<Record<string, number>>((acc, i) => {
+    acc[i.category] = (acc[i.category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const known = CATEGORY_ORDER.filter((key) => counts[key]);
+  const extra = Object.keys(counts).filter((key) => !CATEGORY_ORDER.includes(key as never));
+
+  const categories = [...known, ...extra].map((key) => ({
+    key,
+    label: categoryLabel(key),
+    count: counts[key],
+  }));
 
   return (
     <>
@@ -60,23 +74,14 @@ export default async function PortfolioPage() {
                 Frames from the <span className="italic-serif">last few shoots</span>
               </>
             }
-            lede={`Event coverage, brand launches, fashion shows and campaign photography shot across ${site.city} and Maharashtra. This gallery is updated by our team as new work ships.`}
+            lede={`Weddings, events and concerts, drone and aerial, corporate and commercial, travel and brand content — shot across ${site.city} and Maharashtra. This gallery is updated by our team as new work ships.`}
           />
-          {categories.length > 0 && (
-            <div className="pill-row" data-reveal style={{ marginTop: 0 }}>
-              {categories.map((c) => (
-                <span className="pill" key={c}>
-                  {c}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="shell">
-          <GalleryGrid items={withImages} />
+          <PortfolioGallery items={withImages} categories={categories} />
         </div>
       </section>
 
