@@ -5,7 +5,7 @@
   "description": "Async Creations photography portfolio — static site with a team-only gallery manager backed by Vercel Postgres (metadata) and Cloudflare R2 (photos/videos).",
   "dependencies": {
     "@aws-sdk/client-s3": "3.1137.0",
-    "@aws-sdk/s3-presigned-post": "3.1137.0",
+    "@aws-sdk/s3-request-presigner": "3.1137.0",
     "@vercel/postgres": "^0.10.0"
   }
 }

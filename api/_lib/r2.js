@@ -1,5 +1,5 @@
-const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
-const { createPresignedPost } = require('@aws-sdk/s3-presigned-post');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const BUCKET = process.env.R2_BUCKET_NAME;
 const PUBLIC_URL = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
@@ -13,25 +13,28 @@ const client = new S3Client({
   },
 });
 
-// Client uploads go straight to R2 via a presigned POST policy, never
-// through this serverless function — keeps large photos/videos off the
-// function body-size limit and off our compute time entirely. A presigned
-// POST (rather than a plain PUT URL) lets R2 enforce content-length-range
-// itself, so an oversized upload is rejected by R2 before it ever lands in
-// the bucket — the same class of "storage quietly fills up" bug that took
-// the site down before.
-async function getUploadPost(key, contentType, maxSizeBytes) {
-  const { url, fields } = await createPresignedPost(client, {
+// Client uploads go straight to R2 via a presigned URL, never through this
+// serverless function — keeps large files off the function body-size limit
+// and off our compute time entirely.
+//
+// R2 doesn't support presigned POST (content-length-range policies), so the
+// size cap is enforced a different way: contentLength is baked into the
+// PutObjectCommand and forced into the signature via unhoistableHeaders.
+// That makes the exact byte count part of what's signed — R2 rejects the
+// PUT if the real request body doesn't match, so a caller can't silently
+// upload more than what was declared and checked against the size limit.
+async function getUploadUrl(key, contentType, contentLength) {
+  const command = new PutObjectCommand({
     Bucket: BUCKET,
     Key: key,
-    Conditions: [
-      ['content-length-range', 0, maxSizeBytes],
-      ['eq', '$Content-Type', contentType],
-    ],
-    Fields: { 'Content-Type': contentType },
-    Expires: 300,
+    ContentType: contentType,
+    ContentLength: contentLength,
   });
-  return { url, fields, publicUrl: `${PUBLIC_URL}/${key}` };
+  const uploadUrl = await getSignedUrl(client, command, {
+    expiresIn: 300,
+    unhoistableHeaders: new Set(['content-length']),
+  });
+  return { uploadUrl, publicUrl: `${PUBLIC_URL}/${key}` };
 }
 
 async function deleteObject(key) {
@@ -43,4 +46,4 @@ function keyFromPublicUrl(url) {
   return url.slice(PUBLIC_URL.length + 1);
 }
 
-module.exports = { getUploadPost, deleteObject, keyFromPublicUrl };
+module.exports = { getUploadUrl, deleteObject, keyFromPublicUrl };

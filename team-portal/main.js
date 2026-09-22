@@ -237,23 +237,17 @@ uploadForm.addEventListener('submit', async (e) => {
     const presignRes = await fetch('/api/blob-upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename: safeName, contentType: file.type }),
+      body: JSON.stringify({ filename: safeName, contentType: file.type, fileSize: file.size }),
     });
     const presignData = await presignRes.json();
     if (!presignRes.ok) throw new Error(presignData.error || 'Could not prepare upload');
 
-    const formData = new FormData();
-    Object.entries(presignData.fields).forEach(([key, value]) => formData.append(key, value));
-    formData.append('file', file);
-
-    const putRes = await fetch(presignData.uploadUrl, { method: 'POST', body: formData });
-    if (!putRes.ok) {
-      throw new Error(
-        putRes.status === 400
-          ? 'File is too large or an unsupported type — please try a smaller file.'
-          : 'Upload failed — please try again.'
-      );
-    }
+    const putRes = await fetch(presignData.uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type },
+      body: file,
+    });
+    if (!putRes.ok) throw new Error('Upload failed — please try again.');
 
     const res = await fetch('/api/gallery-add', {
       method: 'POST',

@@ -1,5 +1,5 @@
 const { getSession } = require('./_lib/auth');
-const { getUploadPost } = require('./_lib/r2');
+const { getUploadUrl } = require('./_lib/r2');
 
 const ALLOWED_TYPES = {
   'image/jpeg': 'image',
@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized — please log in again.' });
   }
 
-  const { filename, contentType } = req.body || {};
+  const { filename, contentType, fileSize } = req.body || {};
   if (!filename || typeof filename !== 'string') {
     return res.status(400).json({ error: 'Missing filename' });
   }
@@ -37,13 +37,22 @@ module.exports = async (req, res) => {
   if (!mediaType) {
     return res.status(400).json({ error: 'Unsupported file type' });
   }
+  const size = Number(fileSize);
+  if (!Number.isFinite(size) || size <= 0) {
+    return res.status(400).json({ error: 'Missing or invalid file size' });
+  }
+  const maxSize = MAX_SIZE_BYTES[mediaType];
+  if (size > maxSize) {
+    const maxMb = Math.round(maxSize / (1024 * 1024));
+    return res.status(400).json({ error: `File is too large — ${mediaType}s are capped at ${maxMb}MB.` });
+  }
 
   const safeName = filename.replace(/[^a-zA-Z0-9.\-_]/g, '-');
   const key = `gallery/${mediaType === 'video' ? 'videos' : 'photos'}/${Date.now()}-${safeName}`;
 
   try {
-    const { url, fields, publicUrl } = await getUploadPost(key, contentType, MAX_SIZE_BYTES[mediaType]);
-    return res.status(200).json({ uploadUrl: url, fields, publicUrl, mediaType });
+    const { uploadUrl, publicUrl } = await getUploadUrl(key, contentType, size);
+    return res.status(200).json({ uploadUrl, publicUrl, mediaType });
   } catch (err) {
     console.error('blob-upload.js', err);
     return res.status(500).json({ error: 'Could not prepare upload' });
