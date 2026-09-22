@@ -3,6 +3,7 @@ const { getSession } = require('./_lib/auth');
 const { insertItem, categoryLabel, CATEGORY_LABELS } = require('./_lib/manifest');
 
 const VALID_SIZES = new Set(['normal', 'big', 'tall', 'wide']);
+const VALID_MEDIA_TYPES = new Set(['image', 'video']);
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -15,7 +16,7 @@ module.exports = async (req, res) => {
     return res.status(401).json({ error: 'Please log in again.' });
   }
 
-  const { url, category, title, size } = req.body || {};
+  const { url, category, title, size, mediaType } = req.body || {};
 
   if (!url || typeof url !== 'string' || !/^https:\/\//.test(url)) {
     return res.status(400).json({ error: 'Missing or invalid image URL' });
@@ -28,6 +29,7 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Title is required' });
   }
   const cleanSize = VALID_SIZES.has(size) ? size : 'normal';
+  const cleanMediaType = VALID_MEDIA_TYPES.has(mediaType) ? mediaType : 'image';
 
   const newItem = {
     id: crypto.randomUUID(),
@@ -36,6 +38,7 @@ module.exports = async (req, res) => {
     title: cleanTitle,
     size: cleanSize,
     imageUrl: url,
+    mediaType: cleanMediaType,
     createdAt: Date.now(),
   };
 

@@ -33,6 +33,7 @@ function rowToItem(row) {
     title: row.title,
     size: row.size,
     imageUrl: row.image_url,
+    mediaType: row.media_type || 'image',
     placeholderVariant: row.placeholder_variant || undefined,
     createdAt: Number(row.created_at),
   };
@@ -55,6 +56,10 @@ function ensureSchema() {
           created_at BIGINT NOT NULL
         )
       `;
+      // The table already existed in production before video support was
+      // added, so the new column needs an explicit migration rather than
+      // just being part of CREATE TABLE IF NOT EXISTS.
+      await sql`ALTER TABLE gallery_items ADD COLUMN IF NOT EXISTS media_type TEXT NOT NULL DEFAULT 'image'`;
       const { rows } = await sql`SELECT COUNT(*)::int AS count FROM gallery_items`;
       if (rows[0].count === 0) {
         for (const item of SEED_ITEMS) {
@@ -85,8 +90,8 @@ async function getItem(id) {
 async function insertItem(item) {
   await ensureSchema();
   await sql`
-    INSERT INTO gallery_items (id, category, title, size, image_url, created_at)
-    VALUES (${item.id}, ${item.category}, ${item.title}, ${item.size}, ${item.imageUrl}, ${item.createdAt})
+    INSERT INTO gallery_items (id, category, title, size, image_url, media_type, created_at)
+    VALUES (${item.id}, ${item.category}, ${item.title}, ${item.size}, ${item.imageUrl}, ${item.mediaType || 'image'}, ${item.createdAt})
   `;
   return getManifest();
 }

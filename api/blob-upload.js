@@ -1,7 +1,22 @@
 const { getSession } = require('./_lib/auth');
-const { getUploadUrl } = require('./_lib/r2');
+const { getUploadPost } = require('./_lib/r2');
 
-const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif']);
+const ALLOWED_TYPES = {
+  'image/jpeg': 'image',
+  'image/png': 'image',
+  'image/webp': 'image',
+  'image/gif': 'image',
+  'image/heic': 'image',
+  'image/heif': 'image',
+  'video/mp4': 'video',
+  'video/webm': 'video',
+  'video/quicktime': 'video',
+};
+
+const MAX_SIZE_BYTES = {
+  image: 30 * 1024 * 1024,
+  video: 200 * 1024 * 1024,
+};
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -18,16 +33,17 @@ module.exports = async (req, res) => {
   if (!filename || typeof filename !== 'string') {
     return res.status(400).json({ error: 'Missing filename' });
   }
-  if (!ALLOWED_TYPES.has(contentType)) {
+  const mediaType = ALLOWED_TYPES[contentType];
+  if (!mediaType) {
     return res.status(400).json({ error: 'Unsupported file type' });
   }
 
   const safeName = filename.replace(/[^a-zA-Z0-9.\-_]/g, '-');
-  const key = `gallery/photos/${Date.now()}-${safeName}`;
+  const key = `gallery/${mediaType === 'video' ? 'videos' : 'photos'}/${Date.now()}-${safeName}`;
 
   try {
-    const { uploadUrl, publicUrl } = await getUploadUrl(key, contentType);
-    return res.status(200).json({ uploadUrl, publicUrl });
+    const { url, fields, publicUrl } = await getUploadPost(key, contentType, MAX_SIZE_BYTES[mediaType]);
+    return res.status(200).json({ uploadUrl: url, fields, publicUrl, mediaType });
   } catch (err) {
     console.error('blob-upload.js', err);
     return res.status(500).json({ error: 'Could not prepare upload' });

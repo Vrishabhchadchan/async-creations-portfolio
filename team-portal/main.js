@@ -16,6 +16,7 @@ const uploadError = document.getElementById('uploadError');
 const photoFile = document.getElementById('photoFile');
 const uploadPreview = document.getElementById('uploadPreview');
 const uploadPreviewImg = document.getElementById('uploadPreviewImg');
+const uploadPreviewVideo = document.getElementById('uploadPreviewVideo');
 const portalFilterRow = document.getElementById('portalFilterRow');
 const filterBtns = portalFilterRow.querySelectorAll('.filter-btn');
 
@@ -184,6 +185,9 @@ function openModal() {
   uploadError.textContent = '';
   uploadPreview.hidden = true;
   uploadPreviewImg.src = '';
+  uploadPreviewImg.hidden = true;
+  uploadPreviewVideo.src = '';
+  uploadPreviewVideo.hidden = true;
   const filter = activeFilter();
   if (filter !== 'all') {
     document.getElementById('photoCategory').value = filter;
@@ -201,7 +205,15 @@ uploadModal.addEventListener('click', (e) => { if (e.target === uploadModal) clo
 photoFile.addEventListener('change', () => {
   const file = photoFile.files[0];
   if (!file) { uploadPreview.hidden = true; return; }
-  uploadPreviewImg.src = URL.createObjectURL(file);
+  const isVideo = file.type.startsWith('video/');
+  const objectUrl = URL.createObjectURL(file);
+  uploadPreviewImg.hidden = isVideo;
+  uploadPreviewVideo.hidden = !isVideo;
+  if (isVideo) {
+    uploadPreviewVideo.src = objectUrl;
+  } else {
+    uploadPreviewImg.src = objectUrl;
+  }
   uploadPreview.hidden = false;
 });
 
@@ -213,7 +225,7 @@ uploadForm.addEventListener('submit', async (e) => {
   const title = document.getElementById('photoTitle').value.trim();
   const size = document.getElementById('photoSize').value;
 
-  if (!file) { uploadError.textContent = 'Please choose a photo.'; return; }
+  if (!file) { uploadError.textContent = 'Please choose a photo or video.'; return; }
   if (!title) { uploadError.textContent = 'Please add a title.'; return; }
 
   uploadSubmitBtn.disabled = true;
@@ -230,24 +242,30 @@ uploadForm.addEventListener('submit', async (e) => {
     const presignData = await presignRes.json();
     if (!presignRes.ok) throw new Error(presignData.error || 'Could not prepare upload');
 
-    const putRes = await fetch(presignData.uploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type },
-      body: file,
-    });
-    if (!putRes.ok) throw new Error('Upload failed — please try again.');
+    const formData = new FormData();
+    Object.entries(presignData.fields).forEach(([key, value]) => formData.append(key, value));
+    formData.append('file', file);
+
+    const putRes = await fetch(presignData.uploadUrl, { method: 'POST', body: formData });
+    if (!putRes.ok) {
+      throw new Error(
+        putRes.status === 400
+          ? 'File is too large or an unsupported type — please try a smaller file.'
+          : 'Upload failed — please try again.'
+      );
+    }
 
     const res = await fetch('/api/gallery-add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: presignData.publicUrl, category, title, size }),
+      body: JSON.stringify({ url: presignData.publicUrl, category, title, size, mediaType: presignData.mediaType }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Could not save photo');
 
     renderGallery(data.items || []);
     closeModal();
-    showToast('Photo published to the live site.');
+    showToast('Published to the live site.');
   } catch (err) {
     if (String(err.message).includes('Unauthorized') || String(err.message).includes('log in')) {
       closeModal();

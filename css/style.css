@@ -1603,6 +1603,12 @@ section {
   transition: transform .8s var(--ease);
 }
 
+.gallery-item .tile-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Placeholder tiles — swap these gallery-item backgrounds for real client photos.
    Simply replace the inline background-image url() with your image path, e.g.
    images/work/your-photo.jpg, and drop the .placeholder-tile classes. */

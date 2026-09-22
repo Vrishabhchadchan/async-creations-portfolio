@@ -1,5 +1,5 @@
-const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { createPresignedPost } = require('@aws-sdk/s3-presigned-post');
 
 const BUCKET = process.env.R2_BUCKET_NAME;
 const PUBLIC_URL = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
@@ -13,13 +13,25 @@ const client = new S3Client({
   },
 });
 
-// Client uploads go straight to R2 via a presigned URL, never through this
-// serverless function — keeps large photos off the function body-size limit
-// and off our compute time entirely.
-async function getUploadUrl(key, contentType) {
-  const command = new PutObjectCommand({ Bucket: BUCKET, Key: key, ContentType: contentType });
-  const uploadUrl = await getSignedUrl(client, command, { expiresIn: 300 });
-  return { uploadUrl, publicUrl: `${PUBLIC_URL}/${key}` };
+// Client uploads go straight to R2 via a presigned POST policy, never
+// through this serverless function — keeps large photos/videos off the
+// function body-size limit and off our compute time entirely. A presigned
+// POST (rather than a plain PUT URL) lets R2 enforce content-length-range
+// itself, so an oversized upload is rejected by R2 before it ever lands in
+// the bucket — the same class of "storage quietly fills up" bug that took
+// the site down before.
+async function getUploadPost(key, contentType, maxSizeBytes) {
+  const { url, fields } = await createPresignedPost(client, {
+    Bucket: BUCKET,
+    Key: key,
+    Conditions: [
+      ['content-length-range', 0, maxSizeBytes],
+      ['eq', '$Content-Type', contentType],
+    ],
+    Fields: { 'Content-Type': contentType },
+    Expires: 300,
+  });
+  return { url, fields, publicUrl: `${PUBLIC_URL}/${key}` };
 }
 
 async function deleteObject(key) {
@@ -31,4 +43,4 @@ function keyFromPublicUrl(url) {
   return url.slice(PUBLIC_URL.length + 1);
 }
 
-module.exports = { getUploadUrl, deleteObject, keyFromPublicUrl };
+module.exports = { getUploadPost, deleteObject, keyFromPublicUrl };
