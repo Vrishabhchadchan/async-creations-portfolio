@@ -1,5 +1,3 @@
-import { upload } from 'https://esm.sh/@vercel/blob@0.27.1/client';
-
 const loginScreen = document.getElementById('loginScreen');
 const portalApp = document.getElementById('portalApp');
 const loginForm = document.getElementById('loginForm');
@@ -223,16 +221,26 @@ uploadForm.addEventListener('submit', async (e) => {
 
   try {
     const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
-    const blob = await upload(`gallery/photos/${Date.now()}-${safeName}`, file, {
-      access: 'public',
-      handleUploadUrl: '/api/blob-upload',
-      contentType: file.type,
+
+    const presignRes = await fetch('/api/blob-upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: safeName, contentType: file.type }),
     });
+    const presignData = await presignRes.json();
+    if (!presignRes.ok) throw new Error(presignData.error || 'Could not prepare upload');
+
+    const putRes = await fetch(presignData.uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type },
+      body: file,
+    });
+    if (!putRes.ok) throw new Error('Upload failed — please try again.');
 
     const res = await fetch('/api/gallery-add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: blob.url, category, title, size }),
+      body: JSON.stringify({ url: presignData.publicUrl, category, title, size }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Could not save photo');

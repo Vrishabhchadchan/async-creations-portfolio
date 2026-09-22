@@ -1,6 +1,6 @@
-const { del } = require('@vercel/blob');
 const { getSession } = require('./_lib/auth');
-const { getManifest, updateManifest } = require('./_lib/manifest');
+const { getItem, deleteItem } = require('./_lib/manifest');
+const { deleteObject, keyFromPublicUrl } = require('./_lib/r2');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -18,30 +18,27 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Missing id' });
   }
 
-  const items = await getManifest();
-  const target = items.find((item) => item.id === id);
+  const target = await getItem(id);
   if (!target) {
     return res.status(404).json({ error: 'Photo not found' });
   }
 
-  // Only delete the underlying file if it actually lives in our Blob store —
+  // Only delete the underlying file if it actually lives in our R2 bucket —
   // seed/static images under /images/ should never be removed from disk.
-  if (target.imageUrl && target.imageUrl.includes('.public.blob.vercel-storage.com/')) {
+  const key = keyFromPublicUrl(target.imageUrl);
+  if (key) {
     try {
-      await del(target.imageUrl);
+      await deleteObject(key);
     } catch (err) {
-      console.error('gallery-delete.js: blob delete failed', err);
+      console.error('gallery-delete.js: R2 delete failed', err);
     }
   }
 
   try {
-    const updated = await updateManifest(
-      (current) => current.filter((item) => item.id !== id),
-      (check) => !check.some((item) => item.id === id)
-    );
+    const updated = await deleteItem(id);
     return res.status(200).json({ items: updated });
   } catch (err) {
     console.error('gallery-delete.js', err);
-    return res.status(409).json({ error: err.message || 'Could not delete photo. Please try again.' });
+    return res.status(500).json({ error: 'Could not delete photo. Please try again.' });
   }
 };

@@ -1,6 +1,4 @@
-const { put, list, del } = require('@vercel/blob');
-
-const MANIFEST_PREFIX = 'gallery/manifest-';
+const { sql } = require('@vercel/postgres');
 
 const CATEGORY_LABELS = {
   brand: 'Brand Launch',
@@ -25,74 +23,82 @@ const SEED_ITEMS = [
   { id: 'seed-10', category: 'fashion', title: 'Studio Edit No.4', size: 'normal', imageUrl: null, placeholderVariant: 'ph-4' },
   { id: 'seed-11', category: 'portrait', title: 'Portrait Diaries', size: 'normal', imageUrl: null, placeholderVariant: 'ph-5' },
   { id: 'seed-12', category: 'brand', title: 'We Create Experiences', size: 'normal', imageUrl: null, placeholderVariant: 'ph-8' },
-].map((item) => ({ ...item, categoryLabel: CATEGORY_LABELS[item.category], createdAt: 0 }));
+];
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+function rowToItem(row) {
+  return {
+    id: row.id,
+    category: row.category,
+    categoryLabel: categoryLabel(row.category),
+    title: row.title,
+    size: row.size,
+    imageUrl: row.image_url,
+    placeholderVariant: row.placeholder_variant || undefined,
+    createdAt: Number(row.created_at),
+  };
 }
 
-// Vercel's public Blob CDN caches responses by path only (s-maxage=300),
-// ignoring query strings entirely — so re-fetching the *same* URL after a
-// write can serve a stale copy for up to 5 minutes no matter what cache
-// headers the request sends. The fix: never reuse a URL. Every save writes
-// a brand-new, never-before-cached file, and reads always take the newest
-// one via list() (a control-plane call, not the cached CDN path).
-async function listManifestBlobs() {
-  const { blobs } = await list({ prefix: MANIFEST_PREFIX, limit: 50 });
-  return blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+let schemaReady;
+// Table + seed rows are created lazily on first request rather than via a
+// separate migration step, so deploying just needs POSTGRES_URL set.
+function ensureSchema() {
+  if (!schemaReady) {
+    schemaReady = (async () => {
+      await sql`
+        CREATE TABLE IF NOT EXISTS gallery_items (
+          id TEXT PRIMARY KEY,
+          category TEXT NOT NULL,
+          title TEXT NOT NULL,
+          size TEXT NOT NULL DEFAULT 'normal',
+          image_url TEXT,
+          placeholder_variant TEXT,
+          created_at BIGINT NOT NULL
+        )
+      `;
+      const { rows } = await sql`SELECT COUNT(*)::int AS count FROM gallery_items`;
+      if (rows[0].count === 0) {
+        for (const item of SEED_ITEMS) {
+          await sql`
+            INSERT INTO gallery_items (id, category, title, size, image_url, placeholder_variant, created_at)
+            VALUES (${item.id}, ${item.category}, ${item.title}, ${item.size}, ${item.imageUrl}, ${item.placeholderVariant || null}, 0)
+            ON CONFLICT (id) DO NOTHING
+          `;
+        }
+      }
+    })();
+  }
+  return schemaReady;
 }
 
 async function getManifest() {
-  const blobs = await listManifestBlobs();
-  if (blobs.length) {
-    try {
-      const res = await fetch(blobs[0].url, { cache: 'no-store' });
-      if (res.ok) {
-        const items = await res.json();
-        if (Array.isArray(items)) return items;
-      }
-    } catch (err) {
-      console.error('getManifest: fetch failed', err);
-    }
-  }
-  return saveManifest(SEED_ITEMS);
+  await ensureSchema();
+  const { rows } = await sql`SELECT * FROM gallery_items ORDER BY created_at ASC`;
+  return rows.map(rowToItem);
 }
 
-async function saveManifest(items) {
-  await put(`${MANIFEST_PREFIX}${Date.now()}-${Math.random().toString(36).slice(2, 8)}.json`, JSON.stringify(items, null, 2), {
-    access: 'public',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-  });
-
-  // Best-effort cleanup of older manifest versions so the store doesn't
-  // accumulate files forever. Never blocks or fails the caller.
-  listManifestBlobs()
-    .then((blobs) => Promise.all(blobs.slice(3).map((b) => del(b.url).catch(() => {}))))
-    .catch(() => {});
-
-  return items;
+async function getItem(id) {
+  await ensureSchema();
+  const { rows } = await sql`SELECT * FROM gallery_items WHERE id = ${id}`;
+  return rows[0] ? rowToItem(rows[0]) : null;
 }
 
-// Read-modify-write against shared storage can lose an update if two writes
-// overlap. Guard against that by re-reading (from a fresh, never-cached
-// file) after every write and, if the change didn't stick, retrying the
-// whole cycle against the latest state.
-async function updateManifest(mutate, verify) {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const current = await getManifest();
-    const updated = mutate(current);
-    await saveManifest(updated);
+async function insertItem(item) {
+  await ensureSchema();
+  await sql`
+    INSERT INTO gallery_items (id, category, title, size, image_url, created_at)
+    VALUES (${item.id}, ${item.category}, ${item.title}, ${item.size}, ${item.imageUrl}, ${item.createdAt})
+  `;
+  return getManifest();
+}
 
-    if (attempt > 0) await sleep(300);
-    const check = await getManifest();
-    if (verify(check)) return check;
-  }
-  throw new Error('Changes may not have saved reliably — please refresh and try again.');
+async function deleteItem(id) {
+  await ensureSchema();
+  await sql`DELETE FROM gallery_items WHERE id = ${id}`;
+  return getManifest();
 }
 
 function categoryLabel(category) {
   return CATEGORY_LABELS[category] || category;
 }
 
-module.exports = { getManifest, saveManifest, updateManifest, categoryLabel, CATEGORY_LABELS };
+module.exports = { getManifest, getItem, insertItem, deleteItem, categoryLabel, CATEGORY_LABELS };
