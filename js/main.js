@@ -351,15 +351,40 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(step);
   }
 
-  /* ---------- Contact form (front-end only) ---------- */
+  /* ---------- Contact form: emailed to the studio inbox via /api/contact ---------- */
   const contactForm = document.getElementById('contactForm');
   const formSuccess = document.getElementById('formSuccess');
+  const formError = document.getElementById('formError');
+  const contactSubmitBtn = document.getElementById('contactSubmitBtn');
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      formSuccess.classList.add('show');
-      contactForm.reset();
-      setTimeout(() => formSuccess.classList.remove('show'), 6000);
+      formSuccess.classList.remove('show');
+      formError.classList.remove('show');
+
+      const idleLabel = contactSubmitBtn.textContent;
+      contactSubmitBtn.disabled = true;
+      contactSubmitBtn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(contactForm))),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Something went wrong — please try again.');
+
+        formSuccess.classList.add('show');
+        contactForm.reset();
+        setTimeout(() => formSuccess.classList.remove('show'), 8000);
+      } catch (err) {
+        formError.textContent = err.message || 'Something went wrong — please try again.';
+        formError.classList.add('show');
+      } finally {
+        contactSubmitBtn.disabled = false;
+        contactSubmitBtn.textContent = idleLabel;
+      }
     });
   }
 

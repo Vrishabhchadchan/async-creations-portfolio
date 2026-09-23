@@ -2635,6 +2635,20 @@ section {
   flex: none;
 }
 
+.form-error {
+  display: none;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, .12);
+  border: 1px solid rgba(239, 68, 68, .35);
+  font-size: .9rem;
+  margin-top: 18px;
+}
+
+.form-error.show {
+  display: block;
+}
+
 /* ===== Footer ===== */
 footer {
   position: relative;
