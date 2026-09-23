@@ -9,7 +9,8 @@ import PackagesGrid from '@/components/PackagesGrid';
 import GalleryGrid from '@/components/GalleryGrid';
 import JsonLd from '@/components/JsonLd';
 import { faqSchema } from '@/lib/seo';
-import { getManifest } from '@/lib/manifest';
+import { getManifest, isVisible } from '@/lib/manifest';
+import { getTestimonials, isVisible as isTestimonialVisible } from '@/lib/testimonials';
 import { site, services, whyAsync, processSteps as steps, stats } from '@/lib/site';
 
 const MARQUEE = [
@@ -27,6 +28,8 @@ const MARQUEE = [
 
 export default async function HomePage() {
   const items = await getManifest();
+  const allTestimonials = await getTestimonials();
+  const testimonials = allTestimonials.filter(isTestimonialVisible).slice(0, 4);
 
   return (
     <>
@@ -206,7 +209,7 @@ export default async function HomePage() {
             }
             lede="Event coverage, brand launches and campaign photography shot across Pune and Maharashtra."
           />
-          <GalleryGrid items={items.slice(0, 8)} />
+          <GalleryGrid items={items.filter((i) => i.imageUrl && isVisible(i)).slice(0, 8)} />
           <div style={{ marginTop: '3rem' }} data-reveal>
             <Link href="/portfolio" className="btn btn-ghost">
               View the full portfolio
@@ -379,7 +382,7 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- 9. TESTIMONIALS ---------------- */}
-      <Testimonials />
+      <Testimonials items={testimonials} />
 
       {/* ---------------- FAQ ---------------- */}
       <section className="section">

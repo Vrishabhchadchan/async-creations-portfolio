@@ -21,7 +21,15 @@ export type GalleryItem = {
   imageUrl: string | null;
   placeholderVariant?: string;
   createdAt: number;
+  // Absent/undefined means visible — keeps items saved before this field
+  // existed showing up on the live site exactly as before.
+  visible?: boolean;
 };
+
+/** Whether an item should render on the public site. */
+export function isVisible(item: GalleryItem) {
+  return item.visible !== false;
+}
 
 const SEED_ITEMS: GalleryItem[] = (
   [

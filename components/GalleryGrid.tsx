@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import type { GalleryItem } from '@/lib/manifest';
+import { isVisible, type GalleryItem } from '@/lib/manifest';
 
 /** Server-rendered so every project title and alt text is in the HTML. */
 export default function GalleryGrid({ items }: { items: GalleryItem[] }) {
-  const shown = items.filter((i) => i.imageUrl);
+  const shown = items.filter((i) => i.imageUrl && isVisible(i));
 
   if (!shown.length) {
     return (

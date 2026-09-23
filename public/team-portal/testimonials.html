@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team Portal | Async Creation</title>
+<title>Testimonials | Team Portal | Async Creation</title>
 <meta name="robots" content="noindex, nofollow, noarchive">
 
 <link rel="icon" type="image/png" href="../images/icon/favicon-192.png">
@@ -54,89 +54,60 @@
 
   <nav class="portal-tabs">
     <div class="portal-tabs-inner">
-      <a href="index.html" class="portal-tab is-active">Photos</a>
-      <a href="testimonials.html" class="portal-tab">Testimonials</a>
+      <a href="index.html" class="portal-tab">Photos</a>
+      <a href="testimonials.html" class="portal-tab is-active">Testimonials</a>
     </div>
   </nav>
 
   <main class="portal-main">
     <div class="container">
       <div class="portal-intro">
-        <h1 class="section-title">Manage the <span class="italic-accent grad-text">Work gallery</span></h1>
-        <p class="section-sub">Add, remove, drag to reorder, and toggle a photo's visibility &mdash; changes go live on the public site immediately, no redeploy needed. Every teammate with the passcode sees the same list below.</p>
-      </div>
-
-      <div class="filter-row" id="portalFilterRow">
-        <button type="button" class="filter-btn active" data-filter="all">All Work</button>
-        <button type="button" class="filter-btn" data-filter="brand">Brand Launch</button>
-        <button type="button" class="filter-btn" data-filter="portrait">Portraits</button>
-        <button type="button" class="filter-btn" data-filter="wedding">Weddings</button>
-        <button type="button" class="filter-btn" data-filter="event">Events</button>
-        <button type="button" class="filter-btn" data-filter="fashion">Fashion</button>
-        <button type="button" class="filter-btn" data-filter="realestate">Real Estate</button>
-        <button type="button" class="filter-btn" data-filter="product">Product &amp; Food</button>
+        <h1 class="section-title">Manage <span class="italic-accent grad-text">Client reviews</span></h1>
+        <p class="section-sub">Approve or hide reviews, drag to reorder, or add one on a client's behalf &mdash; changes go live on the public reviews page immediately. New reviews submitted through the website arrive here marked <b>Pending</b> until you approve them.</p>
       </div>
 
       <div class="portal-toast" id="portalToast"></div>
 
-      <div class="gallery" id="portalGallery">
-        <button type="button" class="gallery-item add-tile" id="addTileBtn">
-          <span class="add-tile-plus">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-          <span class="add-tile-label">Add Photo</span>
-        </button>
-        <div class="gallery-loading">Loading current gallery&hellip;</div>
+      <div class="testi-list" id="testiList">
+        <div class="gallery-loading">Loading reviews&hellip;</div>
       </div>
+
+      <button type="button" class="btn btn-primary add-testi-btn" id="addTestiBtn">+ Add a testimonial</button>
     </div>
   </main>
 </div>
 
-<!-- ============ UPLOAD MODAL ============ -->
-<div class="portal-modal" id="uploadModal">
+<!-- ============ ADD/EDIT MODAL ============ -->
+<div class="portal-modal" id="testiModal">
   <div class="portal-modal-card">
-    <button type="button" class="portal-modal-close" id="closeModalBtn" aria-label="Close">
+    <button type="button" class="portal-modal-close" id="closeTestiModalBtn" aria-label="Close">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
-    <h3>Add a photo</h3>
+    <h3>Add a testimonial</h3>
 
-    <form id="uploadForm">
+    <form id="testiForm">
       <div class="field">
-        <label for="photoFile">Photo</label>
-        <input type="file" id="photoFile" name="photoFile" accept="image/*" required>
-        <div class="upload-preview" id="uploadPreview" hidden><img id="uploadPreviewImg" alt=""></div>
+        <label for="testiName">Client name</label>
+        <input type="text" id="testiName" name="name" placeholder="e.g. Rohit Deshpande" maxlength="80" required>
       </div>
 
       <div class="field">
-        <label for="photoCategory">Category</label>
-        <select id="photoCategory" name="category" required>
-          <option value="brand">Brand Launch</option>
-          <option value="portrait">Portraits</option>
-          <option value="wedding">Weddings</option>
-          <option value="event">Events</option>
-          <option value="fashion">Fashion</option>
-          <option value="realestate">Real Estate</option>
-          <option value="product">Product &amp; Food</option>
-        </select>
+        <label for="testiRole">Company / role (optional)</label>
+        <input type="text" id="testiRole" name="role" placeholder="e.g. Founder, XYZ Studio" maxlength="80">
       </div>
 
       <div class="field">
-        <label for="photoTitle">Title</label>
-        <input type="text" id="photoTitle" name="title" placeholder="e.g. Golden Hour Series" maxlength="120" required>
+        <label>Rating</label>
+        <div class="star-picker" id="testiStarPicker" role="radiogroup" aria-label="Star rating"></div>
       </div>
 
       <div class="field">
-        <label for="photoSize">Tile Size</label>
-        <select id="photoSize" name="size">
-          <option value="normal">Normal</option>
-          <option value="big">Big (2&times;2)</option>
-          <option value="tall">Tall</option>
-          <option value="wide">Wide</option>
-        </select>
+        <label for="testiQuote">Feedback</label>
+        <textarea id="testiQuote" name="quote" maxlength="600" placeholder="What did the client say?" required></textarea>
       </div>
 
-      <button type="submit" class="btn btn-primary" id="uploadSubmitBtn" style="width:100%;justify-content:center;">Upload &amp; Publish</button>
-      <p class="portal-modal-error" id="uploadError"></p>
+      <button type="submit" class="btn btn-primary" id="testiSubmitBtn" style="width:100%;justify-content:center;">Save testimonial</button>
+      <p class="portal-modal-error" id="testiError"></p>
     </form>
   </div>
 </div>
@@ -147,8 +118,8 @@
     <div class="portal-confirm-icon">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16z"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
     </div>
-    <h3 id="confirmTitle">Remove this photo?</h3>
-    <p id="confirmBody">It'll disappear from the live site right away. This can't be undone.</p>
+    <h3>Delete this review?</h3>
+    <p>It'll disappear from the live site right away. This can't be undone.</p>
     <div class="portal-confirm-actions">
       <button type="button" class="btn btn-ghost" id="confirmNoBtn">Cancel</button>
       <button type="button" class="btn portal-confirm-yes" id="confirmYesBtn">Yes, Delete</button>
@@ -156,7 +127,6 @@
   </div>
 </div>
 
-<script src="../js/gallery-shared.js"></script>
-<script type="module" src="main.js"></script>
+<script src="testimonials.js"></script>
 </body>
 </html>

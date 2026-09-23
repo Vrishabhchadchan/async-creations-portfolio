@@ -146,7 +146,97 @@ function renderGallery(items) {
       handleDelete(btn.getAttribute('data-id'));
     });
   });
+  portalGallery.querySelectorAll('.tile-visibility').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleToggleVisibility(btn.getAttribute('data-id'), btn.getAttribute('data-visible') !== 'true');
+    });
+  });
+  wireDragAndDrop();
   applyFilter();
+}
+
+async function handleToggleVisibility(id, nextVisible) {
+  if (!id) return;
+  try {
+    const res = await fetch('/api/gallery-visibility', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, visible: nextVisible }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not update visibility');
+    renderGallery(data.items || []);
+    showToast(nextVisible ? 'Photo is now visible on the live site.' : 'Photo hidden from the live site.');
+  } catch (err) {
+    if (String(err.message).includes('log in')) return showLogin();
+    showToast(err.message, 'error');
+  }
+}
+
+// ===== Drag-and-drop reordering =====
+// Reordering acts on the underlying currentItems array (not DOM position),
+// so it works correctly even while a category filter is hiding other tiles.
+let dragSourceId = null;
+
+function wireDragAndDrop() {
+  const tiles = portalGallery.querySelectorAll('.gallery-item:not(.add-tile)');
+  tiles.forEach((tile) => {
+    tile.addEventListener('dragstart', (e) => {
+      dragSourceId = tile.getAttribute('data-id');
+      tile.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', dragSourceId); } catch {}
+    });
+    tile.addEventListener('dragend', () => {
+      tile.classList.remove('dragging');
+      portalGallery.querySelectorAll('.gallery-item.drag-over').forEach((el) => el.classList.remove('drag-over'));
+      dragSourceId = null;
+    });
+    tile.addEventListener('dragover', (e) => {
+      if (!dragSourceId || dragSourceId === tile.getAttribute('data-id')) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      tile.classList.add('drag-over');
+    });
+    tile.addEventListener('dragleave', () => tile.classList.remove('drag-over'));
+    tile.addEventListener('drop', (e) => {
+      e.preventDefault();
+      tile.classList.remove('drag-over');
+      const targetId = tile.getAttribute('data-id');
+      if (!dragSourceId || dragSourceId === targetId) return;
+      handleReorder(dragSourceId, targetId);
+    });
+  });
+}
+
+async function handleReorder(sourceId, targetId) {
+  const items = currentItems.slice();
+  const fromIndex = items.findIndex((i) => i.id === sourceId);
+  const toIndex = items.findIndex((i) => i.id === targetId);
+  if (fromIndex === -1 || toIndex === -1) return;
+
+  const [moved] = items.splice(fromIndex, 1);
+  items.splice(toIndex, 0, moved);
+
+  // Reorder optimistically so the grid doesn't jump back while saving.
+  renderGallery(items);
+
+  try {
+    const res = await fetch('/api/gallery-reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderedIds: items.map((i) => i.id) }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not save the new order');
+    renderGallery(data.items || []);
+    showToast('New order saved.');
+  } catch (err) {
+    if (String(err.message).includes('log in')) return showLogin();
+    showToast(err.message, 'error');
+    loadGallery();
+  }
 }
 
 async function loadGallery() {

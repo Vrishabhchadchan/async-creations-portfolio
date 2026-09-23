@@ -1017,6 +1017,47 @@
   height: 100%;
 }
 
+.star-rating {
+  display: flex;
+  gap: 3px;
+  color: var(--color-clay);
+}
+
+.on-ink .star-rating {
+  color: var(--color-clay-light);
+}
+
+.star-picker {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star-picker button {
+  display: flex;
+  padding: 4px;
+  background: none;
+  border: none;
+  color: var(--color-muted-dark);
+  cursor: pointer;
+  transition: color 0.15s var(--ease-out-soft), transform 0.15s var(--ease-out-soft);
+}
+
+.star-picker button:hover,
+.star-picker button:focus-visible {
+  transform: scale(1.12);
+}
+
+.star-picker-label {
+  margin-left: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  min-width: 5.5em;
+}
+
 .quote blockquote {
   margin: 0;
   font-size: clamp(1.25rem, 2.1vw, 1.65rem);

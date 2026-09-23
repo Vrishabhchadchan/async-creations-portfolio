@@ -5,7 +5,7 @@ import CtaBand from '@/components/CtaBand';
 import GalleryGrid from '@/components/GalleryGrid';
 import JsonLd from '@/components/JsonLd';
 import { pageMetadata } from '@/lib/seo';
-import { getManifest } from '@/lib/manifest';
+import { getManifest, isVisible } from '@/lib/manifest';
 import { SITE_URL, site } from '@/lib/site';
 
 export const metadata: Metadata = pageMetadata({
@@ -27,7 +27,7 @@ export const revalidate = 60;
 
 export default async function PortfolioPage() {
   const items = await getManifest();
-  const withImages = items.filter((i) => i.imageUrl);
+  const withImages = items.filter((i) => i.imageUrl && isVisible(i));
 
   const categories = Array.from(new Set(withImages.map((i) => i.categoryLabel)));
 

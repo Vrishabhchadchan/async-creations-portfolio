@@ -10,6 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/real-estate', priority: 0.9, freq: 'monthly' },
     { path: '/social-media', priority: 0.9, freq: 'monthly' },
     { path: '/portfolio', priority: 0.8, freq: 'weekly' },
+    { path: '/testimonials', priority: 0.7, freq: 'weekly' },
+    { path: '/feedback', priority: 0.3, freq: 'monthly' },
     { path: '/packages', priority: 0.8, freq: 'monthly' },
     { path: '/about', priority: 0.7, freq: 'monthly' },
     { path: '/contact', priority: 0.7, freq: 'monthly' },

@@ -1,6 +1,76 @@
-/* Team Portal — scoped additions on top of the main site stylesheet */
+/* Team Portal — scoped additions on top of the main site stylesheet
+   (public/css/style.css). This file re-themes those shared tokens to
+   match the live site's warm editorial palette (bone/ink/clay, Fraunces
+   + Archivo + JetBrains Mono) and patches the handful of rules that
+   hardcoded a dark-background assumption (white-tint glass, light
+   borders, light toast/error text). */
+
+:root {
+  --bg: #f5f0e8;
+  --bg-alt: #ede5d8;
+  --panel: #ede5d8;
+  --panel-border: rgba(22, 18, 14, 0.14);
+  --text: #16120e;
+  --text-dim: #3a322a;
+  --text-faint: #6b6054;
+
+  --violet: #9a4a22;
+  --purple: #c2612f;
+  --blue: #c2612f;
+  --pink: #e08a4f;
+  --gold: #e08a4f;
+
+  /* Reserved for accent text/circles (italic headline word, eyebrow rule,
+     the "Add Photo" tile) — the site's actual primary buttons are solid
+     ink, set explicitly below rather than through this token. */
+  --grad-brand: linear-gradient(135deg, var(--violet) 0%, var(--purple) 55%, var(--gold) 100%);
+  --grad-brand-soft: rgba(194, 97, 47, 0.14);
+
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-body: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --sand: #d9c7a8;
+  --danger: #9a2020;
+  --danger-bg: rgba(154, 32, 32, 0.08);
+  --danger-border: rgba(154, 32, 32, 0.3);
+}
 
 .portal-body { background: var(--bg); }
+
+/* ===== Fixes for rules that assumed a dark background ===== */
+.btn-primary {
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: none;
+}
+
+.btn-primary:hover {
+  background: var(--violet);
+  box-shadow: none;
+}
+
+.btn-ghost {
+  border-color: var(--panel-border);
+}
+
+.btn-ghost:hover {
+  border-color: var(--text-faint);
+  background: rgba(22, 18, 14, 0.04);
+}
+
+.filter-btn:hover {
+  border-color: var(--text-faint);
+}
+
+.gallery-item .tile-title,
+.gallery-item .tile-cat {
+  color: var(--bg);
+}
+
+.gallery-item .tile-cat {
+  color: var(--gold);
+}
 
 .portal-login[hidden],
 .portal-app[hidden] {
@@ -15,8 +85,8 @@
   justify-content: center;
   padding: 24px;
   background:
-    radial-gradient(60% 55% at 85% 10%, rgba(236, 72, 153, .18), transparent 60%),
-    radial-gradient(55% 55% at 10% 90%, rgba(79, 107, 255, .2), transparent 60%),
+    radial-gradient(60% 55% at 85% 10%, rgba(194, 97, 47, .14), transparent 60%),
+    radial-gradient(55% 55% at 10% 90%, rgba(217, 199, 168, .4), transparent 60%),
     var(--bg);
 }
 
@@ -24,11 +94,11 @@
   width: 100%;
   max-width: 380px;
   padding: 44px 36px;
-  border-radius: 22px;
+  border-radius: 4px;
   border: 1px solid var(--panel-border);
-  background: linear-gradient(165deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, 0) 60%);
+  background: var(--bg-alt);
   text-align: center;
-  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, .6);
+  box-shadow: 0 30px 70px -30px rgba(22, 18, 14, .25);
 }
 
 .portal-login-logo { width: 52px; height: 52px; object-fit: contain; margin: 0 auto 14px; }
@@ -54,9 +124,9 @@
 
 .portal-login-form input {
   width: 100%;
-  background: rgba(255, 255, 255, .03);
+  background: var(--bg);
   border: 1px solid var(--panel-border);
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 14px 16px;
   color: var(--text);
   font-family: inherit;
@@ -68,14 +138,14 @@
 .portal-login-form input:focus {
   outline: none;
   border-color: var(--purple);
-  background: rgba(168, 85, 247, .06);
+  background: var(--bg-alt);
 }
 
 .portal-login-error {
   min-height: 18px;
   margin-top: 14px;
   font-size: .82rem;
-  color: #ff6b6b;
+  color: var(--danger);
   text-align: center;
 }
 
@@ -93,7 +163,7 @@
 .portal-header {
   border-bottom: 1px solid var(--panel-border);
   padding: 18px 0;
-  background: rgba(6, 6, 12, .6);
+  background: rgba(245, 240, 232, .88);
   backdrop-filter: blur(14px);
 }
 
@@ -126,8 +196,8 @@
 }
 
 .portal-toast.show { display: flex; }
-.portal-toast.success { background: rgba(79, 107, 255, .12); border: 1px solid rgba(79, 107, 255, .3); color: var(--text); }
-.portal-toast.error { background: rgba(220, 38, 38, .12); border: 1px solid rgba(220, 38, 38, .35); color: #ffb4b4; }
+.portal-toast.success { background: rgba(194, 97, 47, .1); border: 1px solid rgba(194, 97, 47, .3); color: var(--text); }
+.portal-toast.error { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); }
 
 /* ===== Add-photo tile ===== */
 .add-tile {
@@ -136,16 +206,17 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
+  border-radius: 4px;
   border: 1.5px dashed var(--panel-border);
-  background: rgba(255, 255, 255, .015);
+  background: rgba(22, 18, 14, .015);
   color: var(--text-dim);
   font-family: inherit;
   transition: border-color .3s ease, background .3s ease, transform .3s ease;
 }
 
 .add-tile:hover {
-  border-color: rgba(168, 85, 247, .55);
-  background: rgba(168, 85, 247, .06);
+  border-color: rgba(194, 97, 47, .55);
+  background: rgba(194, 97, 47, .06);
   transform: translateY(-3px);
 }
 
@@ -157,7 +228,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 14px 30px -10px rgba(124, 58, 237, .6);
+  box-shadow: 0 14px 30px -10px rgba(154, 74, 34, .5);
 }
 
 .add-tile-label {
@@ -171,7 +242,7 @@
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: rgba(4, 4, 10, .8);
+  background: rgba(22, 18, 14, .5);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -191,10 +262,10 @@
   max-height: 88vh;
   overflow-y: auto;
   padding: 36px;
-  border-radius: 20px;
+  border-radius: 4px;
   border: 1px solid var(--panel-border);
   background: var(--bg-alt);
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .7);
+  box-shadow: 0 30px 80px -30px rgba(22, 18, 14, .3);
 }
 
 .portal-modal-card h3 {
@@ -209,12 +280,15 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid var(--panel-border);
-  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--text);
+  background: var(--text);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background .3s ease, opacity .3s ease;
 }
+
+.portal-modal-close:hover { opacity: .82; }
 
 .portal-modal-card .field { margin-bottom: 18px; }
 .portal-modal-card .field label {
@@ -230,9 +304,9 @@
 .portal-modal-card input[type="file"],
 .portal-modal-card select {
   width: 100%;
-  background: rgba(255, 255, 255, .03);
+  background: var(--bg);
   border: 1px solid var(--panel-border);
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 13px 15px;
   color: var(--text);
   font-family: inherit;
@@ -240,7 +314,7 @@
 }
 
 .portal-modal-card select {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 .portal-modal-card select option {
@@ -252,7 +326,7 @@
 
 .upload-preview {
   margin-top: 12px;
-  border-radius: 12px;
+  border-radius: 4px;
   overflow: hidden;
   border: 1px solid var(--panel-border);
   aspect-ratio: 4/3;
@@ -264,7 +338,7 @@
   min-height: 18px;
   margin-top: 14px;
   font-size: .82rem;
-  color: #ff6b6b;
+  color: var(--danger);
   text-align: center;
 }
 
@@ -275,11 +349,11 @@
   width: 100%;
   max-width: 380px;
   padding: 36px;
-  border-radius: 20px;
+  border-radius: 4px;
   border: 1px solid var(--panel-border);
   background: var(--bg-alt);
   text-align: center;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .7);
+  box-shadow: 0 30px 80px -30px rgba(22, 18, 14, .3);
 }
 
 .portal-confirm-icon {
@@ -328,8 +402,249 @@
   box-shadow: 0 16px 32px -8px rgba(239, 68, 68, .7);
 }
 
+/* ===== Admin tile controls (drag handle, visibility, hidden state) ===== */
+.gallery-item[draggable="true"] { cursor: grab; }
+.gallery-item.dragging { opacity: .4; }
+
+.gallery-item.drag-over::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 2px dashed rgba(194, 97, 47, .85);
+  border-radius: 4px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.tile-drag-handle {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%) scale(.7);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(6, 6, 12, .55);
+  border: 1px solid rgba(255, 255, 255, .25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all .3s var(--ease);
+  z-index: 2;
+  cursor: grab;
+}
+
+.gallery-item:hover .tile-drag-handle {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.tile-visibility {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(6, 6, 12, .55);
+  border: 1px solid rgba(255, 255, 255, .25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(.7);
+  transition: all .3s var(--ease);
+  z-index: 2;
+}
+
+.gallery-item:hover .tile-visibility {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tile-visibility:hover { background: rgba(194, 97, 47, .8); }
+
+.gallery-item,
+.gallery-item .tile-media,
+.upload-preview { border-radius: 4px; }
+
+.gallery-item.is-hidden {
+  opacity: .45;
+}
+
+.gallery-item.is-hidden .tile-visibility {
+  opacity: 1;
+  transform: scale(1);
+  background: rgba(220, 38, 38, .8);
+}
+
+.tile-hidden-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 2;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(220, 38, 38, .85);
+  border: 1px solid rgba(255, 255, 255, .25);
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* ===== Portal tabs (Photos / Testimonials) ===== */
+.portal-tabs {
+  border-bottom: 1px solid var(--panel-border);
+  background: var(--bg-alt);
+}
+
+.portal-tabs-inner {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: 24px;
+  display: flex;
+  gap: 4px;
+}
+
+.portal-tab {
+  padding: 14px 18px;
+  font-size: .86rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  border-bottom: 2px solid transparent;
+  transition: color .25s ease, border-color .25s ease;
+}
+
+.portal-tab:hover { color: var(--text-dim); }
+
+.portal-tab.is-active {
+  color: var(--text);
+  border-bottom-color: var(--purple);
+}
+
+/* ===== Star rating (read-only display) ===== */
+.star-rating {
+  display: flex;
+  gap: 2px;
+  color: var(--purple);
+}
+
+/* ===== Testimonials list ===== */
+.testi-list {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.testi-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 22px 22px 52px;
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  background: var(--bg-alt);
+  cursor: grab;
+  transition: opacity .25s ease, border-color .25s ease;
+}
+
+.testi-card.dragging { opacity: .4; }
+
+.testi-card.drag-over {
+  border-color: rgba(194, 97, 47, .7);
+  box-shadow: inset 0 0 0 1px rgba(194, 97, 47, .4);
+}
+
+.testi-card.is-hidden { opacity: .6; }
+
+.testi-drag-handle {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  opacity: 1;
+}
+
+.testi-drag-handle svg circle { fill: var(--text-faint) !important; }
+
+.testi-card-body { flex: 1; min-width: 0; }
+
+.testi-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.testi-pending-badge {
+  position: static;
+  padding: 3px 10px;
+}
+
+.testi-card-quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.02rem;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+
+.testi-card-foot b {
+  display: block;
+  font-size: .9rem;
+}
+
+.testi-card-foot span {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.testi-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.testi-visibility,
+.testi-delete {
+  position: static;
+  opacity: 1;
+  transform: none;
+  background: rgba(22, 18, 14, .06);
+  border: 1px solid var(--panel-border);
+}
+
+.testi-visibility svg,
+.testi-delete svg { stroke: var(--text); }
+
+.testi-delete:hover { background: rgba(220, 38, 38, .12); border-color: rgba(220, 38, 38, .4); }
+.testi-delete:hover svg { stroke: #c1272d; }
+
+.testi-visibility:hover { background: rgba(194, 97, 47, .12); border-color: rgba(194, 97, 47, .4); }
+
+.testi-card.is-hidden .testi-visibility {
+  background: rgba(220, 38, 38, .1);
+  border-color: rgba(220, 38, 38, .35);
+}
+
+.testi-card.is-hidden .testi-visibility svg { stroke: #c1272d; }
+
+.add-testi-btn { width: 100%; justify-content: center; }
+
 @media (max-width: 640px) {
   .portal-header-inner { justify-content: center; text-align: center; }
   .portal-modal-card { padding: 26px; }
   .portal-confirm-card { padding: 28px; }
+  .testi-card { flex-direction: column; padding: 20px 20px 20px 44px; }
+  .testi-card-actions { align-self: flex-end; }
 }
