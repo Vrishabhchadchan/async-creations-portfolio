@@ -13,6 +13,31 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 const uploadForm = document.getElementById('uploadForm');
 const uploadSubmitBtn = document.getElementById('uploadSubmitBtn');
 const uploadError = document.getElementById('uploadError');
+const uploadProgress = document.getElementById('uploadProgress');
+const uploadProgressBar = document.getElementById('uploadProgressBar');
+const uploadProgressLabel = document.getElementById('uploadProgressLabel');
+
+function setUploadProgress(fraction) {
+  const pct = Math.round(fraction * 100);
+  uploadProgressBar.style.width = pct + '%';
+  uploadProgressLabel.textContent = pct + '%';
+  uploadSubmitBtn.textContent = 'Uploading… ' + pct + '%';
+}
+
+// fetch() can't report upload progress, so the file PUT uses XHR instead.
+function putFile(url, file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', url);
+    xhr.setRequestHeader('Content-Type', file.type);
+    xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded / e.total); };
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300
+      ? resolve()
+      : reject(new Error('Upload failed — please try again.')));
+    xhr.onerror = () => reject(new Error('Upload failed — please check your connection and try again.'));
+    xhr.send(file);
+  });
+}
 const photoFile = document.getElementById('photoFile');
 const uploadPreview = document.getElementById('uploadPreview');
 const uploadPreviewImg = document.getElementById('uploadPreviewImg');
@@ -242,12 +267,10 @@ uploadForm.addEventListener('submit', async (e) => {
     const presignData = await presignRes.json();
     if (!presignRes.ok) throw new Error(presignData.error || 'Could not prepare upload');
 
-    const putRes = await fetch(presignData.uploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type },
-      body: file,
-    });
-    if (!putRes.ok) throw new Error('Upload failed — please try again.');
+    uploadProgress.hidden = false;
+    setUploadProgress(0);
+    await putFile(presignData.uploadUrl, file, setUploadProgress);
+    uploadSubmitBtn.textContent = 'Publishing…';
 
     const res = await fetch('/api/gallery-add', {
       method: 'POST',
@@ -269,6 +292,7 @@ uploadForm.addEventListener('submit', async (e) => {
   } finally {
     uploadSubmitBtn.disabled = false;
     uploadSubmitBtn.textContent = 'Upload & Publish';
+    uploadProgress.hidden = true;
   }
 });
 

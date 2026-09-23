@@ -1758,6 +1758,69 @@ section {
   border-radius: 14px;
 }
 
+/* Video card — same portrait card look as the About video */
+.lightbox-video-frame {
+  position: relative;
+  margin: 0 auto;
+  height: min(78vh, 800px);
+  aspect-ratio: 3 / 4;
+  max-width: 92vw;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .12), 0 30px 80px rgba(0, 0, 0, .6);
+}
+
+.lightbox-video-frame[hidden] {
+  display: none;
+}
+
+.lightbox-video-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+}
+
+/* Landscape uploads are letterboxed instead of cropped */
+.lightbox-video-frame.is-landscape video {
+  object-fit: contain;
+}
+
+.lightbox-play-btn {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 6, 12, .55);
+  border: 1px solid rgba(255, 255, 255, .25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: background .3s ease, transform .3s ease;
+}
+
+.lightbox-play-btn:hover {
+  background: rgba(6, 6, 12, .78);
+  transform: scale(1.06);
+}
+
+.lightbox-play-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.lightbox-play-btn svg[hidden] {
+  display: none;
+}
+
 .lightbox-caption {
   margin-top: 18px;
 }
