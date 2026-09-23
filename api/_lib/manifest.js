@@ -11,6 +11,8 @@ const CATEGORY_LABELS = {
   'institutional-education': 'Institutional & Education',
   'travel-lifestyle': 'Travel & Lifestyle',
   'social-media-brand': 'Social Media & Brand Content',
+  'real-estate': 'Real Estate',
+  'drone-shoot': 'Drone Shoot',
 };
 
 // Old category slugs (from before the category list was expanded) mapped
