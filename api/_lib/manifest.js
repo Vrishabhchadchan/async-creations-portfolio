@@ -1,28 +1,43 @@
 const { sql } = require('@vercel/postgres');
 
 const CATEGORY_LABELS = {
-  brand: 'Brand Launch',
-  portrait: 'Portraits',
-  wedding: 'Weddings',
-  event: 'Events',
-  fashion: 'Fashion',
+  photography: 'Photography',
+  weddings: 'Weddings',
+  'pre-weddings': 'Pre-Weddings',
+  'drone-aerial': 'Drone & Aerial',
+  'corporate-commercial': 'Corporate & Commercial',
+  'events-concerts': 'Events & Concerts',
+  'cinematic-reels': 'Cinematic Films & Reels',
+  'institutional-education': 'Institutional & Education',
+  'travel-lifestyle': 'Travel & Lifestyle',
+  'social-media-brand': 'Social Media & Brand Content',
+};
+
+// Old category slugs (from before the category list was expanded) mapped
+// onto their closest new equivalent, applied to existing rows on deploy.
+const CATEGORY_MIGRATIONS = {
+  brand: 'corporate-commercial',
+  portrait: 'photography',
+  wedding: 'weddings',
+  event: 'events-concerts',
+  fashion: 'photography',
 };
 
 // Seed data mirrors what shipped in the static HTML before this became
 // database-backed, so the live site doesn't visually change on first load.
 const SEED_ITEMS = [
-  { id: 'seed-1', category: 'brand', title: 'Viksit Bharat — Team On Stage', size: 'big', imageUrl: '/images/work/brand-launch-4.jpg' },
-  { id: 'seed-2', category: 'brand', title: 'Live Event Coverage', size: 'tall', imageUrl: '/images/work/brand-launch-5.jpg' },
-  { id: 'seed-3', category: 'portrait', title: 'Golden Hour Series', size: 'normal', imageUrl: null, placeholderVariant: 'ph-1' },
-  { id: 'seed-4', category: 'wedding', title: 'A Monsoon Wedding', size: 'normal', imageUrl: null, placeholderVariant: 'ph-2' },
-  { id: 'seed-5', category: 'event', title: 'Persona Fest — Showstopper Fashion Show', size: 'big', imageUrl: '/images/work/events3.jpg' },
-  { id: 'seed-6', category: 'event', title: 'On-Stage Ensemble', size: 'tall', imageUrl: '/images/work/events1.jpg' },
-  { id: 'seed-7', category: 'event', title: 'Persona Fest 2026', size: 'normal', imageUrl: '/images/work/events2.jpg' },
-  { id: 'seed-8', category: 'event', title: 'Spotlight Moment', size: 'normal', imageUrl: '/images/work/events4.jpg' },
-  { id: 'seed-9', category: 'event', title: 'Winning Moment — Closing Ceremony', size: 'wide', imageUrl: '/images/work/events5.jpg' },
-  { id: 'seed-10', category: 'fashion', title: 'Studio Edit No.4', size: 'normal', imageUrl: null, placeholderVariant: 'ph-4' },
-  { id: 'seed-11', category: 'portrait', title: 'Portrait Diaries', size: 'normal', imageUrl: null, placeholderVariant: 'ph-5' },
-  { id: 'seed-12', category: 'brand', title: 'We Create Experiences', size: 'normal', imageUrl: null, placeholderVariant: 'ph-8' },
+  { id: 'seed-1', category: 'corporate-commercial', title: 'Viksit Bharat — Team On Stage', size: 'big', imageUrl: '/images/work/brand-launch-4.jpg' },
+  { id: 'seed-2', category: 'corporate-commercial', title: 'Live Event Coverage', size: 'tall', imageUrl: '/images/work/brand-launch-5.jpg' },
+  { id: 'seed-3', category: 'photography', title: 'Golden Hour Series', size: 'normal', imageUrl: null, placeholderVariant: 'ph-1' },
+  { id: 'seed-4', category: 'weddings', title: 'A Monsoon Wedding', size: 'normal', imageUrl: null, placeholderVariant: 'ph-2' },
+  { id: 'seed-5', category: 'events-concerts', title: 'Persona Fest — Showstopper Fashion Show', size: 'big', imageUrl: '/images/work/events3.jpg' },
+  { id: 'seed-6', category: 'events-concerts', title: 'On-Stage Ensemble', size: 'tall', imageUrl: '/images/work/events1.jpg' },
+  { id: 'seed-7', category: 'events-concerts', title: 'Persona Fest 2026', size: 'normal', imageUrl: '/images/work/events2.jpg' },
+  { id: 'seed-8', category: 'events-concerts', title: 'Spotlight Moment', size: 'normal', imageUrl: '/images/work/events4.jpg' },
+  { id: 'seed-9', category: 'events-concerts', title: 'Winning Moment — Closing Ceremony', size: 'wide', imageUrl: '/images/work/events5.jpg' },
+  { id: 'seed-10', category: 'photography', title: 'Studio Edit No.4', size: 'normal', imageUrl: null, placeholderVariant: 'ph-4' },
+  { id: 'seed-11', category: 'photography', title: 'Portrait Diaries', size: 'normal', imageUrl: null, placeholderVariant: 'ph-5' },
+  { id: 'seed-12', category: 'corporate-commercial', title: 'We Create Experiences', size: 'normal', imageUrl: null, placeholderVariant: 'ph-8' },
 ];
 
 function rowToItem(row) {
@@ -60,6 +75,13 @@ function ensureSchema() {
       // added, so the new column needs an explicit migration rather than
       // just being part of CREATE TABLE IF NOT EXISTS.
       await sql`ALTER TABLE gallery_items ADD COLUMN IF NOT EXISTS media_type TEXT NOT NULL DEFAULT 'image'`;
+
+      // Remap any rows still on the old, narrower category set — idempotent,
+      // since after the first run no row matches the old slugs anymore.
+      for (const [oldCategory, newCategory] of Object.entries(CATEGORY_MIGRATIONS)) {
+        await sql`UPDATE gallery_items SET category = ${newCategory} WHERE category = ${oldCategory}`;
+      }
+
       const { rows } = await sql`SELECT COUNT(*)::int AS count FROM gallery_items`;
       if (rows[0].count === 0) {
         for (const item of SEED_ITEMS) {
