@@ -213,20 +213,21 @@
   overflow: hidden;
 }
 
-/* On small screens the 3D is a faint wash behind the copy; from the
+/* On small screens the optic is a faint wash behind the copy; from the
    desktop breakpoint it moves into its own column beside the text and
    never overlaps it. */
-.hero-canvas {
+.hero-optic {
   position: absolute;
   inset: 0;
   z-index: 0;
+  display: grid;
+  place-items: center;
   pointer-events: none;
-  opacity: 0.12;
-  mask-image: radial-gradient(circle at center, #000 45%, transparent 76%);
+  opacity: 0.14;
 }
 
 @media (min-width: 1024px) {
-  .hero-canvas {
+  .hero-optic {
     left: 52%;
     right: 0;
     top: 0;
@@ -235,9 +236,26 @@
   }
 }
 
-.hero-canvas canvas {
-  width: 100% !important;
-  height: 100% !important;
+.lens-optic {
+  width: min(76%, 520px);
+  height: auto;
+  overflow: visible;
+}
+
+.lens-engrave {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 3.2px;
+  fill: #cfc5b4;
+  opacity: 0.72;
+}
+
+.lens-mark {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 1px;
+  fill: #ded4c4;
+  opacity: 0.82;
 }
 
 .hero-bloom {
@@ -365,6 +383,86 @@
   border-radius: 50%;
   background: var(--color-clay);
   flex-shrink: 0;
+}
+
+/* ---------------- Scout drone ---------------- */
+.about-section {
+  position: relative;
+}
+
+/* In the left column's flow, beneath the heading. Anchoring it to the
+   section instead let the sticky heading drift down into its flight
+   path; sharing the column means the two always move together. The top
+   margin leaves more room than the craft can ever climb. */
+.drone-stage {
+  position: relative;
+  margin-top: clamp(3rem, 6vw, 5.5rem);
+  width: clamp(180px, 19vw, 262px);
+  pointer-events: none;
+}
+
+.drone-stage svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.drone-lift {
+  will-change: transform;
+}
+
+.drone-label {
+  display: block;
+  margin-top: -0.5rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-clay-deep);
+  opacity: 0.8;
+}
+
+/* Below the two-column breakpoint the left column collapses, so an
+   absolutely placed craft would sit on top of the copy. */
+@media (max-width: 899px) {
+  .drone-stage {
+    display: none;
+  }
+}
+
+/* ---------------- Route progress ---------------- */
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  width: 100%;
+  height: 2px;
+  background: var(--color-clay);
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Creeps toward the end without reaching it — the bar is showing that
+   work is happening, not claiming to know how long it will take. */
+.nav-progress.is-loading {
+  opacity: 1;
+  transform: scaleX(0.9);
+  transition:
+    transform 3.2s cubic-bezier(0.1, 0.85, 0.2, 1),
+    opacity 0.1s linear;
+}
+
+.nav-progress.is-done {
+  opacity: 0;
+  transform: scaleX(1);
+  transition:
+    transform 0.18s ease-out,
+    opacity 0.28s ease-out 0.1s;
 }
 
 /* ---------------- Viewfinder reticle cursor ---------------- */
@@ -587,7 +685,8 @@
 /* From the pin breakpoint up, GSAP drives the x position, so the track
    must not scroll on its own. */
 @media (min-width: 1024px) {
-  .hsection {
+  /* The inner wrapper is what gets pinned, so it carries the layout. */
+  .hsection-inner {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1276,6 +1375,246 @@
 .cta-marquee span.t-outline {
   color: transparent;
   -webkit-text-stroke: 1.5px var(--color-bone);
+}
+
+/* ---------------- Editorial spread (home) ----------------
+   A repeating seven-frame rhythm over a 12-column grid. Column span,
+   aspect ratio and vertical offset all vary, so the page reads as a
+   laid-out spread instead of a contact sheet of equal tiles. */
+.spread {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(12px, 1.5vw, 26px);
+  align-items: start;
+}
+
+.frame {
+  position: relative;
+  margin: 0;
+  grid-column: span 12;
+  aspect-ratio: 4 / 3;
+}
+
+@media (min-width: 760px) {
+  .frame {
+    grid-column: span 6;
+    aspect-ratio: 4 / 5;
+  }
+
+  /* 1 — full-bleed opener */
+  .frame:nth-child(7n + 1) {
+    grid-column: span 12;
+    aspect-ratio: 21 / 9;
+  }
+
+  /* 2 & 3 — a tall pair, the second dropped for rhythm */
+  .frame:nth-child(7n + 2) {
+    grid-column: span 7;
+    aspect-ratio: 5 / 4;
+  }
+
+  .frame:nth-child(7n + 3) {
+    grid-column: span 5;
+    aspect-ratio: 3 / 4;
+    margin-top: clamp(1.5rem, 4vw, 4rem);
+  }
+
+  /* 4 & 5 — reversed weighting */
+  .frame:nth-child(7n + 4) {
+    grid-column: span 5;
+    aspect-ratio: 4 / 5;
+  }
+
+  .frame:nth-child(7n + 5) {
+    grid-column: span 7;
+    aspect-ratio: 16 / 11;
+    margin-top: clamp(-3rem, -2vw, -1rem);
+  }
+
+  /* 6 & 7 — an inset square beside a wide closer */
+  .frame:nth-child(7n + 6) {
+    grid-column: span 4;
+    aspect-ratio: 1;
+    margin-top: clamp(1rem, 3vw, 3rem);
+  }
+
+  .frame:nth-child(7n + 7) {
+    grid-column: span 8;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.frame-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--color-bone-3);
+}
+
+.frame-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease-out-expo), filter 0.6s var(--ease-out-soft);
+}
+
+.frame:hover .frame-media img {
+  transform: scale(1.04);
+}
+
+/* Caption sits under the frame rather than over the photograph — an
+   overlay was dimming the very images it was labelling. */
+.frame-cap {
+  position: absolute;
+  top: calc(100% + 0.85rem);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.frame-cat {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-clay-deep);
+}
+
+.on-ink .frame-cat {
+  color: var(--color-clay-light);
+}
+
+.frame-cap b {
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+/* The captions live outside the frame box, so the grid needs room. */
+.spread {
+  row-gap: clamp(4rem, 6vw, 6.5rem);
+}
+
+/* ---------------- Portfolio filters ---------------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.75rem;
+}
+
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0.55rem 1.15rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--color-ink-3);
+  background: transparent;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    color 0.3s var(--ease-out-soft),
+    border-color 0.3s var(--ease-out-soft),
+    background-color 0.3s var(--ease-out-soft);
+}
+
+.filter:hover {
+  border-color: var(--color-clay);
+  color: var(--color-ink);
+}
+
+.filter.is-on {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-bone);
+}
+
+.filter-count {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  opacity: 0.6;
+}
+
+.filter-status {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin: 0 0 2.5rem;
+}
+
+/* ---------------- Portfolio grid ---------------- */
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: clamp(1.25rem, 2vw, 2rem) clamp(1rem, 1.6vw, 1.5rem);
+}
+
+.shot {
+  position: relative;
+  margin: 0;
+}
+
+.shot-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--color-bone-3);
+}
+
+/* Every third tile runs landscape, so the grid has rhythm without
+   needing per-photo art direction. */
+.shot:nth-child(3n + 1) .shot-media {
+  aspect-ratio: 3 / 4;
+}
+
+.shot:nth-child(5n + 3) .shot-media {
+  aspect-ratio: 1;
+}
+
+.shot-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease-out-expo);
+}
+
+.shot:hover .shot-media img {
+  transform: scale(1.05);
+}
+
+.shot-cap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  padding-top: 0.85rem;
+}
+
+.shot-cat {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-clay-deep);
+}
+
+.shot-cap b {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.25;
 }
 
 /* ---------------- Gallery ---------------- */

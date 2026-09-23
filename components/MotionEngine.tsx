@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
@@ -33,6 +34,11 @@ import { CustomEase } from 'gsap/CustomEase';
  *                                   one covers it
  */
 export default function MotionEngine() {
+  // This lives in the root layout, so without a route key it would set up
+  // once and never again — every page after the first would arrive with
+  // no animation at all.
+  const pathname = usePathname();
+
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase);
 
@@ -45,7 +51,15 @@ export default function MotionEngine() {
     // Hands CSS fallbacks (like the marquee keyframes) over to GSAP.
     document.documentElement.classList.add('js-motion');
 
-    const ctx = gsap.context(() => {
+    let ctx: gsap.Context | undefined;
+    let cancelled = false;
+
+    // Splitting every heading and building the scroll triggers for a page
+    // is heavy. Holding it until after the next paint lets a navigation
+    // render immediately and the choreography attach a frame later.
+    const setup = () => {
+      if (cancelled) return;
+      ctx = gsap.context(() => {
       /* ---------------- Backdrop colour journey ----------------
          Sections declare the palette they sit on; the fixed backdrop
          scrubs between them so the page shifts colour as you travel. */
@@ -502,18 +516,27 @@ export default function MotionEngine() {
           el.addEventListener('mouseleave', reset);
         });
       }
-    });
+      });
+
+    };
+
+    const raf = requestAnimationFrame(() => requestAnimationFrame(setup));
 
     const refresh = () => ScrollTrigger.refresh();
     document.fonts?.ready.then(refresh);
     window.addEventListener('load', refresh);
+    // 'load' never fires again on a client-side navigation.
+    const settle = window.setTimeout(refresh, 320);
 
     return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
       window.removeEventListener('load', refresh);
+      window.clearTimeout(settle);
       splits.forEach((s) => s.revert());
-      ctx.revert();
+      ctx?.revert();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

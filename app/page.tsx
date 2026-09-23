@@ -1,12 +1,13 @@
 import Link from 'next/link';
-import HeroCanvas from '@/components/three/HeroCanvas';
+import LensOptic from '@/components/LensOptic';
+import DroneScout from '@/components/DroneScout';
 import SectionHead from '@/components/SectionHead';
 import CardCorners from '@/components/CardCorners';
 import CtaBand from '@/components/CtaBand';
 import FaqList from '@/components/FaqList';
 import Testimonials from '@/components/Testimonials';
 import PackagesGrid from '@/components/PackagesGrid';
-import GalleryGrid from '@/components/GalleryGrid';
+import GalleryEditorial from '@/components/GalleryEditorial';
 import JsonLd from '@/components/JsonLd';
 import { faqSchema } from '@/lib/seo';
 import { getManifest, isVisible } from '@/lib/manifest';
@@ -37,7 +38,9 @@ export default async function HomePage() {
 
       {/* ---------------- 1. HERO ---------------- */}
       <section className="hero">
-        <HeroCanvas />
+        <div className="hero-optic" aria-hidden="true">
+          <LensOptic />
+        </div>
         <div className="shell hero-inner">
           <div className="hero-copy">
             <p className="t-label hero-eyebrow" data-reveal>
@@ -93,7 +96,7 @@ export default async function HomePage() {
       </div>
 
       {/* ---------------- 2. ABOUT ---------------- */}
-      <section className="section" id="about" data-bg="sand">
+      <section className="section about-section" id="about" data-bg="sand">
         <div className="shell lede-grid">
           <div>
             <span className="t-label" data-reveal>
@@ -103,6 +106,7 @@ export default async function HomePage() {
             <h2 className="t-h2" data-split="lines">
               A content studio that thinks like a <span className="italic-serif">brand partner</span>
             </h2>
+            <DroneScout />
           </div>
           <div data-reveal>
             <p className="t-lead" data-highlight>
@@ -159,39 +163,46 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- 3. SERVICES ---------------- */}
-      <section className="section on-ink hsection" id="services" data-hscroll>
-        <div className="shell">
-          <SectionHead
-            chapter="01"
-            variant="alt"
-            label="Services"
-            title={
-              <>
-                Ten services, <span className="italic-serif">one pipeline</span>
-              </>
-            }
-            lede="From the first strategy call to the final published reel — every part of the process is handled in-house."
-          />
-        </div>
+      {/* ScrollTrigger's pin wraps its target in a .pin-spacer div. If the
+          target were this <section> — a direct child of <main> — React
+          would later try to remove it from <main> and fail, because its
+          real parent had become the spacer. Pinning the inner wrapper
+          keeps that reparenting inside a subtree React removes wholesale. */}
+      <section className="section on-ink hsection" id="services">
+        <div className="hsection-inner" data-hscroll>
+          <div className="shell">
+            <SectionHead
+              chapter="01"
+              variant="alt"
+              label="Services"
+              title={
+                <>
+                  Ten services, <span className="italic-serif">one pipeline</span>
+                </>
+              }
+              lede="From the first strategy call to the final published reel — every part of the process is handled in-house."
+            />
+          </div>
 
-        <div className="htrack-wrap">
-          <div className="htrack">
-            {services.map((s, i) => (
-              <Link key={s.slug} href={`/services#${s.slug}`} className="card svc hcard">
-                <CardCorners />
-                <h3>{s.title}</h3>
-                <p>{s.short}</p>
-                <span className="hcard-go" aria-hidden="true">
-                  →
-                </span>
+          <div className="htrack-wrap">
+            <div className="htrack">
+              {services.map((s) => (
+                <Link key={s.slug} href={`/services#${s.slug}`} className="card svc hcard">
+                  <CardCorners />
+                  <h3>{s.title}</h3>
+                  <p>{s.short}</p>
+                  <span className="hcard-go" aria-hidden="true">
+                    →
+                  </span>
+                </Link>
+              ))}
+              <Link href="/services" className="card hcard hcard-cta">
+                <h3>
+                  See every <span className="italic-serif">service</span>
+                </h3>
+                <span className="btn btn-primary">Explore all services</span>
               </Link>
-            ))}
-            <Link href="/services" className="card hcard hcard-cta">
-              <h3>
-                See every <span className="italic-serif">service</span>
-              </h3>
-              <span className="btn btn-primary">Explore all services</span>
-            </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -209,7 +220,7 @@ export default async function HomePage() {
             }
             lede="Event coverage, brand launches and campaign photography shot across Pune and Maharashtra."
           />
-          <GalleryGrid items={items.filter((i) => i.imageUrl && isVisible(i)).slice(0, 8)} />
+          <GalleryEditorial items={items.filter((i) => i.imageUrl && isVisible(i)).slice(0, 7)} />
           <div style={{ marginTop: '3rem' }} data-reveal>
             <Link href="/portfolio" className="btn btn-ghost">
               View the full portfolio

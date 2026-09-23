@@ -2,12 +2,13 @@
   "name": "async-creation-studio",
   "version": "2.0.0",
   "private": true,
-  "description": "Async Creation — Creative Content & Branding Studio. Next.js site with 3D/GSAP motion and a team-only gallery manager backed by Vercel Blob.",
+  "description": "Async Creation \u2014 Creative Content & Branding Studio. Next.js site with 3D/GSAP motion and a team-only gallery manager backed by Vercel Blob.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:webpack": "next dev"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
