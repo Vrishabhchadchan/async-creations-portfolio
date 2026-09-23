@@ -8,7 +8,6 @@ import SmoothScroll from '@/components/SmoothScroll';
 import MotionEngine from '@/components/MotionEngine';
 import Cursor from '@/components/Cursor';
 import NavProgress from '@/components/NavProgress';
-import DroneScout from '@/components/DroneScout';
 import JsonLd from '@/components/JsonLd';
 import { organizationSchema, websiteSchema } from '@/lib/seo';
 import { SITE_URL, site } from '@/lib/site';
@@ -117,7 +116,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main id="main">{children}</main>
         <Footer />
-        <DroneScout />
       </body>
     </html>
   );

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import HeroCanvas from '@/components/three/HeroCanvas';
+import LensOptic from '@/components/LensOptic';
+import DroneScout from '@/components/DroneScout';
 import SectionHead from '@/components/SectionHead';
 import CardCorners from '@/components/CardCorners';
 import CtaBand from '@/components/CtaBand';
@@ -34,7 +35,9 @@ export default async function HomePage() {
 
       {/* ---------------- 1. HERO ---------------- */}
       <section className="hero">
-        <HeroCanvas />
+        <div className="hero-optic" aria-hidden="true">
+          <LensOptic />
+        </div>
         <div className="shell hero-inner">
           <div className="hero-copy">
             <p className="t-label hero-eyebrow" data-reveal>
@@ -90,7 +93,7 @@ export default async function HomePage() {
       </div>
 
       {/* ---------------- 2. ABOUT ---------------- */}
-      <section className="section" id="about" data-bg="sand">
+      <section className="section about-section" id="about" data-bg="sand">
         <div className="shell lede-grid">
           <div>
             <span className="t-label" data-reveal>
@@ -100,6 +103,7 @@ export default async function HomePage() {
             <h2 className="t-h2" data-split="lines">
               A content studio that thinks like a <span className="italic-serif">brand partner</span>
             </h2>
+            <DroneScout />
           </div>
           <div data-reveal>
             <p className="t-lead" data-highlight>
