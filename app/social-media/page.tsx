@@ -46,11 +46,11 @@ const influencerScope = [
 const socialFaqs = [
   {
     q: 'What does a social media management retainer include?',
-    a: 'A monthly retainer covers strategy and content calendar, scheduled shoot days, post and reel design, copywriting, scheduling and publishing, community management, and a performance report at the end of each cycle. Paid campaign management is included from the Growth package upward.',
+    a: 'A monthly retainer covers strategy and content calendar, scheduled shoot days, post and reel design, copywriting, scheduling and publishing, community management, and a performance report at the end of each cycle. Paid campaign management can be added on request.',
   },
   {
     q: 'How many posts and reels do we get each month?',
-    a: 'Our Starter package delivers 8 posts and 4 reels a month, and Growth delivers 16 posts and 10 reels. Volumes are adjusted to your platforms and launch calendar after a discovery call.',
+    a: 'Volumes typically range from 8 posts and 4 reels to 16 posts and 10 reels a month, adjusted to your platforms and launch calendar after a discovery call.',
   },
   {
     q: 'Do you handle influencer campaigns as well?',
@@ -99,8 +99,8 @@ export default function SocialMediaPage() {
             lede={`Managed social media and creator campaigns for brands in ${site.city} and across India — planned, shot, designed, published and reported by one team.`}
           />
           <div className="hero-actions" data-reveal>
-            <Link href="/packages" className="btn btn-primary">
-              See retainer packages
+            <Link href="/contact" className="btn btn-primary">
+              Get a retainer quote
             </Link>
             <Link href="/contact" className="btn btn-ghost">
               Talk to us

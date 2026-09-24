@@ -6,7 +6,6 @@ import CardCorners from '@/components/CardCorners';
 import CtaBand from '@/components/CtaBand';
 import FaqList from '@/components/FaqList';
 import Testimonials from '@/components/Testimonials';
-import PackagesGrid from '@/components/PackagesGrid';
 import GalleryEditorial from '@/components/GalleryEditorial';
 import JsonLd from '@/components/JsonLd';
 import { faqSchema } from '@/lib/seo';
@@ -368,30 +367,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------------- 8. PACKAGES ---------------- */}
-      <section className="section on-ink" id="packages">
-        <div className="shell">
-          <SectionHead
-            chapter="06"
-            label="Packages"
-            title={
-              <>
-                Retainers that scale with <span className="italic-serif">your calendar</span>
-              </>
-            }
-            lede="Transparent starting points. Every package is adjusted to your shoot volume and deliverables after a discovery call."
-          />
-          <PackagesGrid />
-          <p className="t-lead" style={{ marginTop: '2.5rem' }} data-from="bottom">
-            Need something outside these tiers?{' '}
-            <Link href="/contact" style={{ textDecoration: 'underline' }}>
-              Ask for a custom quote
-            </Link>
-            .
-          </p>
-        </div>
-      </section>
-
       {/* ---------------- 9. TESTIMONIALS ---------------- */}
       <Testimonials items={testimonials} />
 
@@ -399,7 +374,7 @@ export default async function HomePage() {
       <section className="section">
         <div className="shell">
           <SectionHead
-            chapter="07"
+            chapter="06"
             label="FAQ"
             title={
               <>

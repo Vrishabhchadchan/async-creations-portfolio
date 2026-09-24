@@ -44,7 +44,6 @@ export const nav = [
   { label: 'Services', href: '/services' },
   { label: 'Real Estate', href: '/real-estate' },
   { label: 'Social & Influencer', href: '/social-media' },
-  { label: 'Packages', href: '/packages' },
   { label: 'Testimonials', href: '/testimonials' },
   { label: 'About', href: '/about' },
 ] as const;
@@ -297,56 +296,6 @@ export const processSteps = [
   { step: '05', title: 'Launch & Grow', body: 'Publishing, campaign support and reporting — then we use what the numbers say to shape the next cycle.' },
 ];
 
-export const packages = [
-  {
-    name: 'Starter',
-    tagline: 'For new brands finding their footing',
-    price: 'From ₹25,000',
-    period: 'per month',
-    features: [
-      '1 shoot day per month',
-      '8 social posts + 4 reels',
-      'Basic content calendar',
-      'Caption writing and hashtags',
-      'Monthly performance snapshot',
-    ],
-    cta: 'Start here',
-    featured: false,
-  },
-  {
-    name: 'Growth',
-    tagline: 'For brands publishing every week',
-    price: 'From ₹55,000',
-    period: 'per month',
-    features: [
-      '2 shoot days per month',
-      '16 posts + 10 reels',
-      'Full strategy and content calendar',
-      'Motion graphics and design assets',
-      'Community management',
-      'Paid campaign setup and reporting',
-    ],
-    cta: 'Most popular',
-    featured: true,
-  },
-  {
-    name: 'Signature',
-    tagline: 'For launches, developers and campaigns',
-    price: 'Custom',
-    period: 'per project',
-    features: [
-      'Unlimited shoot days in scope',
-      'Drone, real estate and product coverage',
-      'Brand identity and creative design',
-      'Influencer and creator campaigns',
-      'Dedicated strategist and editor',
-      'Full campaign reporting',
-    ],
-    cta: 'Request a quote',
-    featured: false,
-  },
-];
-
 export const testimonials = [
   {
     quote:
@@ -385,7 +334,7 @@ export const faqs = [
   },
   {
     q: 'How much does a photography or videography shoot cost?',
-    a: 'Shoot pricing depends on days, crew, locations and deliverables. Monthly content retainers start from ₹25,000 and full project packages are quoted after a discovery call. Share your brief and we will send a written quote.',
+    a: 'Shoot pricing depends on days, crew, locations and deliverables. Monthly content retainers start from ₹25,000 and full projects are quoted after a discovery call. Share your brief and we will send a written quote.',
   },
   {
     q: 'Do you offer drone shoots for real estate projects?',
@@ -393,7 +342,7 @@ export const faqs = [
   },
   {
     q: 'How quickly are photos and videos delivered?',
-    a: 'Reels and short-form edits are typically delivered within three to five working days. Full photo sets take about a week, and long-form brand films or campaign packages run on a timeline agreed before the shoot.',
+    a: 'Reels and short-form edits are typically delivered within three to five working days. Full photo sets take about a week, and long-form brand films or campaigns run on a timeline agreed before the shoot.',
   },
   {
     q: 'Can you manage our social media accounts every month?',
