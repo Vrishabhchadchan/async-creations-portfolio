@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import LensOptic from '@/components/LensOptic';
+import Lens3D from '@/components/Lens3D';
 import DroneScout from '@/components/DroneScout';
 import SectionHead from '@/components/SectionHead';
 import CardCorners from '@/components/CardCorners';
@@ -36,7 +36,7 @@ export default async function HomePage() {
       {/* ---------------- 1. HERO ---------------- */}
       <section className="hero">
         <div className="hero-optic" aria-hidden="true">
-          <LensOptic />
+          <Lens3D />
         </div>
         <div className="shell hero-inner">
           <div className="hero-copy">

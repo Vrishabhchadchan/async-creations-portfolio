@@ -22,7 +22,8 @@ function ticks(radius: number, length: number, count: number, every = 1) {
     const a = (i / count) * Math.PI * 2;
     const cos = Math.cos(a);
     const sin = Math.sin(a);
-    d += `M${C + cos * radius},${C + sin * radius}L${C + cos * (radius + length)},${C + sin * (radius + length)}`;
+    const f = (n: number) => n.toFixed(2);
+    d += `M${f(C + cos * radius)},${f(C + sin * radius)}L${f(C + cos * (radius + length))},${f(C + sin * (radius + length))}`;
   }
   return d;
 }
