@@ -629,6 +629,9 @@
 
 @media (min-width: 768px) {
   .hero-decor {
+    /* One source for the print width: the frame's corner labels slide
+       inward past whatever the cards occupy. */
+    --hframe-w: clamp(96px, 8.2vw, 128px);
     display: block;
     position: absolute;
     inset: 0;
@@ -708,9 +711,10 @@
     white-space: nowrap;
   }
 
+  /* Past the top-left print, so the label and the card never collide. */
   .hvf-rec {
     top: -2px;
-    left: 34px;
+    left: calc(var(--hframe-w) + 34px);
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
@@ -725,15 +729,16 @@
     animation: vf-blink 1.4s steps(1, end) infinite;
   }
 
+  /* Likewise past the bottom-right print. */
   .hvf-readout {
     bottom: -2px;
-    right: 34px;
+    right: calc(var(--hframe-w) + 34px);
   }
 
   /* ---- Floating work frames ---- */
   .hframe {
     position: absolute;
-    width: clamp(126px, 11vw, 170px);
+    width: var(--hframe-w);
     margin: 0;
     padding: 6px 6px 0;
     background: #fdfbf7;
@@ -758,31 +763,33 @@
 
   .hframe figcaption {
     font-family: var(--font-mono);
-    font-size: 0.55rem;
-    letter-spacing: 0.16em;
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-muted);
-    padding: 0.5rem 0.1rem 0.45rem;
+    padding: 0.4rem 0.1rem 0.35rem;
     white-space: nowrap;
   }
 
-  /* Pinned to the corners of the viewfinder frame. The lens runs along
-     that frame's diagonal, so the three cards ring it without ever
-     crossing its centre, and the bottom-right corner stays free for the
-     exposure readout. */
+  /* A loose ring around the lens, positioned as percentages of the
+     viewfinder frame so the clearances hold at every desktop width. The
+     lens sweeps the frame's diagonal from rear (top-left) to front glass
+     (bottom-right), which leaves three pockets: above the rear, below the
+     barrel on the left, and the strip under the front element. Top-right
+     is deliberately empty — the lens shoulder reaches too far into it. */
   .hframe.f1 {
-    top: 7%;
+    top: 2.5%;
+    left: 1%;
+  }
+
+  .hframe.f3 {
+    bottom: 4%;
     left: 1%;
   }
 
   .hframe.f2 {
-    top: 12%;
+    bottom: 0;
     right: 0;
-  }
-
-  .hframe.f3 {
-    bottom: 9%;
-    left: 6%;
   }
 
   /* ---- Rotating availability badge ----
@@ -791,7 +798,7 @@
   .hero-badge {
     display: none;
     position: absolute;
-    left: 42%;
+    left: 38%;
     bottom: 6%;
     width: 120px;
     height: 120px;

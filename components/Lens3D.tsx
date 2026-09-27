@@ -86,16 +86,32 @@ export default function Lens3D() {
         // the canvas, which spans the whole hero so the lens has room to
         // dive. Measured from the layout, so it holds at any width — the
         // offsets differ with viewport height as well as width.
+        /** Frame width the lens size is tuned against. Narrower than this and the
+         * camera pulls back, which is what keeps the corner prints clear at
+         * 1024 and 1280. */
+        const REF_FRAME = 650;
+
         const aim = () => {
-          if (!wide.matches) return lens.setAim(0.26, 0);
+          if (!wide.matches) {
+            lens.setFit(1);
+            return lens.setAim(0.26, 0);
+          }
           const frame = el.closest('.hero')?.querySelector('.hvf');
           if (!frame) return lens.setAim(0.26, 0);
           const c = el.getBoundingClientRect();
           const f = frame.getBoundingClientRect();
           if (!c.width || !c.height) return;
+          // Biased slightly above the frame's centre. The barrel runs from
+          // rear at the top-left to front glass at the bottom-right, so a
+          // dead-centre aim leaves no strip under the front element for the
+          // third work frame. The bias is what buys that strip.
+          const RISE = 0.1;
+          // Narrower viewfinders pull the camera back rather than letting
+          // the barrel swallow the frame and the prints around it.
+          lens.setFit(Math.min(1, f.width / REF_FRAME));
           lens.setAim(
             (f.left + f.width / 2 - (c.left + c.width / 2)) / c.width,
-            (f.top + f.height / 2 - (c.top + c.height / 2)) / c.height,
+            (f.top + f.height * (0.5 - RISE) - (c.top + c.height / 2)) / c.height,
           );
         };
 

@@ -23,6 +23,12 @@ export interface LensScene {
    * so the lens stays centred in the viewfinder frame at any width.
    */
   setAim(x: number, y: number): void;
+  /**
+   * How much of the reference frame width the lens has to work with, 0.5–1.
+   * Below 1, the camera pulls back so the barrel keeps the same share of a
+   * narrower viewfinder instead of swamping it.
+   */
+  setFit(scale: number): void;
   resize(): void;
   onContextLost(cb: () => void): void;
   dispose(): void;
@@ -49,8 +55,8 @@ const IRIS_NARROW = 30;
 const TILT_MAX = 10;
 /** Hard ceiling on the resting silhouette, tilt and idle drift combined.
  *  Without it the two stack and the barrel swings into the work frames. */
-const YAW_SAFE = 9;
-const PITCH_SAFE = 6;
+const YAW_SAFE = 6;
+const PITCH_SAFE = 4;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -596,9 +602,12 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     return track(new THREE.CanvasTexture(canvas));
   })();
   const shadowMat = new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false });
-  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(5.8, 2.3), shadowMat);
+  // Kept tight and high enough that the gradient completes well inside the
+  // canvas. A wider blob projects past the canvas's bottom edge at this
+  // camera angle and the cut shows as a hard line across the hero.
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.35), shadowMat);
   shadow.rotation.x = -Math.PI / 2;
-  shadow.position.set(0, -1.72, 0.35);
+  shadow.position.set(0, -1.5, 0.1);
   scene.add(shadow);
   disposables.push(shadow.geometry, shadowMat);
 
@@ -622,6 +631,7 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
    *  layout. The x default matches the old hard-coded right-column aim. */
   let aimX = 0.26;
   let aimY = 0;
+  let fit = 1;
 
   function frame(now: number) {
     raf = requestAnimationFrame(frame);
@@ -653,7 +663,9 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     const el = rad(lerp(13, 3, e));
     // 7.8 rather than 9.4 at rest: the lens reads about a fifth larger and
     // holds the viewfinder frame as its focal point.
-    const dist = lerp(7.8, 4.1, e) * lerp(1, 0.66, blockFraming);
+    // 0.795 on mobile is 7.8 x 0.795 = 6.2, which is what 9.4 x 0.66 gave
+    // before the desktop lens was enlarged: the phone framing is unchanged.
+    const dist = (lerp(7.8, 4.1, e) / fit) * lerp(1, 0.795, blockFraming);
     const zc = lerp(0.35, 2.15 + front.position.z, e);
     look.set(0, 0, zc);
     camera.position.set(
@@ -681,8 +693,11 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
       const idleX = Math.sin(elapsed * 0.27 + 1.1) * idleAmt * 0.6;
       // Clamped after summing, not per term: tilt and idle drift used to
       // stack, and the combined swing is what reaches the work frames.
-      root.rotation.y = clamp(pointer.sx * rad(TILT_MAX) + idleY, -rad(YAW_SAFE), rad(YAW_SAFE));
-      root.rotation.x = clamp(-pointer.sy * rad(TILT_MAX) + idleX, -rad(PITCH_SAFE), rad(PITCH_SAFE));
+      // The phone has no frames beside the lens, so it keeps the full range.
+      const yawCap = blockFraming ? rad(TILT_MAX * 1.4) : rad(YAW_SAFE);
+      const pitchCap = blockFraming ? rad(TILT_MAX * 1.4) : rad(PITCH_SAFE);
+      root.rotation.y = clamp(pointer.sx * rad(TILT_MAX) + idleY, -yawCap, yawCap);
+      root.rotation.x = clamp(-pointer.sy * rad(TILT_MAX) + idleX, -pitchCap, pitchCap);
     }
 
     // Light sweep: a slow pass across the glass roughly every 5s, idle
@@ -745,6 +760,9 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     setAim(x, y) {
       aimX = x;
       aimY = y;
+    },
+    setFit(scale) {
+      fit = clamp(scale, 0.5, 1);
     },
     setActive(on) {
       active = on;
