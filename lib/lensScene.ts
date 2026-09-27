@@ -17,6 +17,12 @@ export interface LensScene {
   setActive(on: boolean): void;
   /** true when the lens has its own block (small screens). */
   setFraming(block: boolean): void;
+  /**
+   * Where the lens rests inside the canvas, as a fraction of the canvas
+   * size away from its centre. The caller measures this from the layout,
+   * so the lens stays centred in the viewfinder frame at any width.
+   */
+  setAim(x: number, y: number): void;
   resize(): void;
   onContextLost(cb: () => void): void;
   dispose(): void;
@@ -41,9 +47,14 @@ const IRIS_WIDE = 5;
 const IRIS_NARROW = 30;
 /** Maximum lens tilt toward the pointer or device, in degrees. */
 const TILT_MAX = 10;
+/** Hard ceiling on the resting silhouette, tilt and idle drift combined.
+ *  Without it the two stack and the barrel swings into the work frames. */
+const YAW_SAFE = 9;
+const PITCH_SAFE = 6;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const rad = (deg: number) => (deg * Math.PI) / 180;
 
@@ -578,16 +589,16 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
   const shadowTex = (() => {
     const { canvas, ctx } = makeCanvas(256, 256);
     const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    g.addColorStop(0, 'rgba(40,24,12,0.34)');
+    g.addColorStop(0, 'rgba(40,24,12,0.46)');
     g.addColorStop(1, 'rgba(40,24,12,0)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 256, 256);
     return track(new THREE.CanvasTexture(canvas));
   })();
   const shadowMat = new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false });
-  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 1.5), shadowMat);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(5.8, 2.3), shadowMat);
   shadow.rotation.x = -Math.PI / 2;
-  shadow.position.set(0, -1.65, 0.4);
+  shadow.position.set(0, -1.72, 0.35);
   scene.add(shadow);
   disposables.push(shadow.geometry, shadowMat);
 
@@ -607,6 +618,10 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
   let viewH = 1;
   /** 1 while the lens sits in its own mobile block, 0 in the desktop column. */
   let blockFraming = 0;
+  /** Resting offset from the canvas centre, set by the caller from the
+   *  layout. The x default matches the old hard-coded right-column aim. */
+  let aimX = 0.26;
+  let aimY = 0;
 
   function frame(now: number) {
     raf = requestAnimationFrame(frame);
@@ -636,7 +651,9 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     // Camera: swings from a three-quarter view toward head-on and dollies in
     const az = rad(lerp(-26, -5, e));
     const el = rad(lerp(13, 3, e));
-    const dist = lerp(9.4, 4.1, e) * lerp(1, 0.66, blockFraming);
+    // 7.8 rather than 9.4 at rest: the lens reads about a fifth larger and
+    // holds the viewfinder frame as its focal point.
+    const dist = lerp(7.8, 4.1, e) * lerp(1, 0.66, blockFraming);
     const zc = lerp(0.35, 2.15 + front.position.z, e);
     look.set(0, 0, zc);
     camera.position.set(
@@ -645,9 +662,12 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
       zc + Math.cos(az) * Math.cos(el) * dist,
     );
     camera.fov = lerp(30, 23, e);
-    // The canvas spans the whole hero, but the lens rests in its right-hand
-    // column (centre at 76% of the width) and drifts to centre as it dives.
-    camera.setViewOffset(viewW, viewH, -viewW * lerp(0.26, 0, e) * lerp(1, 0.34, blockFraming), 0, viewW, viewH);
+    // The canvas spans the whole hero, but the lens rests inside the
+    // viewfinder frame on the right and drifts to centre as it dives. The
+    // mobile block keeps its own fixed aim.
+    const ax = blockFraming ? 0.26 * 0.34 : aimX;
+    const ay = blockFraming ? 0 : aimY;
+    camera.setViewOffset(viewW, viewH, -viewW * ax * (1 - e), -viewH * ay * (1 - e), viewW, viewH);
     camera.lookAt(look);
 
     // The lens leans toward the pointer (or the phone's tilt). Capped at
@@ -659,8 +679,10 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
       const idleAmt = hasInput ? 0.02 : 0.055;
       const idleY = Math.sin(elapsed * 0.35) * idleAmt;
       const idleX = Math.sin(elapsed * 0.27 + 1.1) * idleAmt * 0.6;
-      root.rotation.y = pointer.sx * rad(TILT_MAX) + idleY;
-      root.rotation.x = -pointer.sy * rad(TILT_MAX) + idleX;
+      // Clamped after summing, not per term: tilt and idle drift used to
+      // stack, and the combined swing is what reaches the work frames.
+      root.rotation.y = clamp(pointer.sx * rad(TILT_MAX) + idleY, -rad(YAW_SAFE), rad(YAW_SAFE));
+      root.rotation.x = clamp(-pointer.sy * rad(TILT_MAX) + idleX, -rad(PITCH_SAFE), rad(PITCH_SAFE));
     }
 
     // Light sweep: a slow pass across the glass roughly every 5s, idle
@@ -719,6 +741,10 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     },
     setFraming(block) {
       blockFraming = block ? 1 : 0;
+    },
+    setAim(x, y) {
+      aimX = x;
+      aimY = y;
     },
     setActive(on) {
       active = on;

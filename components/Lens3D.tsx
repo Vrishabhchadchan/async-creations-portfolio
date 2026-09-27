@@ -81,11 +81,35 @@ export default function Lens3D() {
         // 768 is where the hero becomes a two-column desktop layout, so the
         // lens takes its column framing from the same breakpoint.
         const wide = window.matchMedia('(min-width: 768px)');
-        const applyFraming = () => lens.setFraming(!wide.matches);
+
+        // Aim: keep the lens centred in the viewfinder frame rather than in
+        // the canvas, which spans the whole hero so the lens has room to
+        // dive. Measured from the layout, so it holds at any width — the
+        // offsets differ with viewport height as well as width.
+        const aim = () => {
+          if (!wide.matches) return lens.setAim(0.26, 0);
+          const frame = el.closest('.hero')?.querySelector('.hvf');
+          if (!frame) return lens.setAim(0.26, 0);
+          const c = el.getBoundingClientRect();
+          const f = frame.getBoundingClientRect();
+          if (!c.width || !c.height) return;
+          lens.setAim(
+            (f.left + f.width / 2 - (c.left + c.width / 2)) / c.width,
+            (f.top + f.height / 2 - (c.top + c.height / 2)) / c.height,
+          );
+        };
+
+        const applyFraming = () => {
+          lens.setFraming(!wide.matches);
+          aim();
+        };
         applyFraming();
         wide.addEventListener('change', applyFraming);
 
-        const ro = new ResizeObserver(() => lens.resize());
+        const ro = new ResizeObserver(() => {
+          lens.resize();
+          aim();
+        });
         ro.observe(el);
 
         const io = new IntersectionObserver(([entry]) => lens.setActive(entry.isIntersecting), {
