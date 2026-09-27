@@ -99,10 +99,7 @@ export default function SocialMediaPage() {
             lede={`Managed social media and creator campaigns for brands in ${site.city} and across India — planned, shot, designed, published and reported by one team.`}
           />
           <div className="hero-actions" data-reveal>
-            <Link href="/packages" className="btn btn-primary">
-              See retainer packages
-            </Link>
-            <Link href="/contact" className="btn btn-ghost">
+            <Link href="/contact" className="btn btn-primary">
               Talk to us
             </Link>
           </div>

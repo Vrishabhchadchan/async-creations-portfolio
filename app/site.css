@@ -34,31 +34,10 @@
   min-height: 44px;
 }
 
-.brand-mark {
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-}
-
-.brand-word {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-
-.brand-word b {
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-}
-
-.brand-word span {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--color-muted);
+.brand-logo {
+  display: block;
+  height: 46px;
+  width: auto;
 }
 
 .nav-desk {
@@ -1395,244 +1374,304 @@
   -webkit-text-stroke: 1.5px var(--color-bone);
 }
 
-/* ---------------- Editorial spread (home) ----------------
-   A repeating seven-frame rhythm over a 12-column grid. Column span,
-   aspect ratio and vertical offset all vary, so the page reads as a
-   laid-out spread instead of a contact sheet of equal tiles. */
-.spread {
+/* ---------------- Work cards (home page + work page) ----------------
+   One card size everywhere: 442 × 600, three across at desktop widths. */
+.work-grid {
+  --card-w: 442px;
+  --card-gap: 32px;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: clamp(12px, 1.5vw, 26px);
-  align-items: start;
-}
-
-.frame {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--card-gap);
+  width: min(calc(3 * var(--card-w) + 2 * var(--card-gap)), calc(100vw - 40px));
   position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+/* Two across on tablets. Cards span 2 of 4 tracks so a leftover card on
+   the last row can sit in the middle instead of hugging the left edge. */
+@media (min-width: 700px) {
+  .work-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .work-grid > * {
+    grid-column: span 2;
+  }
+
+  .work-grid > :last-child:nth-child(2n + 1) {
+    grid-column: 2 / span 2;
+  }
+}
+
+/* Three across on desktop, on 6 tracks, with any leftover cards centred. */
+@media (min-width: 1100px) {
+  .work-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .work-grid > :last-child:nth-child(2n + 1) {
+    grid-column: span 2;
+  }
+
+  .work-grid > :last-child:nth-child(3n + 1) {
+    grid-column: 3 / span 2;
+  }
+
+  .work-grid > :nth-last-child(2):nth-child(3n + 1) {
+    grid-column: 2 / span 2;
+  }
+
+  .work-grid > :last-child:nth-child(3n + 2) {
+    grid-column: 4 / span 2;
+  }
+}
+
+.wcard {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 442 / 600;
   margin: 0;
-  grid-column: span 12;
-  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0b0b0e;
+  color: #fff;
+  box-shadow: 0 22px 44px -26px rgba(0, 0, 0, 0.65);
+  /* No transform transition here: the scroll reveal animates transform
+     with GSAP, and a CSS transition on the same property fights it. */
+  transition: box-shadow 0.55s ease;
 }
 
-@media (min-width: 760px) {
-  .frame {
-    grid-column: span 6;
-    aspect-ratio: 4 / 5;
-  }
-
-  /* 1 — full-bleed opener */
-  .frame:nth-child(7n + 1) {
-    grid-column: span 12;
-    aspect-ratio: 21 / 9;
-  }
-
-  /* 2 & 3 — a tall pair, the second dropped for rhythm */
-  .frame:nth-child(7n + 2) {
-    grid-column: span 7;
-    aspect-ratio: 5 / 4;
-  }
-
-  .frame:nth-child(7n + 3) {
-    grid-column: span 5;
-    aspect-ratio: 3 / 4;
-    margin-top: clamp(1.5rem, 4vw, 4rem);
-  }
-
-  /* 4 & 5 — reversed weighting */
-  .frame:nth-child(7n + 4) {
-    grid-column: span 5;
-    aspect-ratio: 4 / 5;
-  }
-
-  .frame:nth-child(7n + 5) {
-    grid-column: span 7;
-    aspect-ratio: 16 / 11;
-    margin-top: clamp(-3rem, -2vw, -1rem);
-  }
-
-  /* 6 & 7 — an inset square beside a wide closer */
-  .frame:nth-child(7n + 6) {
-    grid-column: span 4;
-    aspect-ratio: 1;
-    margin-top: clamp(1rem, 3vw, 3rem);
-  }
-
-  .frame:nth-child(7n + 7) {
-    grid-column: span 8;
-    aspect-ratio: 16 / 9;
-  }
+.wcard:hover {
+  box-shadow: 0 34px 60px -22px rgba(0, 0, 0, 0.8);
 }
 
-.frame-media {
+.wcard-art {
   position: absolute;
   inset: 0;
-  overflow: hidden;
-  border-radius: var(--radius-card);
-  background: var(--color-bone-3);
+  z-index: -2;
+  background: var(--art, #111);
 }
 
-.frame-media img {
-  width: 100%;
-  height: 100%;
+.wcard-art img {
   object-fit: cover;
-  transition: transform 0.9s var(--ease-out-expo), filter 0.6s var(--ease-out-soft);
+  transition: transform 1.3s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.frame:hover .frame-media img {
-  transform: scale(1.04);
+.wcard:hover .wcard-art img {
+  transform: scale(1.06);
 }
 
-/* Caption sits under the frame rather than over the photograph — an
-   overlay was dimming the very images it was labelling. */
-.frame-cap {
+/* Legibility scrim: dark at the top for the title, clear through the
+   middle for the artwork, dark again at the bottom for the copy. */
+.wcard::before {
+  content: '';
   position: absolute;
-  top: calc(100% + 0.85rem);
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 6, 8, 0.5) 0%,
+    rgba(6, 6, 8, 0.08) 34%,
+    rgba(6, 6, 8, 0.5) 62%,
+    rgba(6, 6, 8, 0.92) 100%
+  );
+}
+
+.wcard-mega {
+  position: absolute;
+  top: 7cqw;
+  left: 5cqw;
+  right: 5cqw;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-condensed), Impact, 'Arial Narrow Bold', sans-serif;
+  font-weight: 400;
+  font-size: 16.8cqw;
+  line-height: 0.92;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: #fff;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Optional sticker-style subject: a transparent PNG with a white edge. */
+.wcard-cutout {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: 78%;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff)
+    drop-shadow(0 -2px 0 #fff) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.5));
+}
+
+.wcard-body {
+  position: absolute;
   left: 0;
   right: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.frame-cat {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-clay-deep);
-}
-
-.on-ink .frame-cat {
-  color: var(--color-clay-light);
-}
-
-.frame-cap b {
-  font-family: var(--font-display);
-  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
-  font-weight: 500;
-  line-height: 1.25;
-}
-
-/* The captions live outside the frame box, so the grid needs room. */
-.spread {
-  row-gap: clamp(4rem, 6vw, 6.5rem);
-}
-
-/* ---------------- Portfolio filters ---------------- */
-.filters {
-  display: flex;
-  flex-wrap: wrap;
+  bottom: 0;
+  z-index: 1;
+  display: grid;
   gap: 0.6rem;
-  margin-bottom: 1.75rem;
+  justify-items: start;
+  padding: 0 6.6cqw 7cqw;
 }
 
-.filter {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  min-height: 44px;
-  padding: 0.55rem 1.15rem;
+.wcard-name {
+  margin: 0;
   font-family: var(--font-sans);
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--color-ink-3);
-  background: transparent;
+  font-size: 6.4cqw;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+}
+
+.wcard-tag {
+  margin: 0;
+  font-size: 3.9cqw;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.wcard-btn {
+  position: static;
+  margin-top: 0.7rem;
+  padding: 0.95em 1.9em;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 3.7cqw;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-a, #ff5a1f), var(--accent-b, #ff8a3d));
+  box-shadow: 0 12px 26px -12px var(--accent-a, #ff5a1f);
+  transition:
+    filter 0.3s ease,
+    transform 0.3s ease;
+}
+
+/* Stretch the button's link over the whole card. */
+.wcard-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.wcard:hover .wcard-btn {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+}
+
+.wcard-btn:focus-visible {
+  outline: none;
+}
+
+.wcard:has(.wcard-btn:focus-visible) {
+  outline: 3px solid var(--accent-b, #ff8a3d);
+  outline-offset: 3px;
+}
+
+.wcard-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* A piece of work: photograph full-bleed, caption at the foot. */
+.wcard-shot .wcard-art {
+  z-index: -2;
+}
+
+.wcard-shot::before {
+  background: linear-gradient(180deg, rgba(6, 6, 8, 0) 45%, rgba(6, 6, 8, 0.88) 100%);
+}
+
+.wcard-shot .wcard-body {
+  gap: 0.35rem;
+}
+
+.wcard-cat {
+  font-family: var(--font-mono);
+  font-size: 3.1cqw;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.wcard-shot-title {
+  font-family: var(--font-sans);
+  font-size: 5.6cqw;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ---------------- Work page sections ---------------- */
+.work-nav {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 30;
+  background: color-mix(in srgb, var(--color-bone) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-block: 1px solid var(--color-line);
+}
+
+.work-nav-inner {
+  display: flex;
+  gap: 0.5rem;
+  padding-block: 0.75rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.work-nav-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.work-pill {
+  flex: none;
+  padding: 0.55rem 1rem;
   border: 1px solid var(--color-line);
   border-radius: 999px;
-  cursor: pointer;
-  touch-action: manipulation;
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: inherit;
   transition:
-    color 0.3s var(--ease-out-soft),
-    border-color 0.3s var(--ease-out-soft),
-    background-color 0.3s var(--ease-out-soft);
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
-.filter:hover {
-  border-color: var(--color-clay);
-  color: var(--color-ink);
+.work-pill:hover {
+  border-color: currentColor;
 }
 
-.filter.is-on {
+.work-pill[aria-current='page'] {
   background: var(--color-ink);
   border-color: var(--color-ink);
   color: var(--color-bone);
 }
 
-.filter-count {
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  opacity: 0.6;
+.work-page {
+  padding-bottom: clamp(3rem, 6vw, 5rem);
 }
 
-.filter-status {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.work-empty {
+  max-width: 44ch;
+  margin: clamp(2rem, 5vw, 4rem) auto;
+  text-align: center;
   color: var(--color-muted);
-  margin: 0 0 2.5rem;
-}
-
-/* ---------------- Portfolio grid ---------------- */
-.shots {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: clamp(1.25rem, 2vw, 2rem) clamp(1rem, 1.6vw, 1.5rem);
-}
-
-.shot {
-  position: relative;
-  margin: 0;
-}
-
-.shot-media {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border-radius: var(--radius-card);
-  background: var(--color-bone-3);
-}
-
-/* Every third tile runs landscape, so the grid has rhythm without
-   needing per-photo art direction. */
-.shot:nth-child(3n + 1) .shot-media {
-  aspect-ratio: 3 / 4;
-}
-
-.shot:nth-child(5n + 3) .shot-media {
-  aspect-ratio: 1;
-}
-
-.shot-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.9s var(--ease-out-expo);
-}
-
-.shot:hover .shot-media img {
-  transform: scale(1.05);
-}
-
-.shot-cap {
-  display: flex;
-  flex-direction: column;
-  gap: 0.28rem;
-  padding-top: 0.85rem;
-}
-
-.shot-cat {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-clay-deep);
-}
-
-.shot-cap b {
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 500;
-  line-height: 1.25;
 }
 
 /* ---------------- Gallery ---------------- */

@@ -6,11 +6,10 @@ import CardCorners from '@/components/CardCorners';
 import CtaBand from '@/components/CtaBand';
 import FaqList from '@/components/FaqList';
 import Testimonials from '@/components/Testimonials';
-import PackagesGrid from '@/components/PackagesGrid';
-import GalleryEditorial from '@/components/GalleryEditorial';
+import { ServiceCard } from '@/components/WorkCards';
+import { WORK_SECTIONS } from '@/lib/workSections';
 import JsonLd from '@/components/JsonLd';
 import { faqSchema } from '@/lib/seo';
-import { getManifest } from '@/lib/manifest';
 import { site, services, whyAsync, processSteps as steps, stats } from '@/lib/site';
 
 const MARQUEE = [
@@ -26,9 +25,7 @@ const MARQUEE = [
   'Motion Graphics',
 ];
 
-export default async function HomePage() {
-  const items = await getManifest();
-
+export default function HomePage() {
   return (
     <>
       <JsonLd data={faqSchema()} />
@@ -217,7 +214,12 @@ export default async function HomePage() {
             }
             lede="Event coverage, brand launches and campaign photography shot across Pune and Maharashtra."
           />
-          <GalleryEditorial items={items.slice(0, 7)} />
+          <div className="work-grid" data-reveal-stagger>
+            {WORK_SECTIONS.map((section) => (
+              <ServiceCard key={section.slug} section={section} href={`/portfolio/${section.slug}`} />
+            ))}
+          </div>
+
           <div style={{ marginTop: '3rem' }} data-reveal>
             <Link href="/portfolio" className="btn btn-ghost">
               View the full portfolio
@@ -365,30 +367,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------------- 8. PACKAGES ---------------- */}
-      <section className="section on-ink" id="packages">
-        <div className="shell">
-          <SectionHead
-            chapter="06"
-            label="Packages"
-            title={
-              <>
-                Retainers that scale with <span className="italic-serif">your calendar</span>
-              </>
-            }
-            lede="Transparent starting points. Every package is adjusted to your shoot volume and deliverables after a discovery call."
-          />
-          <PackagesGrid />
-          <p className="t-lead" style={{ marginTop: '2.5rem' }} data-from="bottom">
-            Need something outside these tiers?{' '}
-            <Link href="/contact" style={{ textDecoration: 'underline' }}>
-              Ask for a custom quote
-            </Link>
-            .
-          </p>
-        </div>
-      </section>
-
       {/* ---------------- 9. TESTIMONIALS ---------------- */}
       <Testimonials />
 
@@ -396,7 +374,7 @@ export default async function HomePage() {
       <section className="section">
         <div className="shell">
           <SectionHead
-            chapter="07"
+            chapter="06"
             label="FAQ"
             title={
               <>

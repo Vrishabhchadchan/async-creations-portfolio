@@ -52,7 +52,7 @@ export function organizationSchema() {
     telephone: site.phone,
     priceRange: site.priceRange,
     image: `${SITE_URL}/opengraph-image`,
-    logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/icon/logo-icon-400.png` },
+    logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/icon/logo-mark-400.png` },
     address: {
       '@type': 'PostalAddress',
       addressLocality: site.city,

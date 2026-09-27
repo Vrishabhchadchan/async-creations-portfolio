@@ -42,9 +42,6 @@ export const site = {
 export const nav = [
   { label: 'Work', href: '/portfolio' },
   { label: 'Services', href: '/services' },
-  { label: 'Real Estate', href: '/real-estate' },
-  { label: 'Social & Influencer', href: '/social-media' },
-  { label: 'Packages', href: '/packages' },
   { label: 'About', href: '/about' },
 ] as const;
 
@@ -129,6 +126,7 @@ export const services: Service[] = [
       'Interior and exterior photography',
       'Cinematic property walkthrough films',
       'Drone aerials and site context shots',
+      'Panoramic drone shoots',
       'Brochure, hoarding and listing creatives',
       'Project launch campaign assets',
     ],
@@ -294,56 +292,6 @@ export const processSteps = [
   { step: '03', title: 'Production', body: 'Shoot days run to plan, with lighting, sound and direction handled by the team on set.' },
   { step: '04', title: 'Post & Design', body: 'Edit, grade, motion graphics and design, delivered for review in rounds you can actually give notes on.' },
   { step: '05', title: 'Launch & Grow', body: 'Publishing, campaign support and reporting — then we use what the numbers say to shape the next cycle.' },
-];
-
-export const packages = [
-  {
-    name: 'Starter',
-    tagline: 'For new brands finding their footing',
-    price: 'From ₹25,000',
-    period: 'per month',
-    features: [
-      '1 shoot day per month',
-      '8 social posts + 4 reels',
-      'Basic content calendar',
-      'Caption writing and hashtags',
-      'Monthly performance snapshot',
-    ],
-    cta: 'Start here',
-    featured: false,
-  },
-  {
-    name: 'Growth',
-    tagline: 'For brands publishing every week',
-    price: 'From ₹55,000',
-    period: 'per month',
-    features: [
-      '2 shoot days per month',
-      '16 posts + 10 reels',
-      'Full strategy and content calendar',
-      'Motion graphics and design assets',
-      'Community management',
-      'Paid campaign setup and reporting',
-    ],
-    cta: 'Most popular',
-    featured: true,
-  },
-  {
-    name: 'Signature',
-    tagline: 'For launches, developers and campaigns',
-    price: 'Custom',
-    period: 'per project',
-    features: [
-      'Unlimited shoot days in scope',
-      'Drone, real estate and product coverage',
-      'Brand identity and creative design',
-      'Influencer and creator campaigns',
-      'Dedicated strategist and editor',
-      'Full campaign reporting',
-    ],
-    cta: 'Request a quote',
-    featured: false,
-  },
 ];
 
 export const testimonials = [

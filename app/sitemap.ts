@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/site';
+import { WORK_SECTIONS } from '@/lib/workSections';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -10,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/real-estate', priority: 0.9, freq: 'monthly' },
     { path: '/social-media', priority: 0.9, freq: 'monthly' },
     { path: '/portfolio', priority: 0.8, freq: 'weekly' },
-    { path: '/packages', priority: 0.8, freq: 'monthly' },
+    ...WORK_SECTIONS.map((s) => ({ path: `/portfolio/${s.slug}`, priority: 0.7, freq: 'weekly' as const })),
     { path: '/about', priority: 0.7, freq: 'monthly' },
     { path: '/contact', priority: 0.7, freq: 'monthly' },
   ];
