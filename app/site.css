@@ -245,6 +245,29 @@
   }
 }
 
+/* Eyebrow: long form on desktop, short form on phones. */
+.eyebrow-short {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .eyebrow-full {
+    display: none;
+  }
+
+  .eyebrow-short {
+    display: inline;
+  }
+}
+
+/* Long words in hero copy should never be able to push the column wider
+   than its container, whatever the language or viewport. */
+.hero-desc,
+.hero-title {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
 /* ---------------- Viewfinder HUD (small screens) ---------------- */
 .vf {
   position: absolute;

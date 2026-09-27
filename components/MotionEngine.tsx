@@ -100,24 +100,41 @@ export default function MotionEngine() {
          rather than fading in. */
       gsap.utils.toArray<HTMLElement>('[data-split]').forEach((el) => {
         const kind = el.dataset.split || 'lines';
-        const split = new SplitText(el, {
+        // Once the reveal has played, a re-split must land on the finished
+        // state rather than replay from hidden.
+        let played = false;
+
+        const split = SplitText.create(el, {
           type: kind === 'chars' ? 'chars,words' : kind === 'words' ? 'words,lines' : 'lines',
           mask: kind === 'chars' ? 'chars' : kind === 'words' ? 'words' : 'lines',
           linesClass: 'split-line',
+          // Line boxes are measured at split time. Without this they are
+          // frozen: rotate the phone or load at one width and read at
+          // another, and the text keeps the old line breaks and gets
+          // clipped by its own mask. autoSplit re-measures on resize and
+          // after webfonts land.
+          autoSplit: true,
+          onSplit(self) {
+            const targets =
+              kind === 'chars' ? self.chars : kind === 'words' ? self.words : self.lines;
+            if (!targets?.length || played) return undefined;
+
+            // Returning the tween hands it to SplitText, which reverts it
+            // cleanly before each re-split.
+            return gsap.from(targets, {
+              yPercent: 118,
+              rotate: kind === 'chars' ? 6 : 2,
+              duration: kind === 'chars' ? 0.85 : 1.05,
+              ease: 'swift',
+              stagger: kind === 'chars' ? 0.022 : 0.085,
+              scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+              onComplete: () => {
+                played = true;
+              },
+            });
+          },
         });
         splits.push(split);
-
-        const targets = kind === 'chars' ? split.chars : kind === 'words' ? split.words : split.lines;
-        if (!targets?.length) return;
-
-        gsap.from(targets, {
-          yPercent: 118,
-          rotate: kind === 'chars' ? 6 : 2,
-          duration: kind === 'chars' ? 0.85 : 1.05,
-          ease: 'swift',
-          stagger: kind === 'chars' ? 0.022 : 0.085,
-          scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-        });
       });
 
       /* ---------------- Hero exit ----------------

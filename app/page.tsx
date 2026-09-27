@@ -41,8 +41,14 @@ export default function HomePage() {
         </div>
         <div className="shell hero-inner">
           <div className="hero-copy">
+            {/* The full role wraps to two lines below 768px and orphans
+                "· PUNE"; the short form keeps it on one line. Both are in
+                the DOM so the full wording stays crawlable. */}
             <p className="t-label hero-eyebrow" data-reveal>
-              {site.role} · {site.city}
+              <span className="eyebrow-full">
+                {site.role} · {site.city}
+              </span>
+              <span className="eyebrow-short">Studio · {site.city}</span>
             </p>
             <h1 className="t-display hero-title">
               <span className="ln" data-split="chars">
