@@ -33,12 +33,13 @@ export default function HomePage() {
 
       {/* ---------------- 1. HERO ---------------- */}
       <section className="hero">
-        {/* Its own block at the top of the hero on small screens; an
-            absolutely-placed column beside the copy from 1024px up. */}
+        {/* Absolutely placed behind the copy at every size: a bled
+            top-right backdrop on phones, an offset column on desktop. */}
         <div className="hero-optic" aria-hidden="true">
           <Lens3D />
-          <ViewfinderHUD />
         </div>
+        <div className="hero-scrim" aria-hidden="true" />
+        <ViewfinderHUD />
         <div className="shell hero-inner">
           <div className="hero-copy">
             {/* The full role wraps to two lines below 768px and orphans
@@ -72,17 +73,22 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="hero-meta">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <b className="tnum">
-                  <span data-count={s.value}>{s.value}</span>
-                  {s.suffix}
-                </b>
-                <span>{s.label}</span>
-              </div>
-            ))}
-          </div>
+        </div>
+      </section>
+
+      {/* Sits under the hero on phones and inside its lower band on
+          desktop, where the hero's min-height leaves room for it. */}
+      <section className="hero-stats">
+        <div className="shell hero-meta">
+          {stats.map((s) => (
+            <div key={s.label}>
+              <b className="tnum">
+                <span data-count={s.value}>{s.value}</span>
+                {s.suffix}
+              </b>
+              <span>{s.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 

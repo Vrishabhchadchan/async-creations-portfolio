@@ -1,9 +1,10 @@
 /**
- * Camera-viewfinder chrome for the mobile hero block: four corner
- * brackets, a blinking record dot and an exposure readout.
+ * Camera-viewfinder chrome framing the hero: corner brackets at the four
+ * edges, a blinking record dot top-left and an exposure readout top-right,
+ * both clearing the navbar.
  *
- * Decorative only — hidden from assistive tech, and the readout is
- * static set dressing rather than anything the page measures.
+ * Decorative — hidden from assistive tech, and the readout is set dressing
+ * rather than anything the page measures.
  */
 export default function ViewfinderHUD() {
   return (

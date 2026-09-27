@@ -181,71 +181,117 @@
   margin-top: 2rem;
 }
 
-/* ---------------- Hero ---------------- */
+/* ---------------- Hero ----------------
+   Phones get a poster: the lens is a bled backdrop behind the copy, the
+   content is anchored to the bottom, and the stats sit in the band below.
+   From 768px it returns to a two-column layout with the lens beside the
+   text. The mobile breakpoint is 768 to match the design brief. */
 .hero {
   position: relative;
-  min-height: 100svh;
+  height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   padding-top: calc(var(--header-h) + 1.25rem);
-  padding-bottom: 3rem;
+  padding-bottom: 2rem;
   overflow: hidden;
 }
 
-@media (min-width: 1024px) {
-  .hero {
-    flex-direction: row;
-    align-items: center;
-    padding-top: calc(var(--header-h) + 3rem);
-    padding-bottom: 4rem;
-  }
-}
-
-/* On small screens the optic is a faint wash behind the copy; from the
-   desktop breakpoint it moves into its own column beside the text and
-   never overlaps it. */
-/* Below the desktop breakpoint the lens gets its own block at the top of
-   the hero instead of sitting washed-out behind the copy. It bleeds off
-   the right edge so the crop reads as deliberate framing. */
+/* Lens backdrop: bleeds off the top-right corner and covers roughly the
+   top 60% of the screen. Absolute, so the bleed cannot widen the
+   document the way the old negative-margin block could. */
 .hero-optic {
-  position: relative;
+  position: absolute;
+  top: -5svh;
+  right: -24vw;
+  left: 2vw;
+  height: 60svh;
   z-index: 0;
-  height: 53svh;
-  min-height: 300px;
-  margin: 0 calc(var(--shell-gutter, 20px) * -1) 1.5rem;
-  margin-right: -13vw;
   display: grid;
   place-items: center;
   pointer-events: none;
 }
 
-/* "We Create. / You Grow." has to hold two lines without wrapping a third
-   once the lens takes the top half of the hero. 12.5vw keeps the longer
-   line inside the gutters from 320px up. */
-@media (max-width: 1023px) {
-  .hero-title {
-    font-size: clamp(2.35rem, 12.5vw, 4.4rem);
-    max-width: none;
-  }
-
-  .hero-desc {
-    margin-top: 1.25rem;
-    font-size: 1rem;
-  }
-
-  .hero-actions {
-    margin-top: 1.75rem;
-  }
-
-  .hero-meta {
-    margin-top: 2.25rem;
-    padding-top: 1.5rem;
-    gap: 1.5rem 2rem;
-  }
+/* Scrim: clear at the top-right where the lens lives, solid page colour
+   by the bottom-left where the copy sits. Two stops rather than one so
+   the text block sits on flat background instead of a gradient ramp. */
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    205deg,
+    rgba(245, 240, 232, 0) 0%,
+    rgba(245, 240, 232, 0.5) 26%,
+    rgba(245, 240, 232, 0.97) 44%,
+    var(--color-bone) 54%
+  );
 }
 
-/* Eyebrow: long form on desktop, short form on phones. */
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--color-clay);
+}
+
+.hero-title {
+  max-width: 16ch;
+  font-size: clamp(3.2rem, 15vw, 5rem);
+  line-height: 0.94;
+}
+
+.hero-title .ln {
+  display: block;
+}
+
+.hero-desc {
+  margin-top: 1.1rem;
+  max-width: 40ch;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.6rem;
+}
+
+/* Full width and stacked on phones, work first. */
+.hero-actions .btn {
+  width: 100%;
+}
+
+/* Long words in hero copy should never push the column wider than its
+   container, whatever the language or viewport. */
+.hero-desc,
+.hero-title {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+/* Eyebrow: long form from 768px, short form on phones. */
 .eyebrow-short {
   display: none;
 }
@@ -260,18 +306,117 @@
   }
 }
 
-/* Long words in hero copy should never be able to push the column wider
-   than its container, whatever the language or viewport. */
-.hero-desc,
-.hero-title {
-  overflow-wrap: break-word;
-  min-width: 0;
+/* ---------------- Hero stats ---------------- */
+.hero-stats {
+  position: relative;
+  z-index: 2;
+  padding-block: 2rem 2.5rem;
 }
 
-/* ---------------- Viewfinder HUD (small screens) ---------------- */
+.hero-meta {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.hero-meta div {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-meta b {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Direct child only — the count-up <span> lives inside <b> and must keep
+   the display face, not the label's mono styling. */
+.hero-meta div > span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-top: 0.5rem;
+}
+
+/* ---------------- Hero from 768px ---------------- */
+@media (min-width: 768px) {
+  /* Hero and stats together fill the viewport, so the numbers stay above
+     the fold rather than being pushed under it. */
+  .hero {
+    height: auto;
+    min-height: calc(100svh - 150px);
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: calc(var(--header-h) + 3rem);
+    padding-bottom: 2rem;
+  }
+
+  .hero-optic {
+    inset: 0 0 90px 50%;
+    height: auto;
+  }
+
+  .hero-scrim,
+  .vf {
+    display: none;
+  }
+
+  .hero-copy {
+    max-width: 48%;
+  }
+
+  .hero-title {
+    font-size: clamp(2.6rem, 5.4vw, 4.75rem);
+    line-height: 0.92;
+  }
+
+  .hero-desc {
+    margin-top: 2rem;
+    max-width: 54ch;
+    font-size: 1.05rem;
+  }
+
+  .hero-actions {
+    margin-top: 2.5rem;
+  }
+
+  .hero-actions .btn {
+    width: auto;
+  }
+
+  .hero-eyebrow {
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-stats {
+    padding-block: 0 2.5rem;
+    min-height: 150px;
+  }
+
+  .hero-meta {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-optic {
+    inset: 0 0 120px 52%;
+  }
+}
+
+/* ---------------- Viewfinder HUD (phones) ---------------- */
 .vf {
   position: absolute;
-  inset: 10px max(13vw, 26px) 10px 14px;
+  inset: calc(var(--header-h) + 6px) 14px 14px 14px;
+  z-index: 3;
   pointer-events: none;
 }
 
@@ -281,7 +426,7 @@
   height: 14px;
   padding: 6px;
   border: 0 solid var(--color-ink);
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
 .vf-corner.tl {
@@ -314,6 +459,7 @@
 
 .vf-rec,
 .vf-readout {
+  text-shadow: 0 1px 3px rgba(20, 12, 6, 0.55);
   position: absolute;
   font-family: var(--font-mono);
   font-size: 0.6rem;
@@ -323,7 +469,7 @@
 }
 
 .vf-rec {
-  top: 2px;
+  top: -2px;
   left: 26px;
   display: inline-flex;
   align-items: center;
@@ -351,10 +497,10 @@
 }
 
 .vf-readout {
-  bottom: 1px;
-  left: 26px;
-  color: var(--color-clay-deep);
-  opacity: 0.85;
+  top: -2px;
+  right: 26px;
+  color: #f1e7d8;
+  opacity: 0.92;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -489,88 +635,7 @@
   filter: blur(18px);
 }
 
-.hero-inner {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-}
-
-.hero-copy {
-  position: relative;
-  z-index: 2;
-}
-
-@media (min-width: 1024px) {
-  .hero-copy {
-    max-width: 48%;
-  }
-}
-
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1.75rem;
-}
-
-.hero-eyebrow::before {
-  content: '';
-  width: 40px;
-  height: 1px;
-  background: var(--color-clay);
-}
-
-.hero-title {
-  max-width: 16ch;
-}
-
-.hero-title .ln {
-  display: block;
-}
-
-.hero-desc {
-  margin-top: 2rem;
-  max-width: 54ch;
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-  margin-top: 2.5rem;
-}
-
-.hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2.5rem;
-  margin-top: 4rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--color-line);
-}
-
-.hero-meta div {
-  display: flex;
-  flex-direction: column;
-}
-
-.hero-meta b {
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-  font-weight: 500;
-  line-height: 1;
-}
-
-/* Direct child only — the count-up <span> lives inside <b> and must keep
-   the display face, not the label's mono styling. */
-.hero-meta div > span {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-  margin-top: 0.5rem;
-}
+/* (Superseded hero rules removed — the live block is above.) */
 
 /* ---------------- Marquee strip ---------------- */
 .strip {
