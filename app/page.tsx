@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Lens3D from '@/components/Lens3D';
+import ViewfinderHUD from '@/components/ViewfinderHUD';
 import DroneScout from '@/components/DroneScout';
 import SectionHead from '@/components/SectionHead';
 import CardCorners from '@/components/CardCorners';
@@ -32,8 +33,11 @@ export default function HomePage() {
 
       {/* ---------------- 1. HERO ---------------- */}
       <section className="hero">
+        {/* Its own block at the top of the hero on small screens; an
+            absolutely-placed column beside the copy from 1024px up. */}
         <div className="hero-optic" aria-hidden="true">
           <Lens3D />
+          <ViewfinderHUD />
         </div>
         <div className="shell hero-inner">
           <div className="hero-copy">

@@ -48,8 +48,10 @@ export default function Lens3D() {
     const el = stage.current;
     if (!el) return;
 
-    const desktop = window.matchMedia('(min-width: 1024px)').matches;
-    if (!desktop || !webglAvailable()) {
+    // The lens now has a dedicated block on small screens, so 3D is no
+    // longer desktop-only; only a missing WebGL context forces the flat
+    // fallback. (Phase 4 adds the low-end device gate.)
+    if (!webglAvailable()) {
       setMode('flat');
       return;
     }
@@ -73,6 +75,13 @@ export default function Lens3D() {
         }
         lens.onContextLost(() => setMode('flat'));
         setMode('3d');
+
+        // Framing follows the layout: its own block on small screens, an
+        // offset column on desktop.
+        const wide = window.matchMedia('(min-width: 1024px)');
+        const applyFraming = () => lens.setFraming(!wide.matches);
+        applyFraming();
+        wide.addEventListener('change', applyFraming);
 
         const ro = new ResizeObserver(() => lens.resize());
         ro.observe(el);
@@ -113,6 +122,7 @@ export default function Lens3D() {
 
         cleanup = () => {
           ctx.revert();
+          wide.removeEventListener('change', applyFraming);
           ro.disconnect();
           io.disconnect();
           sceneRef.current = null;

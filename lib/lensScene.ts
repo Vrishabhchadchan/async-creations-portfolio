@@ -15,6 +15,8 @@ export interface LensScene {
   setProgress(p: number): void;
   setPointer(nx: number, ny: number): void;
   setActive(on: boolean): void;
+  /** true when the lens has its own block (small screens). */
+  setFraming(block: boolean): void;
   resize(): void;
   onContextLost(cb: () => void): void;
   dispose(): void;
@@ -596,6 +598,8 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
   const look = new THREE.Vector3();
   let viewW = 1;
   let viewH = 1;
+  /** 1 while the lens sits in its own mobile block, 0 in the desktop column. */
+  let blockFraming = 0;
 
   function frame(now: number) {
     raf = requestAnimationFrame(frame);
@@ -625,7 +629,7 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     // Camera: swings from a three-quarter view toward head-on and dollies in
     const az = rad(lerp(-26, -5, e));
     const el = rad(lerp(13, 3, e));
-    const dist = lerp(9.4, 4.1, e);
+    const dist = lerp(9.4, 4.1, e) * lerp(1, 0.66, blockFraming);
     const zc = lerp(0.35, 2.15 + front.position.z, e);
     look.set(0, 0, zc);
     camera.position.set(
@@ -636,7 +640,7 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     camera.fov = lerp(30, 23, e);
     // The canvas spans the whole hero, but the lens rests in its right-hand
     // column (centre at 76% of the width) and drifts to centre as it dives.
-    camera.setViewOffset(viewW, viewH, -viewW * lerp(0.26, 0, e), 0, viewW, viewH);
+    camera.setViewOffset(viewW, viewH, -viewW * lerp(0.26, 0, e) * lerp(1, 0.34, blockFraming), 0, viewW, viewH);
     camera.lookAt(look);
 
     // The lens leans toward the pointer (or the phone's tilt). Capped at
@@ -683,6 +687,7 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     renderer.setSize(w, h, false);
     viewW = w;
     viewH = h;
+
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
@@ -704,6 +709,9 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
       hasInput = true;
       pointer.x = Math.max(-1, Math.min(1, nx));
       pointer.y = Math.max(-1, Math.min(1, ny));
+    },
+    setFraming(block) {
+      blockFraming = block ? 1 : 0;
     },
     setActive(on) {
       active = on;
