@@ -20,7 +20,9 @@ import { CustomEase } from 'gsap/CustomEase';
  *   data-reveal-stagger             sequence direct children
  *   data-parallax="-12"             drift across the viewport
  *   data-bg="bone|ink|clay|sand"    morph the page backdrop
- *   data-marquee                    scroll-velocity driven strip
+ *   data-marquee                    scroll-velocity driven strip,
+ *                                   pausing on hover; seconds per pass
+ *                                   from data-marquee-duration
  *   data-magnetic                   pointer-attracted control
  *   data-count="150"                count up
  *   data-draw                       draw an SVG line
@@ -277,10 +279,13 @@ export default function MotionEngine() {
         const track = el.querySelector<HTMLElement>('.marquee-track');
         if (!track) return;
         const base = parseFloat(el.dataset.marquee || '-50');
+        // Seconds for one full pass. Long strips need a longer duration to
+        // travel at the same speed, since the distance is the track width.
+        const duration = parseFloat(el.dataset.marqueeDuration || '22');
         const loop = gsap.to(el.querySelectorAll('.marquee-track'), {
           xPercent: base,
           ease: 'none',
-          duration: 22,
+          duration,
           repeat: -1,
         });
 
@@ -295,6 +300,17 @@ export default function MotionEngine() {
             });
           },
         });
+
+        // Hold the strip still while it is being read. Pointer devices
+        // only: on touch, hovering is a tap and would freeze the loop.
+        if (window.matchMedia('(pointer: fine)').matches) {
+          const hold = () => loop.pause();
+          const release = () => loop.resume();
+          el.addEventListener('mouseenter', hold);
+          el.addEventListener('mouseleave', release);
+          el.addEventListener('focusin', hold);
+          el.addEventListener('focusout', release);
+        }
       });
 
       /* ---------------- Count up ---------------- */

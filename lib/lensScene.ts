@@ -29,7 +29,12 @@ const CLAY = 0xc2612f;
 const COAT = 0x8b5cf6;
 /** Showreel loop played inside the front element. Optional: if the file
  *  is not present the scene simply renders without it. */
-const REEL_SRC = '/reel-loop.mp4';
+const REEL_SRC = '/images/work/logo-animation.mp4';
+/** The loop is 16:9 with the logo mark left of centre; the front element
+ *  is round, so crop a square window around the mark rather than squashing
+ *  the whole frame into the circle. */
+const REEL_CROP_X = 9 / 16;
+const REEL_OFFSET_X = 0.05;
 
 /** Iris travel, in degrees about each blade's hinge. Lower is wider. */
 const IRIS_WIDE = 5;
@@ -482,6 +487,8 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
 
   const reelTex = track(new THREE.VideoTexture(reelVideo));
   reelTex.colorSpace = THREE.SRGBColorSpace;
+  reelTex.repeat.set(REEL_CROP_X, 1);
+  reelTex.offset.set(REEL_OFFSET_X, 0);
 
   const reelMat = track(
     new THREE.MeshBasicMaterial({

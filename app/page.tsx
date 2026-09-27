@@ -14,16 +14,19 @@ import JsonLd from '@/components/JsonLd';
 import { faqSchema } from '@/lib/seo';
 import { site, services, whyAsync, processSteps as steps, stats } from '@/lib/site';
 
+/* The four headline services the brief calls for, then the rest of the
+   offer. All ten stay in the served HTML, so the strip keeps carrying the
+   service keywords rather than trading them for a shorter loop. */
 const MARQUEE = [
   'Photography',
   'Videography',
+  'Drone',
+  'Branding',
   'Reels',
-  'Drone Shoots',
   'Real Estate',
   'Social Media',
   'Influencer Campaigns',
   'Product & Food',
-  'Brand Identity',
   'Motion Graphics',
 ];
 
@@ -95,7 +98,7 @@ export default function HomePage() {
       </section>
 
       {/* ---------------- MARQUEE ---------------- */}
-      <div className="strip" data-marquee="-100">
+      <div className="strip" data-marquee="-100" data-marquee-duration="52">
         <div className="marquee">
           {[0, 1].map((dup) => (
             <div className="marquee-track" key={dup} aria-hidden={dup === 1}>

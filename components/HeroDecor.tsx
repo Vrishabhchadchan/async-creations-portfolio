@@ -8,11 +8,36 @@ import { gsap } from 'gsap';
 /* Three frames, not four: at 1280 a fourth card crowded the lens and
    collided with the exposure readout. They sit at the corners of the
    viewfinder frame, leaving its diagonal — where the lens lives — clear.
-   `depth` scales each card's parallax travel. */
+
+   The photos are the studio's own, reused from the services set. Captions
+   describe what is actually in each shot: nothing in the library is aerial,
+   so there is no drone card. `depth` scales each card's parallax travel,
+   and `focus` recentres the crop, since these are 16:9 in a 4:5 window. */
 const FRAMES = [
-  { src: '/hero/frame-1.jpg', caption: 'DRONE · LONAVALA', cls: 'f1', rotate: -6, depth: 1 },
-  { src: '/hero/frame-2.jpg', caption: 'PRODUCT · STUDIO', cls: 'f2', rotate: 5, depth: 0.55 },
-  { src: '/hero/frame-3.jpg', caption: 'EVENT · PUNE', cls: 'f3', rotate: 7, depth: 0.8 },
+  {
+    src: '/images/work/service-cine.jpg',
+    caption: 'FILM · ON SET',
+    cls: 'f1',
+    rotate: -6,
+    depth: 1,
+    focus: '38% 50%',
+  },
+  {
+    src: '/images/work/service-brand.jpg',
+    caption: 'BRAND · CAMPAIGN',
+    cls: 'f2',
+    rotate: 5,
+    depth: 0.55,
+    focus: '50% 32%',
+  },
+  {
+    src: '/images/work/service-drone.jpg',
+    caption: 'EVENT · PUNE',
+    cls: 'f3',
+    rotate: 7,
+    depth: 0.8,
+    focus: '52% 55%',
+  },
 ];
 
 const BADGE_TEXT = 'AVAILABLE FOR SHOOTS · PUNE · 2026 · ';
@@ -133,7 +158,14 @@ export default function HeroDecor() {
           >
             <div className="hframe-media">
               {/* Fixed intrinsic size + a ratio box, so decoding shifts nothing. */}
-              <Image src={f.src} alt="" width={600} height={750} sizes="200px" />
+              <Image
+                src={f.src}
+                alt=""
+                width={600}
+                height={750}
+                sizes="200px"
+                style={{ objectPosition: f.focus }}
+              />
             </div>
             <figcaption>{f.caption}</figcaption>
           </figure>
