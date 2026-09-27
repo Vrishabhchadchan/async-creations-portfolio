@@ -78,7 +78,9 @@ export default function Lens3D() {
 
         // Framing follows the layout: its own block on small screens, an
         // offset column on desktop.
-        const wide = window.matchMedia('(min-width: 1024px)');
+        // 768 is where the hero becomes a two-column desktop layout, so the
+        // lens takes its column framing from the same breakpoint.
+        const wide = window.matchMedia('(min-width: 768px)');
         const applyFraming = () => lens.setFraming(!wide.matches);
         applyFraming();
         wide.addEventListener('change', applyFraming);

@@ -619,20 +619,290 @@
   opacity: 0.82;
 }
 
-.hero-bloom {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(920px, 120vw);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle,
-    rgba(194, 97, 47, 0.24) 0%,
-    rgba(217, 199, 168, 0.16) 38%,
-    transparent 68%
-  );
-  filter: blur(18px);
+/* ---------------- Desktop hero furniture (Phase 3) ----------------
+   Print-style work frames, a viewfinder frame around the right half, the
+   rotating availability badge and the margin details. All of it is off on
+   phones, where the hero is already a full-bleed poster. */
+.hero-decor {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hero-decor {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Warm pool of light so the lens sits in something rather than floating
+     on flat beige. Centred on the lens column, fading out to page colour. */
+  .hero-glow {
+    position: absolute;
+    top: 46%;
+    left: 76%;
+    width: min(760px, 52vw);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      circle,
+      rgba(194, 97, 47, 0.2) 0%,
+      rgba(194, 97, 47, 0.1) 34%,
+      rgba(226, 215, 197, 0.14) 56%,
+      transparent 74%
+    );
+    filter: blur(20px);
+  }
+
+  /* ---- Viewfinder frame around the lens and the frames ---- */
+  .hvf {
+    position: absolute;
+    inset: calc(var(--header-h) + 1rem) 24px 24px 50%;
+  }
+
+  .hvf-corner {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(22, 18, 14, 0.28);
+  }
+
+  .hvf-corner.tl {
+    top: 0;
+    left: 0;
+    border-right: 0;
+    border-bottom: 0;
+  }
+
+  .hvf-corner.tr {
+    top: 0;
+    right: 0;
+    border-left: 0;
+    border-bottom: 0;
+  }
+
+  .hvf-corner.bl {
+    bottom: 0;
+    left: 0;
+    border-right: 0;
+    border-top: 0;
+  }
+
+  .hvf-corner.br {
+    bottom: 0;
+    right: 0;
+    border-left: 0;
+    border-top: 0;
+  }
+
+  /* Same letter-spaced mono as the eyebrows, deliberately muted. */
+  .hvf-rec,
+  .hvf-readout {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    white-space: nowrap;
+  }
+
+  .hvf-rec {
+    top: -2px;
+    left: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hvf-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #d23b26;
+    animation: vf-blink 1.4s steps(1, end) infinite;
+  }
+
+  .hvf-readout {
+    bottom: -2px;
+    right: 34px;
+  }
+
+  /* ---- Floating work frames ---- */
+  .hframe {
+    position: absolute;
+    width: clamp(126px, 11vw, 170px);
+    margin: 0;
+    padding: 6px 6px 0;
+    background: #fdfbf7;
+    box-shadow: 0 18px 34px -18px rgba(22, 18, 14, 0.4), 0 2px 6px rgba(22, 18, 14, 0.08);
+    will-change: transform;
+  }
+
+  /* Fixed ratio so the images never shift the layout as they decode. */
+  .hframe-media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--color-bone-3);
+  }
+
+  .hframe-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hframe figcaption {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    padding: 0.5rem 0.1rem 0.45rem;
+    white-space: nowrap;
+  }
+
+  /* Pinned to the corners of the viewfinder frame. The lens runs along
+     that frame's diagonal, so the three cards ring it without ever
+     crossing its centre, and the bottom-right corner stays free for the
+     exposure readout. */
+  .hframe.f1 {
+    top: 7%;
+    left: 1%;
+  }
+
+  .hframe.f2 {
+    top: 12%;
+    right: 0;
+  }
+
+  .hframe.f3 {
+    bottom: 9%;
+    left: 6%;
+  }
+
+  /* ---- Rotating availability badge ----
+     Hidden below 1024px: the copy column is 48% wide and the lens starts
+     at 52%, so there is no gap to sit in until the hero gets wider. */
+  .hero-badge {
+    display: none;
+    position: absolute;
+    left: 42%;
+    bottom: 6%;
+    width: 120px;
+    height: 120px;
+    place-items: center;
+    pointer-events: auto;
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-badge {
+      display: grid;
+    }
+  }
+
+  .hero-badge svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    animation: badge-spin 20s linear infinite;
+  }
+
+  .hero-badge:hover svg,
+  .hero-badge:focus-visible svg {
+    animation-duration: 7s;
+  }
+
+  .badge-text {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    fill: currentColor;
+  }
+
+  .hero-badge .badge-arrow {
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--color-clay-deep);
+    transition: transform 0.3s var(--ease-out-soft);
+  }
+
+  .hero-badge:hover .badge-arrow,
+  .hero-badge:focus-visible .badge-arrow {
+    transform: translate(2px, -2px);
+  }
+
+  /* ---- Margin details ---- */
+  .hero-coords,
+  .hero-scroll {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .hero-coords {
+    left: 12px;
+    top: 50%;
+    writing-mode: vertical-rl;
+    transform: translateY(-50%);
+  }
+
+  /* Sits on the same gutter as the headline at every width, including
+     past 1280px where the shell stops growing and starts centring. */
+  .hero-scroll {
+    left: calc(50% - min(640px, 50vw) + 40px);
+    bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .hero-scroll i {
+    font-style: normal;
+    animation: scroll-bounce 1.8s ease-in-out infinite;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-scroll {
+    left: calc(50% - min(640px, 50vw) + 56px);
+  }
+}
+
+@keyframes badge-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scroll-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-badge svg,
+  .hero-badge:hover svg,
+  .hero-scroll i,
+  .hvf-dot {
+    animation: none;
+  }
 }
 
 /* (Superseded hero rules removed — the live block is above.) */

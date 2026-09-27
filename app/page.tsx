@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Lens3D from '@/components/Lens3D';
 import ViewfinderHUD from '@/components/ViewfinderHUD';
+import HeroDecor from '@/components/HeroDecor';
 import DroneScout from '@/components/DroneScout';
 import SectionHead from '@/components/SectionHead';
 import CardCorners from '@/components/CardCorners';
@@ -40,6 +41,7 @@ export default function HomePage() {
         </div>
         <div className="hero-scrim" aria-hidden="true" />
         <ViewfinderHUD />
+        <HeroDecor />
         <div className="shell hero-inner">
           <div className="hero-copy">
             {/* The full role wraps to two lines below 768px and orphans
