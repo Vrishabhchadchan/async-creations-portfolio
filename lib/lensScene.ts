@@ -29,8 +29,11 @@ const COAT = 0x8b5cf6;
  *  is not present the scene simply renders without it. */
 const REEL_SRC = '/reel-loop.mp4';
 
-const IRIS_OPEN = 6;
-const IRIS_REST = 15;
+/** Iris travel, in degrees about each blade's hinge. Lower is wider. */
+const IRIS_WIDE = 5;
+const IRIS_NARROW = 30;
+/** Maximum lens tilt toward the pointer or device, in degrees. */
+const TILT_MAX = 10;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -558,7 +561,7 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     bladePivots.push(pivot);
   }
   const setIris = (deg: number) => bladePivots.forEach((b) => (b.rotation.z = -rad(deg)));
-  setIris(IRIS_REST);
+  setIris(IRIS_WIDE);
 
   root.add(front);
 
@@ -583,6 +586,7 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
   let target = 0; // scroll progress the page asked for
   let current = 0; // eased toward target each frame
   const pointer = { x: 0, y: 0, sx: 0, sy: 0 };
+  let hasInput = false;
   let active = true;
   let raf = 0;
   let lastTime = performance.now();
@@ -614,11 +618,13 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     focusGroup.rotation.z = -e * 0.7 + (opts.reduced ? 0 : elapsed * 0.05);
     tube1.position.z = e * 0.66;
     front.position.z = e * 1.32;
-    setIris(lerp(IRIS_REST, IRIS_OPEN, e) + (opts.reduced ? 0 : Math.sin(elapsed * 0.9) * 3));
+    // Stopping down as the viewer pushes in: wide open at rest, narrow by
+    // the end of the dive.
+    setIris(lerp(IRIS_WIDE, IRIS_NARROW, e) + (opts.reduced ? 0 : Math.sin(elapsed * 0.9) * 1.5));
 
     // Camera: swings from a three-quarter view toward head-on and dollies in
-    const az = rad(lerp(-26, -5, e) + pointer.sx * 5);
-    const el = rad(lerp(13, 3, e) - pointer.sy * 4);
+    const az = rad(lerp(-26, -5, e));
+    const el = rad(lerp(13, 3, e));
     const dist = lerp(9.4, 4.1, e);
     const zc = lerp(0.35, 2.15 + front.position.z, e);
     look.set(0, 0, zc);
@@ -633,8 +639,18 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     camera.setViewOffset(viewW, viewH, -viewW * lerp(0.26, 0, e), 0, viewW, viewH);
     camera.lookAt(look);
 
-    // Idle drift so it never feels pinned to the page
-    if (!opts.reduced) root.rotation.y = Math.sin(elapsed * 0.35) * 0.035;
+    // The lens leans toward the pointer (or the phone's tilt). Capped at
+    // TILT_MAX so it reads as attention rather than a spin, and driven off
+    // the already-damped pointer values so it never snaps.
+    // Idle drift keeps it alive when there is no input at all — it grows
+    // when nothing is steering, so a denied gyroscope still feels animate.
+    if (!opts.reduced) {
+      const idleAmt = hasInput ? 0.02 : 0.055;
+      const idleY = Math.sin(elapsed * 0.35) * idleAmt;
+      const idleX = Math.sin(elapsed * 0.27 + 1.1) * idleAmt * 0.6;
+      root.rotation.y = pointer.sx * rad(TILT_MAX) + idleY;
+      root.rotation.x = -pointer.sy * rad(TILT_MAX) + idleX;
+    }
 
     // Light sweep: a slow pass across the glass roughly every 5s, idle
     // for the rest of the cycle so it reads as an event, not a loop.
@@ -685,6 +701,7 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
       target = clamp01(p);
     },
     setPointer(nx, ny) {
+      hasInput = true;
       pointer.x = Math.max(-1, Math.min(1, nx));
       pointer.y = Math.max(-1, Math.min(1, ny));
     },

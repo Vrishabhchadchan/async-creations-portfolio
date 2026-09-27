@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import LensOptic from '@/components/LensOptic';
+import { useLensTilt } from '@/components/useLensTilt';
 
 type Mode = 'pending' | '3d' | 'flat';
 
@@ -24,7 +25,24 @@ function webglAvailable() {
  */
 export default function Lens3D() {
   const stage = useRef<HTMLDivElement>(null);
+  const shell = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<{ setPointer(nx: number, ny: number): void } | null>(null);
   const [mode, setMode] = useState<Mode>('pending');
+
+  const reduced =
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // One tilt channel for both pointer and gyroscope. The 3D scene takes it
+  // directly; the flat fallback leans via a CSS variable, so the gesture is
+  // never dead weight on devices that never load the canvas.
+  useLensTilt((nx, ny) => {
+    sceneRef.current?.setPointer(nx, ny);
+    const el = shell.current;
+    if (el) {
+      el.style.setProperty('--tilt-x', String(nx));
+      el.style.setProperty('--tilt-y', String(ny));
+    }
+  }, !reduced);
 
   useEffect(() => {
     const el = stage.current;
@@ -64,14 +82,7 @@ export default function Lens3D() {
         });
         io.observe(el);
 
-        const onMove = (e: MouseEvent) => {
-          const r = el.getBoundingClientRect();
-          lens.setPointer(
-            (e.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2),
-            (e.clientY - (r.top + r.height / 2)) / (window.innerHeight / 2),
-          );
-        };
-        if (!reduced) window.addEventListener('mousemove', onMove, { passive: true });
+        sceneRef.current = lens;
 
         const ctx = gsap.context(() => {
           if (reduced) return;
@@ -104,7 +115,7 @@ export default function Lens3D() {
           ctx.revert();
           ro.disconnect();
           io.disconnect();
-          window.removeEventListener('mousemove', onMove);
+          sceneRef.current = null;
           lens.dispose();
         };
       })
@@ -117,7 +128,7 @@ export default function Lens3D() {
   }, []);
 
   return (
-    <div className={`lens-stage is-${mode}`}>
+    <div className={`lens-stage is-${mode}`} ref={shell}>
       <div className="lens-flat">
         <LensOptic />
       </div>
