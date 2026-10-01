@@ -19,7 +19,7 @@ const FRAMES = [
     caption: 'FILM · ON SET',
     cls: 'f1',
     rotate: -6,
-    depth: 1,
+    depth: 1.25,
     focus: '38% 50%',
   },
   {
@@ -27,7 +27,7 @@ const FRAMES = [
     caption: 'BRAND · CAMPAIGN',
     cls: 'f2',
     rotate: 5,
-    depth: 0.55,
+    depth: 0.75,
     focus: '50% 32%',
   },
   {
@@ -35,7 +35,7 @@ const FRAMES = [
     caption: 'EVENT · PUNE',
     cls: 'f3',
     rotate: 7,
-    depth: 0.8,
+    depth: 1,
     focus: '52% 55%',
   },
 ];
@@ -95,22 +95,31 @@ export default function HeroDecor() {
 
     const ctx = gsap.context(() => {
       // Frames float in, staggered, once the headline has landed.
+      // Prints arrive already out of focus (the CSS background state) and
+      // sharpen into it, after the lens has faded in. Transitions stay off
+      // until this ends so they don't fight the tween; filter and opacity
+      // are then handed back to CSS so hover can drive them.
+      gsap.from('.hframe-drift', { y: 26, duration: 1, stagger: 0.14, delay: 1.1, ease: 'power3.out' });
       gsap.from('.hframe', {
         opacity: 0,
-        y: 26,
-        scale: 0.94,
-        duration: 0.9,
-        stagger: 0.12,
-        delay: 0.55,
+        filter: 'blur(9px) contrast(0.9) saturate(0.85)',
+        duration: 1,
+        stagger: 0.14,
+        delay: 1.1,
         ease: 'power3.out',
+        onComplete: () => {
+          gsap.set('.hframe', { clearProps: 'opacity,filter' });
+          gsap.set('.hframe-drift', { clearProps: 'opacity' });
+          el.classList.add('is-ready');
+        },
       });
 
       if (!window.matchMedia('(pointer: fine)').matches) return;
 
       // Parallax. Each card keeps its own quickTo so the tweens never fight,
       // and depth varies the travel to suggest layers at different distances.
-      const movers = gsap.utils.toArray<HTMLElement>('.hframe').map((card) => ({
-        depth: parseFloat(card.dataset.depth || '1'),
+      const movers = gsap.utils.toArray<HTMLElement>('.hframe-drift').map((card) => ({
+        depth: parseFloat(card.parentElement?.dataset.depth || '1'),
         x: gsap.quickTo(card, 'x', { duration: 0.9, ease: 'power2.out' }),
         y: gsap.quickTo(card, 'y', { duration: 0.9, ease: 'power2.out' }),
       }));
@@ -119,8 +128,8 @@ export default function HeroDecor() {
         const nx = (e.clientX / window.innerWidth) * 2 - 1;
         const ny = (e.clientY / window.innerHeight) * 2 - 1;
         movers.forEach((m) => {
-          m.x(nx * 15 * m.depth);
-          m.y(ny * 15 * m.depth);
+          m.x(nx * 8 * m.depth);
+          m.y(ny * 8 * m.depth);
         });
       };
 
@@ -153,9 +162,10 @@ export default function HeroDecor() {
             key={f.cls}
             className={`hframe ${f.cls}`}
             data-depth={f.depth}
-            style={{ rotate: `${f.rotate}deg` }}
+            style={{ '--r': `${f.rotate}deg` } as React.CSSProperties}
             aria-hidden="true"
           >
+            <div className="hframe-drift">
             <div className="hframe-media">
               {/* Fixed intrinsic size + a ratio box, so decoding shifts nothing. */}
               <Image
@@ -168,6 +178,7 @@ export default function HeroDecor() {
               />
             </div>
             <figcaption>{f.caption}</figcaption>
+          </div>
           </figure>
         ))}
       </div>

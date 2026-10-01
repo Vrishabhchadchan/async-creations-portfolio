@@ -635,8 +635,25 @@
     display: block;
     position: absolute;
     inset: 0;
-    z-index: 2;
     pointer-events: none;
+  }
+
+  /* Depth rule: the lens canvas sits above the prints (z 1 over 0), and a
+     hovered print is lifted above the canvas (z 3). The decor wrapper has
+     no z-index so it creates no stacking context to trap that. The canvas
+     wrapper is pointer-events: none, so hover still reaches the prints. */
+  .hero-optic {
+    z-index: 1;
+  }
+
+  /* The copy shell spans the hero, so it must not swallow hover meant for
+     the prints beneath it; only the copy itself takes the pointer. */
+  .hero-inner {
+    pointer-events: none;
+  }
+
+  .hero-copy {
+    pointer-events: auto;
   }
 
   /* Warm pool of light so the lens sits in something rather than floating
@@ -722,11 +739,11 @@
   }
 
   .hvf-dot {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: #d23b26;
-    animation: vf-blink 1.4s steps(1, end) infinite;
+    background: var(--color-clay);
+    animation: hvf-blink 2s steps(1, end) infinite;
   }
 
   /* Likewise past the bottom-right print. */
@@ -742,8 +759,36 @@
     margin: 0;
     padding: 6px 6px 0;
     background: #fdfbf7;
-    box-shadow: 0 18px 34px -18px rgba(22, 18, 14, 0.4), 0 2px 6px rgba(22, 18, 14, 0.08);
-    will-change: transform;
+    /* Background state: further away, softly out of focus. */
+    rotate: var(--r, 0deg);
+    scale: 0.9;
+    opacity: 0.9;
+    filter: blur(1.5px) contrast(0.9) saturate(0.85);
+    box-shadow: 0 10px 22px -14px rgba(22, 18, 14, 0.24), 0 1px 4px rgba(22, 18, 14, 0.05);
+    pointer-events: auto;
+    z-index: 0;
+    will-change: transform, filter;
+  }
+
+  /* Focus pull: a lens racking in. Only after the entrance has finished. */
+  .hero-decor.is-ready .hframe {
+    will-change: auto;
+    transition: filter 0.4s cubic-bezier(0.22, 1, 0.36, 1), scale 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      rotate 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease-out,
+      box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hframe:hover {
+    scale: 1;
+    rotate: 0deg;
+    opacity: 1;
+    filter: none;
+    z-index: 3;
+    box-shadow: 0 30px 50px -22px rgba(22, 18, 14, 0.55), 0 3px 8px rgba(22, 18, 14, 0.1);
+  }
+
+  .hero-decor.is-ready .hframe:hover {
+    will-change: filter, scale;
   }
 
   /* Fixed ratio so the images never shift the layout as they decode. */
@@ -859,7 +904,7 @@
   }
 
   .hero-coords {
-    left: 12px;
+    left: clamp(18px, 2.2vw, 32px);
     top: 50%;
     writing-mode: vertical-rl;
     transform: translateY(-50%);
@@ -887,6 +932,17 @@
   }
 }
 
+@keyframes hvf-blink {
+  0%,
+  49.9% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes badge-spin {
   to {
     transform: rotate(360deg);
@@ -909,6 +965,11 @@
   .hero-scroll i,
   .hvf-dot {
     animation: none;
+  }
+
+  /* Focus changes are instant, not eased. */
+  .hero-decor .hframe {
+    transition: none !important;
   }
 }
 
