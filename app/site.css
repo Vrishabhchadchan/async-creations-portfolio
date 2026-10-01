@@ -631,7 +631,7 @@
   .hero-decor {
     /* One source for the print width: the frame's corner labels slide
        inward past whatever the cards occupy. */
-    --hframe-w: clamp(120px, 10.4vw, 160px);
+    --hframe-w: clamp(106px, 9vw, 140px);
     display: block;
     position: absolute;
     inset: 0;

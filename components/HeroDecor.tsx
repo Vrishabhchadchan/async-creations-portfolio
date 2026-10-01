@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 /* Three frames, not four: at 1280 a fourth card crowded the lens and
    collided with the exposure readout. They sit at the corners of the
@@ -101,6 +102,7 @@ export default function HeroDecor() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!window.matchMedia(DESKTOP).matches) return;
 
+    gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
       // Frames float in, staggered, once the headline has landed.
       // Prints arrive already out of focus (the CSS background state) and
@@ -118,6 +120,24 @@ export default function HeroDecor() {
           gsap.set('.hframe', { clearProps: 'opacity' });
           gsap.set('.hframe-drift', { clearProps: 'opacity' });
           el.classList.add('is-ready');
+        },
+      });
+
+      // As the hero scrolls away the prints fall out of focus and fade, so
+      // they recede behind the lens instead of sitting there static. Runs
+      // on the drift wrapper, which parallax doesn't use for opacity/filter.
+      gsap.to('.hframe-drift', {
+        opacity: 0,
+        filter: 'blur(10px)',
+        scale: 0.94,
+        ease: 'none',
+        stagger: 0.04,
+        scrollTrigger: {
+          trigger: el.closest('.hero'),
+          start: 'top top',
+          end: () => `+=${window.innerHeight * 0.55}`,
+          scrub: true,
+          invalidateOnRefresh: true,
         },
       });
 
