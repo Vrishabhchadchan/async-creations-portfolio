@@ -60,7 +60,7 @@ export default function HomePage() {
               <span className="ln" data-split="chars">
                 We Create.
               </span>
-              <span className="ln t-outline" data-split="chars">
+              <span className="ln hero-title-accent" data-split="chars">
                 You Grow.
               </span>
             </h1>
@@ -250,37 +250,69 @@ export default function HomePage() {
       </section>
 
       {/* ---------------- 5. REAL ESTATE ---------------- */}
-      <section className="section on-ink" id="real-estate">
-        <div className="shell lede-grid">
-          <div data-from="left">
-            <span className="t-label">Real Estate Solutions</span>
-            <h2 className="t-h2" style={{ marginTop: '1rem' }}>
-              Properties sell faster when they <span className="italic-serif">photograph honestly</span>
-            </h2>
-            <p className="t-lead" data-highlight style={{ marginTop: '1.5rem' }}>
-              A dedicated vertical for builders, developers, architects and agents in Pune — interiors, exteriors, drone
-              aerials, cinematic walkthroughs and every launch creative that carries them to market.
-            </p>
-            <div style={{ marginTop: '2.5rem' }}>
-              <Link href="/real-estate" className="btn btn-primary">
-                Real estate solutions
-              </Link>
+      <section className="section on-ink re-section" id="real-estate">
+        <div className="shell">
+          <div className="re-header" data-reveal>
+            <div className="re-header-main">
+              <span className="t-label re-tag">Real Estate Solutions</span>
+              <h2 className="t-h2 re-title">
+                Properties sell faster when they <span className="italic-serif">photograph honestly</span>
+              </h2>
+            </div>
+            <div className="re-header-side">
+              <p className="t-lead re-lede" data-highlight>
+                A dedicated vertical for builders, developers, architects and agents in Pune — interiors, exteriors, drone
+                aerials, cinematic walkthroughs and every launch creative that carries them to market.
+              </p>
+              <div className="re-actions">
+                <Link href="/contact" className="btn btn-primary" data-magnetic>
+                  Book a site shoot
+                </Link>
+              </div>
             </div>
           </div>
-          <ul className="svc-list" data-from="right" style={{ gap: '1rem' }}>
+
+          <div className="re-grid" data-reveal-stagger>
             {[
-              'Interior and exterior property photography',
-              '4K drone aerials and site reveal shots',
-              'Cinematic walkthrough films for listings',
-              'Construction progress documentation',
-              'Brochures, hoardings and listing creatives',
-              'Project launch campaigns end to end',
-            ].map((f) => (
-              <li key={f} style={{ fontSize: '1rem' }}>
-                {f}
-              </li>
+              {
+                num: '01',
+                title: 'Interior & Exterior Photography',
+                desc: 'Naturally lit, distortion-corrected architectural frames of sample flats, elevation details and common amenities at peak daylight and blue hour.',
+              },
+              {
+                num: '02',
+                title: '4K Drone Aerials & Site Reveals',
+                desc: 'DGCA-compliant flight paths, dramatic altitude reveals, top-down masterplan frames and connectivity perspectives ground cameras cannot capture.',
+              },
+              {
+                num: '03',
+                title: 'Cinematic Walkthrough Films',
+                desc: 'Fluid gimbal-stabilized POV tours cut with intentional pacing and ambient sound design, helping remote buyers feel the scale and spatial flow.',
+              },
+              {
+                num: '04',
+                title: 'Construction Progress Coverage',
+                desc: 'Recurring monthly milestone shoots, ground logs and time-lapse video for investor decks, stakeholder reports, RERA compliance and pre-sales.',
+              },
+              {
+                num: '05',
+                title: 'Brochures, Hoardings & Creatives',
+                desc: 'High-res print-ready creatives, billboard hoardings, digital sales gallery decks and portal banners produced straight from shoot day RAWs.',
+              },
+              {
+                num: '06',
+                title: 'Project Launch Campaigns',
+                desc: 'A synchronized launch rollout — teaser reels, architect interview cuts, influencer walkthrough visits and performance marketing ad creatives.',
+              },
+            ].map((item) => (
+              <article key={item.num} className="card svc re-card">
+                <CardCorners />
+                <span className="re-card-num">{item.num}</span>
+                <h3 className="re-card-title">{item.title}</h3>
+                <p className="re-card-desc">{item.desc}</p>
+              </article>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 
