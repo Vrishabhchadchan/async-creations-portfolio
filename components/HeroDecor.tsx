@@ -38,6 +38,14 @@ const FRAMES = [
     depth: 1,
     focus: '52% 55%',
   },
+  {
+    src: '/images/work/service-photo.jpg',
+    caption: 'FASHION · STUDIO',
+    cls: 'f4',
+    rotate: -5,
+    depth: 0.75,
+    focus: '60% 40%',
+  },
 ];
 
 const BADGE_TEXT = 'AVAILABLE FOR SHOOTS · PUNE · 2026 · ';
@@ -102,13 +110,12 @@ export default function HeroDecor() {
       gsap.from('.hframe-drift', { y: 26, duration: 1, stagger: 0.14, delay: 1.1, ease: 'power3.out' });
       gsap.from('.hframe', {
         opacity: 0,
-        filter: 'blur(9px) contrast(0.9) saturate(0.85)',
         duration: 1,
         stagger: 0.14,
         delay: 1.1,
         ease: 'power3.out',
         onComplete: () => {
-          gsap.set('.hframe', { clearProps: 'opacity,filter' });
+          gsap.set('.hframe', { clearProps: 'opacity' });
           gsap.set('.hframe-drift', { clearProps: 'opacity' });
           el.classList.add('is-ready');
         },

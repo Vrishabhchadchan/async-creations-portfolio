@@ -631,7 +631,7 @@
   .hero-decor {
     /* One source for the print width: the frame's corner labels slide
        inward past whatever the cards occupy. */
-    --hframe-w: clamp(96px, 8.2vw, 128px);
+    --hframe-w: clamp(120px, 10.4vw, 160px);
     display: block;
     position: absolute;
     inset: 0;
@@ -761,34 +761,26 @@
     background: #fdfbf7;
     /* Background state: further away, softly out of focus. */
     rotate: var(--r, 0deg);
-    scale: 0.9;
-    opacity: 0.9;
-    filter: blur(1.5px) contrast(0.9) saturate(0.85);
-    box-shadow: 0 10px 22px -14px rgba(22, 18, 14, 0.24), 0 1px 4px rgba(22, 18, 14, 0.05);
+    box-shadow: 0 18px 34px -18px rgba(22, 18, 14, 0.4), 0 2px 6px rgba(22, 18, 14, 0.08);
     pointer-events: auto;
     z-index: 0;
-    will-change: transform, filter;
+    will-change: transform;
   }
 
   /* Focus pull: a lens racking in. Only after the entrance has finished. */
   .hero-decor.is-ready .hframe {
     will-change: auto;
-    transition: filter 0.4s cubic-bezier(0.22, 1, 0.36, 1), scale 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-      rotate 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease-out,
-      box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: rotate 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .hframe:hover {
-    scale: 1;
     rotate: 0deg;
-    opacity: 1;
-    filter: none;
     z-index: 3;
     box-shadow: 0 30px 50px -22px rgba(22, 18, 14, 0.55), 0 3px 8px rgba(22, 18, 14, 0.1);
   }
 
   .hero-decor.is-ready .hframe:hover {
-    will-change: filter, scale;
+    will-change: rotate;
   }
 
   /* Fixed ratio so the images never shift the layout as they decode. */
@@ -835,6 +827,17 @@
   .hframe.f2 {
     bottom: 0;
     right: 0;
+  }
+
+  /* Caption right-aligned and the print lifted: the lens shoulder reaches
+     the lower-left of this corner and would otherwise cover the label. */
+  .hframe.f4 {
+    top: -1%;
+    right: 0;
+  }
+
+  .hframe.f4 figcaption {
+    text-align: right;
   }
 
   /* ---- Rotating availability badge ----
