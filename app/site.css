@@ -34,31 +34,10 @@
   min-height: 44px;
 }
 
-.brand-mark {
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-}
-
-.brand-word {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-
-.brand-word b {
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-}
-
-.brand-word span {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--color-muted);
+.brand-logo {
+  display: block;
+  height: 46px;
+  width: auto;
 }
 
 .nav-desk {
@@ -202,135 +181,52 @@
   margin-top: 2rem;
 }
 
-/* ---------------- Hero ---------------- */
+/* ---------------- Hero ----------------
+   Phones get a poster: the lens is a bled backdrop behind the copy, the
+   content is anchored to the bottom, and the stats sit in the band below.
+   From 768px it returns to a two-column layout with the lens beside the
+   text. The mobile breakpoint is 768 to match the design brief. */
 .hero {
   position: relative;
-  min-height: 100svh;
+  height: 100svh;
   display: flex;
-  align-items: center;
-  padding-top: calc(var(--header-h) + 3rem);
-  padding-bottom: 4rem;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-top: calc(var(--header-h) + 1.25rem);
+  padding-bottom: 2rem;
   overflow: hidden;
 }
 
-/* On small screens the optic is a faint wash behind the copy; from the
-   desktop breakpoint it moves into its own column beside the text and
-   never overlaps it. */
+/* Lens backdrop: bleeds off the top-right corner and covers roughly the
+   top 60% of the screen. Absolute, so the bleed cannot widen the
+   document the way the old negative-margin block could. */
 .hero-optic {
   position: absolute;
-  inset: 0;
+  top: -5svh;
+  right: -24vw;
+  left: 2vw;
+  height: 60svh;
   z-index: 0;
   display: grid;
   place-items: center;
   pointer-events: none;
-  opacity: 0.14;
 }
 
-@media (min-width: 1024px) {
-  .hero-optic {
-    left: 52%;
-    right: 0;
-    top: 0;
-    bottom: 170px;
-    opacity: 1;
-  }
-}
-
-.lens-optic {
-  width: min(76%, 520px);
-  height: auto;
-  overflow: visible;
-}
-
-/* Hero lens: flat vector on small screens / without WebGL, real-time 3D
-   from the desktop breakpoint. */
-.lens-stage {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-}
-
-.lens-flat {
-  width: 100%;
-  display: grid;
-  place-items: center;
-}
-
-.lens-3d {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .lens-flat {
-    transition: opacity 0.6s ease;
-  }
-
-  .lens-stage.is-pending .lens-flat,
-  .lens-stage.is-3d .lens-flat {
-    opacity: 0;
-  }
-
-  .lens-3d {
-    display: block;
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.9s ease;
-  }
-
-  .lens-stage.is-3d .lens-3d {
-    opacity: 1;
-  }
-
-  /* The 3D canvas spans the whole hero so the lens can grow past its
-     column as it dives; the lens itself is offset into that column. */
-  .hero:has(.lens-stage.is-3d) .hero-optic {
-    left: 0;
-  }
-
-  .lens-stage.is-flat .lens-3d {
-    display: none;
-  }
-}
-
-.lens-3d-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.lens-engrave {
-  font-family: var(--font-mono);
-  font-size: 15px;
-  letter-spacing: 3.2px;
-  fill: #cfc5b4;
-  opacity: 0.72;
-}
-
-.lens-mark {
-  font-family: var(--font-mono);
-  font-size: 15px;
-  letter-spacing: 1px;
-  fill: #ded4c4;
-  opacity: 0.82;
-}
-
-.hero-bloom {
+/* Scrim: clear at the top-right where the lens lives, solid page colour
+   by the bottom-left where the copy sits. Two stops rather than one so
+   the text block sits on flat background instead of a gradient ramp. */
+.hero-scrim {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(920px, 120vw);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle,
-    rgba(194, 97, 47, 0.24) 0%,
-    rgba(217, 199, 168, 0.16) 38%,
-    transparent 68%
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    205deg,
+    rgba(245, 240, 232, 0) 0%,
+    rgba(245, 240, 232, 0.5) 26%,
+    rgba(245, 240, 232, 0.97) 44%,
+    var(--color-bone) 54%
   );
-  filter: blur(18px);
 }
 
 .hero-inner {
@@ -344,52 +240,86 @@
   z-index: 2;
 }
 
-@media (min-width: 1024px) {
-  .hero-copy {
-    max-width: 48%;
-  }
-}
-
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  margin-bottom: 1.75rem;
-}
-
-.hero-eyebrow::before {
-  content: '';
-  width: 40px;
-  height: 1px;
-  background: var(--color-clay);
+  margin-bottom: 1rem;
 }
 
 .hero-title {
-  max-width: 16ch;
+  max-width: 18ch;
+  font-size: clamp(3.5rem, 16vw, 5.5rem);
+  line-height: 0.96;
 }
 
 .hero-title .ln {
   display: block;
 }
 
+.hero-title .hero-title-accent {
+  font-family: var(--font-quote);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.06em;
+  color: var(--color-clay);
+  letter-spacing: -0.01em;
+}
+
 .hero-desc {
-  margin-top: 2rem;
-  max-width: 54ch;
+  margin-top: 1.1rem;
+  max-width: 40ch;
+  font-size: 0.95rem;
+  line-height: 1.55;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.85rem;
-  margin-top: 2.5rem;
+  gap: 0.75rem;
+  margin-top: 1.6rem;
+}
+
+/* Full width and stacked on phones, work first. */
+.hero-actions .btn {
+  width: 100%;
+}
+
+/* Long words in hero copy should never push the column wider than its
+   container, whatever the language or viewport. */
+.hero-desc,
+.hero-title {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+/* Eyebrow: long form from 768px, short form on phones. */
+.eyebrow-short {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .eyebrow-full {
+    display: none;
+  }
+
+  .eyebrow-short {
+    display: inline;
+  }
+}
+
+/* ---------------- Hero stats ---------------- */
+.hero-stats {
+  position: relative;
+  z-index: 2;
+  padding-block: 2rem 2.5rem;
 }
 
 .hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2.5rem;
-  margin-top: 4rem;
-  padding-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 1rem;
+  padding-top: 1.5rem;
   border-top: 1px solid var(--color-line);
 }
 
@@ -416,31 +346,669 @@
   margin-top: 0.5rem;
 }
 
+/* ---------------- Hero from 768px ---------------- */
+@media (min-width: 768px) {
+  /* Hero and stats together fill the viewport, so the numbers stay above
+     the fold rather than being pushed under it. */
+  .hero {
+    height: auto;
+    min-height: calc(100svh - 150px);
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: calc(var(--header-h) + 3rem);
+    padding-bottom: 2rem;
+  }
+
+  .hero-optic {
+    inset: 0 0 90px 50%;
+    height: auto;
+  }
+
+  .hero-scrim,
+  .vf {
+    display: none;
+  }
+
+  .hero-copy {
+    max-width: 48%;
+  }
+
+  .hero-title {
+    font-size: clamp(3rem, 6.2vw, 5.4rem);
+    line-height: 0.94;
+  }
+
+  .hero-desc {
+    margin-top: 2rem;
+    max-width: 54ch;
+    font-size: 1.05rem;
+  }
+
+  .hero-actions {
+    margin-top: 2.5rem;
+  }
+
+  .hero-actions .btn {
+    width: auto;
+  }
+
+  .hero-eyebrow {
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-stats {
+    padding-block: 0 2.5rem;
+    min-height: 150px;
+  }
+
+  .hero-meta {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-optic {
+    inset: 0 0 120px 52%;
+  }
+}
+
+/* ---------------- Viewfinder HUD (phones) ---------------- */
+.vf {
+  position: absolute;
+  inset: calc(var(--header-h) + 6px) 14px 14px 14px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.vf-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  padding: 6px;
+  border: 0 solid var(--color-ink);
+  opacity: 0.55;
+}
+
+.vf-corner.tl {
+  top: 0;
+  left: 0;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.vf-corner.tr {
+  top: 0;
+  right: 0;
+  border-top-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.vf-corner.bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.vf-corner.br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.vf-rec,
+.vf-readout {
+  text-shadow: 0 1px 3px rgba(20, 12, 6, 0.55);
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.vf-rec {
+  top: -2px;
+  left: 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #b3261e;
+}
+
+.vf-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #b3261e;
+  animation: vf-blink 1.4s steps(1) infinite;
+}
+
+@keyframes vf-blink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0.15;
+  }
+}
+
+.vf-readout {
+  top: -2px;
+  right: 26px;
+  color: #f1e7d8;
+  opacity: 0.92;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vf-dot {
+    animation: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-optic {
+    position: absolute;
+    inset: 0 0 170px 52%;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    opacity: 1;
+  }
+
+  /* Viewfinder chrome belongs to the mobile block only. */
+  .vf {
+    display: none;
+  }
+}
+
+.lens-optic {
+  width: min(76%, 520px);
+  height: auto;
+  overflow: visible;
+}
+
+/* Hero lens: flat vector on small screens / without WebGL, real-time 3D
+   from the desktop breakpoint. */
+.lens-stage {
+  --tilt-x: 0;
+  --tilt-y: 0;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  perspective: 1100px;
+}
+
+/* The flat lens leans on the same tilt channel as the 3D one, so the
+   pointer and gyroscope still do something where the canvas never loads.
+   Transform only, and the damping already happened upstream. */
+.lens-flat {
+  width: 100%;
+  display: grid;
+  place-items: center;
+  transform: rotateY(calc(var(--tilt-x) * 10deg)) rotateX(calc(var(--tilt-y) * -10deg));
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lens-flat {
+    transform: none;
+  }
+}
+
+.lens-flat {
+  transition: opacity 0.6s ease;
+}
+
+.lens-stage.is-pending .lens-flat,
+.lens-stage.is-3d .lens-flat {
+  opacity: 0;
+}
+
+.lens-3d {
+  display: block;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.lens-stage.is-3d .lens-3d {
+  opacity: 1;
+}
+
+.lens-stage.is-flat .lens-3d {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+
+  /* The 3D canvas spans the whole hero so the lens can grow past its
+     column as it dives; the lens itself is offset into that column. */
+  .hero:has(.lens-stage.is-3d) .hero-optic {
+    left: 0;
+  }
+
+}
+
+.lens-3d-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lens-engrave {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 3.2px;
+  fill: #cfc5b4;
+  opacity: 0.72;
+}
+
+.lens-mark {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 1px;
+  fill: #ded4c4;
+  opacity: 0.82;
+}
+
+/* ---------------- Desktop hero furniture (Phase 3) ----------------
+   Print-style work frames, a viewfinder frame around the right half, the
+   rotating availability badge and the margin details. All of it is off on
+   phones, where the hero is already a full-bleed poster. */
+.hero-decor {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hero-decor {
+    /* One source for the print width: the frame's corner labels slide
+       inward past whatever the cards occupy. */
+    --hframe-w: clamp(106px, 9vw, 140px);
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Depth rule: the lens canvas sits above the prints (z 1 over 0), and a
+     hovered print is lifted above the canvas (z 3). The decor wrapper has
+     no z-index so it creates no stacking context to trap that. The canvas
+     wrapper is pointer-events: none, so hover still reaches the prints. */
+  .hero-optic {
+    z-index: 1;
+  }
+
+  /* The copy shell spans the hero, so it must not swallow hover meant for
+     the prints beneath it; only the copy itself takes the pointer. */
+  .hero-inner {
+    pointer-events: none;
+  }
+
+  .hero-copy {
+    pointer-events: auto;
+  }
+
+  /* Warm pool of light so the lens sits in something rather than floating
+     on flat beige. Centred on the lens column, fading out to page colour. */
+  .hero-glow {
+    position: absolute;
+    top: 46%;
+    left: 76%;
+    width: min(760px, 52vw);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      circle,
+      rgba(194, 97, 47, 0.2) 0%,
+      rgba(194, 97, 47, 0.1) 34%,
+      rgba(226, 215, 197, 0.14) 56%,
+      transparent 74%
+    );
+    filter: blur(20px);
+  }
+
+  /* ---- Viewfinder frame around the lens and the frames ---- */
+  .hvf {
+    position: absolute;
+    inset: calc(var(--header-h) + 1rem) 24px 24px 50%;
+  }
+
+  .hvf-corner {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(22, 18, 14, 0.28);
+  }
+
+  .hvf-corner.tl {
+    top: 0;
+    left: 0;
+    border-right: 0;
+    border-bottom: 0;
+  }
+
+  .hvf-corner.tr {
+    top: 0;
+    right: 0;
+    border-left: 0;
+    border-bottom: 0;
+  }
+
+  .hvf-corner.bl {
+    bottom: 0;
+    left: 0;
+    border-right: 0;
+    border-top: 0;
+  }
+
+  .hvf-corner.br {
+    bottom: 0;
+    right: 0;
+    border-left: 0;
+    border-top: 0;
+  }
+
+  /* Same letter-spaced mono as the eyebrows, deliberately muted. */
+  .hvf-rec,
+  .hvf-readout {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    white-space: nowrap;
+  }
+
+  /* Past the top-left print, so the label and the card never collide. */
+  .hvf-rec {
+    top: -2px;
+    left: calc(var(--hframe-w) + 34px);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hvf-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-clay);
+    animation: hvf-blink 2s steps(1, end) infinite;
+  }
+
+  /* Likewise past the bottom-right print. */
+  .hvf-readout {
+    bottom: -2px;
+    right: calc(var(--hframe-w) + 34px);
+  }
+
+  /* ---- Floating work frames ---- */
+  .hframe {
+    position: absolute;
+    width: var(--hframe-w);
+    margin: 0;
+    padding: 6px 6px 0;
+    background: #fdfbf7;
+    /* Background state: further away, softly out of focus. */
+    rotate: var(--r, 0deg);
+    box-shadow: 0 18px 34px -18px rgba(22, 18, 14, 0.4), 0 2px 6px rgba(22, 18, 14, 0.08);
+    pointer-events: auto;
+    z-index: 0;
+    will-change: transform;
+  }
+
+  /* Focus pull: a lens racking in. Only after the entrance has finished. */
+  .hero-decor.is-ready .hframe {
+    will-change: auto;
+    transition: rotate 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hframe:hover {
+    rotate: 0deg;
+    z-index: 3;
+    box-shadow: 0 30px 50px -22px rgba(22, 18, 14, 0.55), 0 3px 8px rgba(22, 18, 14, 0.1);
+  }
+
+  .hero-decor.is-ready .hframe:hover {
+    will-change: rotate;
+  }
+
+  /* Fixed ratio so the images never shift the layout as they decode. */
+  .hframe-media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--color-bone-3);
+  }
+
+  .hframe-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hframe figcaption {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    padding: 0.4rem 0.1rem 0.35rem;
+    white-space: nowrap;
+  }
+
+  /* A loose ring around the lens, positioned as percentages of the
+     viewfinder frame so the clearances hold at every desktop width. The
+     lens sweeps the frame's diagonal from rear (top-left) to front glass
+     (bottom-right), which leaves three pockets: above the rear, below the
+     barrel on the left, and the strip under the front element. Top-right
+     is deliberately empty — the lens shoulder reaches too far into it. */
+  .hframe.f1 {
+    top: 2.5%;
+    left: 1%;
+  }
+
+  .hframe.f3 {
+    bottom: 4%;
+    left: 1%;
+  }
+
+  .hframe.f2 {
+    bottom: 0;
+    right: 0;
+  }
+
+  /* Caption right-aligned and the print lifted: the lens shoulder reaches
+     the lower-left of this corner and would otherwise cover the label. */
+  .hframe.f4 {
+    top: -1%;
+    right: 0;
+  }
+
+  .hframe.f4 figcaption {
+    text-align: right;
+  }
+
+  /* ---- Rotating availability badge ----
+     Hidden below 1024px: the copy column is 48% wide and the lens starts
+     at 52%, so there is no gap to sit in until the hero gets wider. */
+  .hero-badge {
+    display: none;
+    position: absolute;
+    left: 38%;
+    bottom: 6%;
+    width: 120px;
+    height: 120px;
+    place-items: center;
+    pointer-events: auto;
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-badge {
+      display: grid;
+    }
+  }
+
+  .hero-badge svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    animation: badge-spin 20s linear infinite;
+  }
+
+  .hero-badge:hover svg,
+  .hero-badge:focus-visible svg {
+    animation-duration: 7s;
+  }
+
+  .badge-text {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    fill: currentColor;
+  }
+
+  .hero-badge .badge-arrow {
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--color-clay-deep);
+    transition: transform 0.3s var(--ease-out-soft);
+  }
+
+  .hero-badge:hover .badge-arrow,
+  .hero-badge:focus-visible .badge-arrow {
+    transform: translate(2px, -2px);
+  }
+
+  /* ---- Margin details ---- */
+  .hero-coords,
+  .hero-scroll {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .hero-coords {
+    left: clamp(18px, 2.2vw, 32px);
+    top: 50%;
+    writing-mode: vertical-rl;
+    transform: translateY(-50%);
+  }
+
+  /* Sits on the same gutter as the headline at every width, including
+     past 1280px where the shell stops growing and starts centring. */
+  .hero-scroll {
+    left: calc(50% - min(640px, 50vw) + 40px);
+    bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .hero-scroll i {
+    font-style: normal;
+    animation: scroll-bounce 1.8s ease-in-out infinite;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-scroll {
+    left: calc(50% - min(640px, 50vw) + 56px);
+  }
+}
+
+@keyframes hvf-blink {
+  0%,
+  49.9% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes badge-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scroll-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-badge svg,
+  .hero-badge:hover svg,
+  .hero-scroll i,
+  .hvf-dot {
+    animation: none;
+  }
+
+  /* Focus changes are instant, not eased. */
+  .hero-decor .hframe {
+    transition: none !important;
+  }
+}
+
+/* (Superseded hero rules removed — the live block is above.) */
+
 /* ---------------- Marquee strip ---------------- */
 .strip {
   border-block: 1px solid var(--color-line);
-  padding-block: 1.1rem;
+  padding-block: clamp(0.9rem, 2vw, 1.7rem);
   position: relative;
   z-index: 2;
   background: var(--color-bone-2);
 }
 
+/* Poster-sized serif: the strip is the first thing under the hero, so it
+   reads as a statement of what the studio does rather than a caption. */
 .strip .marquee-track span {
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 2.2vw, 1.6rem);
-  font-style: italic;
+  font-size: clamp(1.5rem, 4.4vw, 3.4rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
 }
 
 .strip .marquee-track span::after {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-clay);
+  content: '✦';
+  font-size: 0.42em;
+  line-height: 1;
+  color: var(--color-clay);
   flex-shrink: 0;
 }
 
@@ -1344,244 +1912,304 @@
   -webkit-text-stroke: 1.5px var(--color-bone);
 }
 
-/* ---------------- Editorial spread (home) ----------------
-   A repeating seven-frame rhythm over a 12-column grid. Column span,
-   aspect ratio and vertical offset all vary, so the page reads as a
-   laid-out spread instead of a contact sheet of equal tiles. */
-.spread {
+/* ---------------- Work cards (home page + work page) ----------------
+   One card size everywhere: 442 × 600, three across at desktop widths. */
+.work-grid {
+  --card-w: 442px;
+  --card-gap: 32px;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: clamp(12px, 1.5vw, 26px);
-  align-items: start;
-}
-
-.frame {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--card-gap);
+  width: min(calc(3 * var(--card-w) + 2 * var(--card-gap)), calc(100vw - 40px));
   position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+/* Two across on tablets. Cards span 2 of 4 tracks so a leftover card on
+   the last row can sit in the middle instead of hugging the left edge. */
+@media (min-width: 700px) {
+  .work-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .work-grid > * {
+    grid-column: span 2;
+  }
+
+  .work-grid > :last-child:nth-child(2n + 1) {
+    grid-column: 2 / span 2;
+  }
+}
+
+/* Three across on desktop, on 6 tracks, with any leftover cards centred. */
+@media (min-width: 1100px) {
+  .work-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .work-grid > :last-child:nth-child(2n + 1) {
+    grid-column: span 2;
+  }
+
+  .work-grid > :last-child:nth-child(3n + 1) {
+    grid-column: 3 / span 2;
+  }
+
+  .work-grid > :nth-last-child(2):nth-child(3n + 1) {
+    grid-column: 2 / span 2;
+  }
+
+  .work-grid > :last-child:nth-child(3n + 2) {
+    grid-column: 4 / span 2;
+  }
+}
+
+.wcard {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 442 / 600;
   margin: 0;
-  grid-column: span 12;
-  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0b0b0e;
+  color: #fff;
+  box-shadow: 0 22px 44px -26px rgba(0, 0, 0, 0.65);
+  /* No transform transition here: the scroll reveal animates transform
+     with GSAP, and a CSS transition on the same property fights it. */
+  transition: box-shadow 0.55s ease;
 }
 
-@media (min-width: 760px) {
-  .frame {
-    grid-column: span 6;
-    aspect-ratio: 4 / 5;
-  }
-
-  /* 1 — full-bleed opener */
-  .frame:nth-child(7n + 1) {
-    grid-column: span 12;
-    aspect-ratio: 21 / 9;
-  }
-
-  /* 2 & 3 — a tall pair, the second dropped for rhythm */
-  .frame:nth-child(7n + 2) {
-    grid-column: span 7;
-    aspect-ratio: 5 / 4;
-  }
-
-  .frame:nth-child(7n + 3) {
-    grid-column: span 5;
-    aspect-ratio: 3 / 4;
-    margin-top: clamp(1.5rem, 4vw, 4rem);
-  }
-
-  /* 4 & 5 — reversed weighting */
-  .frame:nth-child(7n + 4) {
-    grid-column: span 5;
-    aspect-ratio: 4 / 5;
-  }
-
-  .frame:nth-child(7n + 5) {
-    grid-column: span 7;
-    aspect-ratio: 16 / 11;
-    margin-top: clamp(-3rem, -2vw, -1rem);
-  }
-
-  /* 6 & 7 — an inset square beside a wide closer */
-  .frame:nth-child(7n + 6) {
-    grid-column: span 4;
-    aspect-ratio: 1;
-    margin-top: clamp(1rem, 3vw, 3rem);
-  }
-
-  .frame:nth-child(7n + 7) {
-    grid-column: span 8;
-    aspect-ratio: 16 / 9;
-  }
+.wcard:hover {
+  box-shadow: 0 34px 60px -22px rgba(0, 0, 0, 0.8);
 }
 
-.frame-media {
+.wcard-art {
   position: absolute;
   inset: 0;
-  overflow: hidden;
-  border-radius: var(--radius-card);
-  background: var(--color-bone-3);
+  z-index: -2;
+  background: var(--art, #111);
 }
 
-.frame-media img {
-  width: 100%;
-  height: 100%;
+.wcard-art img {
   object-fit: cover;
-  transition: transform 0.9s var(--ease-out-expo), filter 0.6s var(--ease-out-soft);
+  transition: transform 1.3s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.frame:hover .frame-media img {
-  transform: scale(1.04);
+.wcard:hover .wcard-art img {
+  transform: scale(1.06);
 }
 
-/* Caption sits under the frame rather than over the photograph — an
-   overlay was dimming the very images it was labelling. */
-.frame-cap {
+/* Legibility scrim: dark at the top for the title, clear through the
+   middle for the artwork, dark again at the bottom for the copy. */
+.wcard::before {
+  content: '';
   position: absolute;
-  top: calc(100% + 0.85rem);
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 6, 8, 0.5) 0%,
+    rgba(6, 6, 8, 0.08) 34%,
+    rgba(6, 6, 8, 0.5) 62%,
+    rgba(6, 6, 8, 0.92) 100%
+  );
+}
+
+.wcard-mega {
+  position: absolute;
+  top: 7cqw;
+  left: 5cqw;
+  right: 5cqw;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-condensed), Impact, 'Arial Narrow Bold', sans-serif;
+  font-weight: 400;
+  font-size: 16.8cqw;
+  line-height: 0.92;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: #fff;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Optional sticker-style subject: a transparent PNG with a white edge. */
+.wcard-cutout {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: 78%;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff)
+    drop-shadow(0 -2px 0 #fff) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.5));
+}
+
+.wcard-body {
+  position: absolute;
   left: 0;
   right: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.frame-cat {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-clay-deep);
-}
-
-.on-ink .frame-cat {
-  color: var(--color-clay-light);
-}
-
-.frame-cap b {
-  font-family: var(--font-display);
-  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
-  font-weight: 500;
-  line-height: 1.25;
-}
-
-/* The captions live outside the frame box, so the grid needs room. */
-.spread {
-  row-gap: clamp(4rem, 6vw, 6.5rem);
-}
-
-/* ---------------- Portfolio filters ---------------- */
-.filters {
-  display: flex;
-  flex-wrap: wrap;
+  bottom: 0;
+  z-index: 1;
+  display: grid;
   gap: 0.6rem;
-  margin-bottom: 1.75rem;
+  justify-items: start;
+  padding: 0 6.6cqw 7cqw;
 }
 
-.filter {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  min-height: 44px;
-  padding: 0.55rem 1.15rem;
+.wcard-name {
+  margin: 0;
   font-family: var(--font-sans);
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--color-ink-3);
-  background: transparent;
+  font-size: 6.4cqw;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+}
+
+.wcard-tag {
+  margin: 0;
+  font-size: 3.9cqw;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.wcard-btn {
+  position: static;
+  margin-top: 0.7rem;
+  padding: 0.95em 1.9em;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 3.7cqw;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-a, #ff5a1f), var(--accent-b, #ff8a3d));
+  box-shadow: 0 12px 26px -12px var(--accent-a, #ff5a1f);
+  transition:
+    filter 0.3s ease,
+    transform 0.3s ease;
+}
+
+/* Stretch the button's link over the whole card. */
+.wcard-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.wcard:hover .wcard-btn {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+}
+
+.wcard-btn:focus-visible {
+  outline: none;
+}
+
+.wcard:has(.wcard-btn:focus-visible) {
+  outline: 3px solid var(--accent-b, #ff8a3d);
+  outline-offset: 3px;
+}
+
+.wcard-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* A piece of work: photograph full-bleed, caption at the foot. */
+.wcard-shot .wcard-art {
+  z-index: -2;
+}
+
+.wcard-shot::before {
+  background: linear-gradient(180deg, rgba(6, 6, 8, 0) 45%, rgba(6, 6, 8, 0.88) 100%);
+}
+
+.wcard-shot .wcard-body {
+  gap: 0.35rem;
+}
+
+.wcard-cat {
+  font-family: var(--font-mono);
+  font-size: 3.1cqw;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.wcard-shot-title {
+  font-family: var(--font-sans);
+  font-size: 5.6cqw;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ---------------- Work page sections ---------------- */
+.work-nav {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 30;
+  background: color-mix(in srgb, var(--color-bone) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-block: 1px solid var(--color-line);
+}
+
+.work-nav-inner {
+  display: flex;
+  gap: 0.5rem;
+  padding-block: 0.75rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.work-nav-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.work-pill {
+  flex: none;
+  padding: 0.55rem 1rem;
   border: 1px solid var(--color-line);
   border-radius: 999px;
-  cursor: pointer;
-  touch-action: manipulation;
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: inherit;
   transition:
-    color 0.3s var(--ease-out-soft),
-    border-color 0.3s var(--ease-out-soft),
-    background-color 0.3s var(--ease-out-soft);
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
-.filter:hover {
-  border-color: var(--color-clay);
-  color: var(--color-ink);
+.work-pill:hover {
+  border-color: currentColor;
 }
 
-.filter.is-on {
+.work-pill[aria-current='page'] {
   background: var(--color-ink);
   border-color: var(--color-ink);
   color: var(--color-bone);
 }
 
-.filter-count {
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  opacity: 0.6;
+.work-page {
+  padding-bottom: clamp(3rem, 6vw, 5rem);
 }
 
-.filter-status {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.work-empty {
+  max-width: 44ch;
+  margin: clamp(2rem, 5vw, 4rem) auto;
+  text-align: center;
   color: var(--color-muted);
-  margin: 0 0 2.5rem;
-}
-
-/* ---------------- Portfolio grid ---------------- */
-.shots {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: clamp(1.25rem, 2vw, 2rem) clamp(1rem, 1.6vw, 1.5rem);
-}
-
-.shot {
-  position: relative;
-  margin: 0;
-}
-
-.shot-media {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border-radius: var(--radius-card);
-  background: var(--color-bone-3);
-}
-
-/* Every third tile runs landscape, so the grid has rhythm without
-   needing per-photo art direction. */
-.shot:nth-child(3n + 1) .shot-media {
-  aspect-ratio: 3 / 4;
-}
-
-.shot:nth-child(5n + 3) .shot-media {
-  aspect-ratio: 1;
-}
-
-.shot-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.9s var(--ease-out-expo);
-}
-
-.shot:hover .shot-media img {
-  transform: scale(1.05);
-}
-
-.shot-cap {
-  display: flex;
-  flex-direction: column;
-  gap: 0.28rem;
-  padding-top: 0.85rem;
-}
-
-.shot-cat {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-clay-deep);
-}
-
-.shot-cap b {
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 500;
-  line-height: 1.25;
 }
 
 /* ---------------- Gallery ---------------- */
@@ -2012,3 +2640,498 @@ a.pill:hover {
 .on-ink .pill {
   border-color: var(--color-line-dark);
 }
+
+/* ---------------- 5. Real Estate Section (Clean & Simple) ---------------- */
+.re-section {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--space-6);
+}
+
+.re-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+@media (min-width: 900px) {
+  .re-header {
+    grid-template-columns: 1.15fr 1fr;
+    gap: 4rem;
+    align-items: flex-end;
+  }
+}
+
+.re-tag {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  color: var(--color-clay-light);
+}
+
+.re-title {
+  max-width: 18ch;
+  line-height: 1.05;
+}
+
+.re-lede {
+  color: var(--color-muted-dark);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.re-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+/* Clean 6-Card Capability Grid */
+.re-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .re-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .re-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.re-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 2.25rem 2rem;
+  min-height: 220px;
+  background: linear-gradient(160deg, rgba(245, 240, 232, 0.05) 0%, rgba(245, 240, 232, 0.015) 100%);
+  border: 1px solid rgba(245, 240, 232, 0.1);
+  border-radius: var(--radius-card);
+  transition: transform 0.4s var(--ease-out-soft), border-color 0.4s var(--ease-out-soft), box-shadow 0.4s var(--ease-out-soft);
+}
+
+.re-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(224, 138, 79, 0.4);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.6);
+}
+
+.re-card-num {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-clay-light);
+  letter-spacing: 0.04em;
+  margin-bottom: 1.25rem;
+}
+
+.re-card-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-bone);
+  line-height: 1.25;
+  margin-bottom: 0.85rem;
+}
+
+.re-card-desc {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--color-muted-dark);
+  margin: 0;
+}
+
+/* ---------------- Work Gallery Section with Category Tabs ---------------- */
+.work-gallery-section {
+  width: 100%;
+  position: relative;
+}
+
+.work-filter-wrapper {
+  margin-bottom: 2.5rem;
+  overflow: visible;
+  padding-bottom: 0;
+}
+
+.work-filter-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.work-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.work-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1.15rem;
+  border-radius: 9999px;
+  background: var(--color-bone-2, #ede5d8);
+  border: 1px solid var(--color-line, rgba(22, 18, 14, 0.16));
+  color: var(--color-ink, #16120e);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out-soft);
+  touch-action: manipulation;
+}
+
+.work-tab-btn:hover {
+  background: var(--color-bone-3, #e2d7c5);
+  border-color: var(--color-clay, #c2612f);
+  color: var(--color-clay-deep, #9a4a22);
+  transform: translateY(-1px);
+}
+
+.work-tab-btn.active {
+  background: var(--color-ink, #16120e);
+  border-color: var(--color-ink, #16120e);
+  color: var(--color-bone, #f5f0e8);
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(22, 18, 14, 0.18);
+}
+
+.work-tab-btn.active:hover {
+  background: var(--color-clay-deep, #9a4a22);
+  border-color: var(--color-clay-deep, #9a4a22);
+  color: #ffffff;
+}
+
+.work-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .work-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .work-gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.work-gallery-card {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0f0f12;
+  border: 1px solid var(--color-line, rgba(22, 18, 14, 0.14));
+  cursor: pointer;
+  transition: transform 0.4s var(--ease-out-soft), box-shadow 0.4s var(--ease-out-soft), border-color 0.4s var(--ease-out-soft);
+}
+
+.work-gallery-card.big {
+  grid-column: span 1;
+}
+
+@media (min-width: 1024px) {
+  .work-gallery-card.big {
+    grid-column: span 2;
+    aspect-ratio: 16 / 9;
+  }
+  .work-gallery-card.tall {
+    aspect-ratio: 3 / 4;
+  }
+  .work-gallery-card.wide {
+    grid-column: span 2;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.work-gallery-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(194, 97, 47, 0.2);
+  border-color: var(--color-clay, #c2612f);
+}
+
+.work-gallery-img {
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.work-gallery-card:hover .work-gallery-img {
+  transform: scale(1.06);
+}
+
+.work-gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(6, 6, 10, 0.88) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.work-gallery-cat {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-clay-light, #e08a4f);
+  margin-bottom: 0.35rem;
+}
+
+.work-gallery-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.work-gallery-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #181512, #0e0c0a);
+}
+
+.work-gallery-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--color-bone-2, #ede5d8);
+  border: 1px dashed var(--color-line, rgba(22, 18, 14, 0.2));
+  border-radius: 16px;
+  margin-top: 1.5rem;
+}
+
+.work-gallery-empty .t-lead {
+  color: var(--color-ink, #16120e);
+  margin-bottom: 0.5rem;
+}
+
+.work-gallery-empty .t-sub {
+  color: var(--color-muted, #6b6054);
+}
+
+.work-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(14, 12, 10, 0.94);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.25s ease;
+}
+
+.work-lightbox-content {
+  position: relative;
+  max-width: 1100px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #14110e;
+  border: 1px solid rgba(245, 240, 232, 0.15);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+}
+
+.work-lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.work-lightbox-close:hover {
+  background: var(--color-clay, #c2612f);
+  border-color: transparent;
+}
+
+.work-lightbox-img {
+  max-height: 75vh;
+  width: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.work-lightbox-meta {
+  padding: 1.25rem 1.75rem;
+  background: #14110e;
+}
+
+.work-lightbox-meta h3 {
+  color: #ffffff;
+  margin: 0;
+}
+
+/* ---------------- Work Sticky Navigation ---------------- */
+.work-nav {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 50;
+  background: rgba(245, 240, 232, 0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-line);
+  margin-bottom: 2.5rem;
+}
+
+.work-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-block: 0.75rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.work-nav-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.work-pill {
+  flex: none;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-ink);
+  transition: color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.work-pill:hover {
+  border-color: var(--color-clay);
+  color: var(--color-clay-deep);
+}
+
+.work-pill[aria-current='page'] {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-bone);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ---------------- Trusted Clients Section ---------------- */
+.clients-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.clients-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+@media (min-width: 640px) {
+  .clients-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .clients-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.client-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.25rem;
+  background: var(--color-bone-2, #ede5d8);
+  border: 1px solid var(--color-line, rgba(22, 18, 14, 0.14));
+  border-radius: var(--radius-card, 4px);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.35s var(--ease-out-soft), border-color 0.35s var(--ease-out-soft), box-shadow 0.35s var(--ease-out-soft);
+}
+
+.client-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-clay, #c2612f);
+  box-shadow: 0 16px 32px -10px rgba(22, 18, 14, 0.12);
+}
+
+.client-logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 96px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: inset 0 0 0 1px rgba(22, 18, 14, 0.06);
+}
+
+.client-logo-img {
+  max-height: 72px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 0.35s var(--ease-out-soft);
+}
+
+.client-card:hover .client-logo-img {
+  transform: scale(1.05);
+}
+
+.client-card-title {
+  margin-top: 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-ink-2, #241e18);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+

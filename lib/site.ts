@@ -42,9 +42,6 @@ export const site = {
 export const nav = [
   { label: 'Work', href: '/portfolio' },
   { label: 'Services', href: '/services' },
-  { label: 'Real Estate', href: '/real-estate' },
-  { label: 'Social & Influencer', href: '/social-media' },
-  { label: 'Testimonials', href: '/testimonials' },
   { label: 'About', href: '/about' },
 ] as const;
 
@@ -129,6 +126,7 @@ export const services: Service[] = [
       'Interior and exterior photography',
       'Cinematic property walkthrough films',
       'Drone aerials and site context shots',
+      'Panoramic drone shoots',
       'Brochure, hoarding and listing creatives',
       'Project launch campaign assets',
     ],

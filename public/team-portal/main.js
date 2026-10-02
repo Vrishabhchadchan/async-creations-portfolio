@@ -122,7 +122,11 @@ function activeFilter() {
 function applyFilter() {
   const filter = activeFilter();
   portalGallery.querySelectorAll('.gallery-item:not(.add-tile)').forEach((item) => {
-    const match = filter === 'all' || item.getAttribute('data-cat') === filter;
+    const cat = item.getAttribute('data-cat');
+    let match = false;
+    if (filter === 'all') match = true;
+    else if (filter === 'drone' || filter === 'droneshoot') match = (cat === 'drone' || cat === 'droneshoot');
+    else match = (cat === filter);
     item.classList.toggle('hide', !match);
   });
 }

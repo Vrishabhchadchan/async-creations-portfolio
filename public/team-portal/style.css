@@ -641,10 +641,196 @@
 
 .add-testi-btn { width: 100%; justify-content: center; }
 
+/* ===== Client management ===== */
+.client-portal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.client-portal-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 14px 20px 14px 48px;
+  box-shadow: 0 4px 18px -4px rgba(22, 18, 14, .04);
+  transition: border-color .2s ease, opacity .2s ease, transform .2s ease;
+}
+
+.client-portal-item:hover {
+  border-color: rgba(194, 97, 47, .35);
+}
+
+.client-portal-item.is-hidden {
+  opacity: .55;
+  background: rgba(22, 18, 14, .02);
+}
+
+.client-portal-item.dragging {
+  opacity: .3;
+  transform: scale(.98);
+}
+
+.client-portal-item.drag-over {
+  border-color: var(--clay);
+  box-shadow: 0 0 0 2px var(--clay);
+}
+
+.client-drag-handle {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: grab;
+  padding: 0;
+  opacity: .4;
+  transition: opacity .2s;
+}
+
+.client-drag-handle:hover {
+  opacity: .9;
+}
+
+.client-drag-handle svg {
+  stroke: var(--text);
+}
+
+.client-thumb-box {
+  width: 72px;
+  height: 52px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.client-thumb-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.client-meta-box {
+  flex: 1;
+  min-width: 0;
+}
+
+.client-portal-name {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.client-portal-link {
+  display: inline-block;
+  font-size: .8rem;
+  color: var(--clay);
+  text-decoration: none;
+  margin-top: 2px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.client-portal-link:hover {
+  text-decoration: underline;
+}
+
+.portal-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .06em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.badge-live {
+  background: rgba(34, 197, 94, .12);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, .3);
+}
+
+.badge-hidden {
+  background: rgba(220, 38, 38, .1);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, .25);
+}
+
+.client-actions-box {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.client-actions-box .tile-btn {
+  position: static;
+  opacity: 1;
+  transform: none;
+  background: rgba(22, 18, 14, .06);
+  border: 1px solid var(--panel-border);
+}
+
+.client-actions-box .tile-btn svg {
+  stroke: var(--text);
+}
+
+.client-actions-box .client-vis-btn:hover {
+  background: rgba(194, 97, 47, .12);
+  border-color: rgba(194, 97, 47, .4);
+}
+
+.client-portal-item.is-hidden .client-vis-btn {
+  background: rgba(220, 38, 38, .1);
+  border-color: rgba(220, 38, 38, .35);
+}
+
+.client-portal-item.is-hidden .client-vis-btn svg {
+  stroke: #c1272d;
+}
+
+.client-actions-box .client-del-btn:hover {
+  background: rgba(220, 38, 38, .12);
+  border-color: rgba(220, 38, 38, .4);
+}
+
+.client-actions-box .client-del-btn:hover svg {
+  stroke: #c1272d;
+}
+
+.add-client-btn {
+  width: 100%;
+  justify-content: center;
+}
+
 @media (max-width: 640px) {
   .portal-header-inner { justify-content: center; text-align: center; }
   .portal-modal-card { padding: 26px; }
   .portal-confirm-card { padding: 28px; }
   .testi-card { flex-direction: column; padding: 20px 20px 20px 44px; }
   .testi-card-actions { align-self: flex-end; }
+  .client-portal-item { flex-wrap: wrap; padding: 16px 16px 16px 44px; gap: 12px; }
+  .client-actions-box { margin-left: auto; }
 }

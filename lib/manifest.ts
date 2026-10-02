@@ -19,10 +19,7 @@ export const CATEGORY_ORDER = [
   'travel',
   'social',
   'realestate',
-  'product',
-  'portrait',
-  'fashion',
-  'brand',
+  'droneshoot',
 ] as const;
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -37,8 +34,13 @@ export const CATEGORY_LABELS: Record<string, string> = {
   travel: 'Travel & Lifestyle',
   social: 'Social Media & Brand Content',
   realestate: 'Real Estate',
+  droneshoot: 'Drone Shoot',
+  // Legacy / fallback labels so existing uploads remain properly labeled
   product: 'Product & Food',
-  // Legacy values — still accepted, still labelled.
+  influencer: 'Influencer & Creators',
+  branding: 'Brand Identity & Design',
+  strategy: 'Content Strategy',
+  motion: 'Motion Graphics & Editing',
   portrait: 'Portraits',
   fashion: 'Fashion',
   brand: 'Brand Launch',

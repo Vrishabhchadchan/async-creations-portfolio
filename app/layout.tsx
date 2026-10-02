@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Fraunces, Archivo, JetBrains_Mono, Syne, Instrument_Serif } from 'next/font/google';
+import { Fraunces, Archivo, JetBrains_Mono, Syne, Instrument_Serif, Anton } from 'next/font/google';
 import './globals.css';
 import './site.css';
 import Header from '@/components/Header';
@@ -49,6 +49,14 @@ const instrument = Instrument_Serif({
   weight: ['400'],
   style: ['normal', 'italic'],
   variable: '--font-instrument',
+});
+
+// Heavy condensed face for the oversized titles on the work cards.
+const anton = Anton({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: '400',
+  variable: '--font-condensed',
 });
 
 export const viewport: Viewport = {
@@ -101,7 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en-IN"
-      className={`${fraunces.variable} ${archivo.variable} ${mono.variable} ${syne.variable} ${instrument.variable}`}
+      className={`${fraunces.variable} ${archivo.variable} ${mono.variable} ${syne.variable} ${instrument.variable} ${anton.variable}`}
     >
       <body>
         <JsonLd data={[organizationSchema(), websiteSchema()]} />

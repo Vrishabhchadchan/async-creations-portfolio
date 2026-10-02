@@ -100,9 +100,6 @@ export default function SocialMediaPage() {
           />
           <div className="hero-actions" data-reveal>
             <Link href="/contact" className="btn btn-primary">
-              Get a retainer quote
-            </Link>
-            <Link href="/contact" className="btn btn-ghost">
               Talk to us
             </Link>
           </div>

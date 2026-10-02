@@ -38,18 +38,7 @@ export default function Header() {
     <header className={`site-header${solid ? ' is-solid' : ''}`}>
       <div className="shell header-inner">
         <Link href="/" className="brand" aria-label={`${site.name} — home`}>
-          <Image
-            src="/images/icon/logo-icon-128.png"
-            alt=""
-            width={34}
-            height={34}
-            priority
-            className="brand-mark"
-          />
-          <span className="brand-word">
-            <b>ASYNC</b>
-            <span>Creation</span>
-          </span>
+          <Image src="/images/icon/logo.png" alt="" width={149} height={46} priority className="brand-logo" />
         </Link>
 
         <nav className="nav-desk" aria-label="Primary">

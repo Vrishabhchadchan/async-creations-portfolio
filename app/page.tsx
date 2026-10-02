@@ -1,55 +1,72 @@
 import Link from 'next/link';
 import Lens3D from '@/components/Lens3D';
+import ViewfinderHUD from '@/components/ViewfinderHUD';
+import HeroDecor from '@/components/HeroDecor';
 import DroneScout from '@/components/DroneScout';
 import SectionHead from '@/components/SectionHead';
 import CardCorners from '@/components/CardCorners';
 import CtaBand from '@/components/CtaBand';
 import FaqList from '@/components/FaqList';
 import Testimonials from '@/components/Testimonials';
-import GalleryEditorial from '@/components/GalleryEditorial';
+import ClientsSection from '@/components/ClientsSection';
+import { ServiceCard } from '@/components/WorkCards';
 import JsonLd from '@/components/JsonLd';
 import { faqSchema } from '@/lib/seo';
-import { getManifest, isVisible } from '@/lib/manifest';
-import { getTestimonials, isVisible as isTestimonialVisible } from '@/lib/testimonials';
 import { site, services, whyAsync, processSteps as steps, stats } from '@/lib/site';
+import { getTestimonials, isVisible } from '@/lib/testimonials';
+import { getClients } from '@/lib/clients';
+import { WORK_SECTIONS } from '@/lib/workSections';
 
+/* The four headline services the brief calls for, then the rest of the
+   offer. All ten stay in the served HTML, so the strip keeps carrying the
+   service keywords rather than trading them for a shorter loop. */
 const MARQUEE = [
   'Photography',
   'Videography',
+  'Drone',
+  'Branding',
   'Reels',
-  'Drone Shoots',
   'Real Estate',
   'Social Media',
   'Influencer Campaigns',
   'Product & Food',
-  'Brand Identity',
   'Motion Graphics',
 ];
 
 export default async function HomePage() {
-  const items = await getManifest();
-  const allTestimonials = await getTestimonials();
-  const testimonials = allTestimonials.filter(isTestimonialVisible).slice(0, 4);
-
+  const allTestimonials = (await getTestimonials().catch(() => [])) || [];
+  const testimonials = allTestimonials.filter((t) => t && isVisible(t)).slice(0, 4);
+  const allClients = (await getClients().catch(() => [])) || [];
   return (
     <>
       <JsonLd data={faqSchema()} />
 
       {/* ---------------- 1. HERO ---------------- */}
       <section className="hero">
+        {/* Absolutely placed behind the copy at every size: a bled
+            top-right backdrop on phones, an offset column on desktop. */}
         <div className="hero-optic" aria-hidden="true">
           <Lens3D />
         </div>
+        <div className="hero-scrim" aria-hidden="true" />
+        <ViewfinderHUD />
+        <HeroDecor />
         <div className="shell hero-inner">
           <div className="hero-copy">
+            {/* The full role wraps to two lines below 768px and orphans
+                "· PUNE"; the short form keeps it on one line. Both are in
+                the DOM so the full wording stays crawlable. */}
             <p className="t-label hero-eyebrow" data-reveal>
-              {site.role} · {site.city}
+              <span className="eyebrow-full">
+                {site.role} · {site.city}
+              </span>
+              <span className="eyebrow-short">Studio · {site.city}</span>
             </p>
             <h1 className="t-display hero-title">
               <span className="ln" data-split="chars">
                 We Create.
               </span>
-              <span className="ln t-outline" data-split="chars">
+              <span className="ln hero-title-accent" data-split="chars">
                 You Grow.
               </span>
             </h1>
@@ -67,22 +84,27 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="hero-meta">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <b className="tnum">
-                  <span data-count={s.value}>{s.value}</span>
-                  {s.suffix}
-                </b>
-                <span>{s.label}</span>
-              </div>
-            ))}
-          </div>
+        </div>
+      </section>
+
+      {/* Sits under the hero on phones and inside its lower band on
+          desktop, where the hero's min-height leaves room for it. */}
+      <section className="hero-stats">
+        <div className="shell hero-meta">
+          {stats.map((s) => (
+            <div key={s.label}>
+              <b className="tnum">
+                <span data-count={s.value}>{s.value}</span>
+                {s.suffix}
+              </b>
+              <span>{s.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ---------------- MARQUEE ---------------- */}
-      <div className="strip" data-marquee="-100">
+      <div className="strip" data-marquee="-100" data-marquee-duration="52">
         <div className="marquee">
           {[0, 1].map((dup) => (
             <div className="marquee-track" key={dup} aria-hidden={dup === 1}>
@@ -219,7 +241,11 @@ export default async function HomePage() {
             }
             lede="Event coverage, brand launches and campaign photography shot across Pune and Maharashtra."
           />
-          <GalleryEditorial items={items.filter((i) => i.imageUrl && isVisible(i)).slice(0, 7)} />
+          <div className="work-grid" data-reveal-stagger>
+            {WORK_SECTIONS.map((section) => (
+              <ServiceCard key={section.slug} section={section} href={`/portfolio/${section.slug}`} />
+            ))}
+          </div>
           <div style={{ marginTop: '3rem' }} data-reveal>
             <Link href="/portfolio" className="btn btn-ghost">
               View the full portfolio
@@ -229,37 +255,69 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- 5. REAL ESTATE ---------------- */}
-      <section className="section on-ink" id="real-estate">
-        <div className="shell lede-grid">
-          <div data-from="left">
-            <span className="t-label">Real Estate Solutions</span>
-            <h2 className="t-h2" style={{ marginTop: '1rem' }}>
-              Properties sell faster when they <span className="italic-serif">photograph honestly</span>
-            </h2>
-            <p className="t-lead" data-highlight style={{ marginTop: '1.5rem' }}>
-              A dedicated vertical for builders, developers, architects and agents in Pune — interiors, exteriors, drone
-              aerials, cinematic walkthroughs and every launch creative that carries them to market.
-            </p>
-            <div style={{ marginTop: '2.5rem' }}>
-              <Link href="/real-estate" className="btn btn-primary">
-                Real estate solutions
-              </Link>
+      <section className="section on-ink re-section" id="real-estate">
+        <div className="shell">
+          <div className="re-header" data-reveal>
+            <div className="re-header-main">
+              <span className="t-label re-tag">Real Estate Solutions</span>
+              <h2 className="t-h2 re-title">
+                Properties sell faster when they <span className="italic-serif">photograph honestly</span>
+              </h2>
+            </div>
+            <div className="re-header-side">
+              <p className="t-lead re-lede" data-highlight>
+                A dedicated vertical for builders, developers, architects and agents in Pune — interiors, exteriors, drone
+                aerials, cinematic walkthroughs and every launch creative that carries them to market.
+              </p>
+              <div className="re-actions">
+                <Link href="/contact" className="btn btn-primary" data-magnetic>
+                  Book a site shoot
+                </Link>
+              </div>
             </div>
           </div>
-          <ul className="svc-list" data-from="right" style={{ gap: '1rem' }}>
+
+          <div className="re-grid" data-reveal-stagger>
             {[
-              'Interior and exterior property photography',
-              '4K drone aerials and site reveal shots',
-              'Cinematic walkthrough films for listings',
-              'Construction progress documentation',
-              'Brochures, hoardings and listing creatives',
-              'Project launch campaigns end to end',
-            ].map((f) => (
-              <li key={f} style={{ fontSize: '1rem' }}>
-                {f}
-              </li>
+              {
+                num: '01',
+                title: 'Interior & Exterior Photography',
+                desc: 'Naturally lit, distortion-corrected architectural frames of sample flats, elevation details and common amenities at peak daylight and blue hour.',
+              },
+              {
+                num: '02',
+                title: '4K Drone Aerials & Site Reveals',
+                desc: 'DGCA-compliant flight paths, dramatic altitude reveals, top-down masterplan frames and connectivity perspectives ground cameras cannot capture.',
+              },
+              {
+                num: '03',
+                title: 'Cinematic Walkthrough Films',
+                desc: 'Fluid gimbal-stabilized POV tours cut with intentional pacing and ambient sound design, helping remote buyers feel the scale and spatial flow.',
+              },
+              {
+                num: '04',
+                title: 'Construction Progress Coverage',
+                desc: 'Recurring monthly milestone shoots, ground logs and time-lapse video for investor decks, stakeholder reports, RERA compliance and pre-sales.',
+              },
+              {
+                num: '05',
+                title: 'Brochures, Hoardings & Creatives',
+                desc: 'High-res print-ready creatives, billboard hoardings, digital sales gallery decks and portal banners produced straight from shoot day RAWs.',
+              },
+              {
+                num: '06',
+                title: 'Project Launch Campaigns',
+                desc: 'A synchronized launch rollout — teaser reels, architect interview cuts, influencer walkthrough visits and performance marketing ad creatives.',
+              },
+            ].map((item) => (
+              <article key={item.num} className="card svc re-card">
+                <CardCorners />
+                <span className="re-card-num">{item.num}</span>
+                <h3 className="re-card-title">{item.title}</h3>
+                <p className="re-card-desc">{item.desc}</p>
+              </article>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 
@@ -366,6 +424,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ---------------- 8. TRUSTED CLIENTS ---------------- */}
+      <ClientsSection items={allClients} />
 
       {/* ---------------- 9. TESTIMONIALS ---------------- */}
       <Testimonials items={testimonials} />
