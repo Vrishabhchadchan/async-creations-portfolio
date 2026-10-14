@@ -8,13 +8,38 @@
   inset-inline: 0;
   top: 0;
   z-index: var(--z-header);
-  transition: background-color 0.35s var(--ease-out-soft), border-color 0.35s var(--ease-out-soft);
+  transition: border-color 0.35s var(--ease-out-soft);
   border-bottom: 1px solid transparent;
 }
 
-.site-header.is-solid {
+/* The frosted background lives on its own layer, not on the header. A
+   backdrop-filter on the header itself turns it into the containing block
+   for fixed-position children, which squashed the mobile menu panel down
+   to the header's 72px height once the page had been scrolled. */
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: rgba(245, 240, 232, 0.88);
   backdrop-filter: blur(14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-out-soft);
+}
+
+.site-header.is-solid::before {
+  opacity: 1;
+}
+
+/* With the menu open the header sits over a solid panel, so it must be
+   solid too, or page text ghosts through the strip beside the logo. */
+.site-header.is-menu-open::before {
+  background: var(--color-bone);
+  backdrop-filter: none;
+}
+
+.site-header.is-solid {
   border-bottom-color: var(--color-line);
 }
 
@@ -43,7 +68,7 @@
 .nav-desk {
   display: none;
   align-items: center;
-  gap: 2rem;
+  gap: 2.4rem;
 }
 
 @media (min-width: 1100px) {
@@ -57,7 +82,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   font-weight: 500;
   color: var(--color-ink-3);
   transition: color 0.25s var(--ease-out-soft);
@@ -93,9 +118,9 @@
 }
 
 .btn-sm {
-  min-height: 44px;
-  padding: 0.6rem 1.25rem;
-  font-size: 0.86rem;
+  min-height: 46px;
+  padding: 0.65rem 1.45rem;
+  font-size: 0.98rem;
 }
 
 .header-cta .btn-sm {
@@ -182,51 +207,40 @@
 }
 
 /* ---------------- Hero ----------------
-   Phones get a poster: the lens is a bled backdrop behind the copy, the
-   content is anchored to the bottom, and the stats sit in the band below.
-   From 768px it returns to a two-column layout with the lens beside the
-   text. The mobile breakpoint is 768 to match the design brief. */
+   Phones: the lens gets its own full-width block between the header and
+   the copy, so the whole camera is visible and nothing overlaps it. From
+   768px it returns to a two-column layout with the lens beside the text.
+   The mobile breakpoint is 768 to match the design brief. */
 .hero {
+  --lens-h: clamp(240px, 36svh, 340px);
   position: relative;
-  height: 100svh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding-top: calc(var(--header-h) + 1.25rem);
+  justify-content: flex-start;
+  padding-top: calc(var(--header-h) + var(--lens-h) + 0.5rem);
   padding-bottom: 2rem;
   overflow: hidden;
 }
 
-/* Lens backdrop: bleeds off the top-right corner and covers roughly the
-   top 60% of the screen. Absolute, so the bleed cannot widen the
-   document the way the old negative-margin block could. */
+/* The lens block. Same width as the screen (no bleed), so the full lens
+   can be framed inside it. Absolute, so it never widens the document. */
 .hero-optic {
   position: absolute;
-  top: -5svh;
-  right: -24vw;
-  left: 2vw;
-  height: 60svh;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  height: var(--lens-h);
   z-index: 0;
   display: grid;
   place-items: center;
   pointer-events: none;
 }
 
-/* Scrim: clear at the top-right where the lens lives, solid page colour
-   by the bottom-left where the copy sits. Two stops rather than one so
-   the text block sits on flat background instead of a gradient ramp. */
+/* Scrim: only needed when the lens bled behind the copy. With its own
+   block there is nothing to fade, and it was washing the lens out. */
 .hero-scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    205deg,
-    rgba(245, 240, 232, 0) 0%,
-    rgba(245, 240, 232, 0.5) 26%,
-    rgba(245, 240, 232, 0.97) 44%,
-    var(--color-bone) 54%
-  );
+  display: none;
 }
 
 .hero-inner {
@@ -461,7 +475,6 @@
 
 .vf-rec,
 .vf-readout {
-  text-shadow: 0 1px 3px rgba(20, 12, 6, 0.55);
   position: absolute;
   font-family: var(--font-mono);
   font-size: 0.6rem;
@@ -501,8 +514,8 @@
 .vf-readout {
   top: -2px;
   right: 26px;
-  color: #f1e7d8;
-  opacity: 0.92;
+  color: var(--color-ink-3);
+  opacity: 0.7;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1059,6 +1072,38 @@
   }
 }
 
+/* ---------------- Scroll drone ----------------
+   Flies up the screen as the page is scrolled (see ScrollDrone). Sits above
+   page content and below the header (z 100), so it climbs out from under it. */
+.scroll-drone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90;
+  width: clamp(92px, 11vw, 168px);
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  will-change: transform, opacity;
+  /* The craft is dark, so over the page's dark sections it vanished into the
+     background. A thin warm rim lifts its outline there, and is invisible
+     against the light sections. */
+  filter: drop-shadow(0 0 1.2px rgba(255, 238, 215, 0.85)) drop-shadow(0 0 7px rgba(255, 226, 190, 0.28));
+}
+
+.scroll-drone svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+@media print {
+  .scroll-drone {
+    display: none;
+  }
+}
+
 /* ---------------- Route progress ---------------- */
 .nav-progress {
   position: fixed;
@@ -1202,7 +1247,7 @@
 
 .label-rule {
   display: block;
-  width: 72px;
+  width: 88px;
   height: 1px;
   background: var(--color-clay);
   margin-bottom: 1.5rem;
@@ -2160,7 +2205,6 @@
   z-index: 30;
   background: color-mix(in srgb, var(--color-bone) 88%, transparent);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border-block: 1px solid var(--color-line);
 }
 
@@ -2765,11 +2809,43 @@ a.pill:hover {
 }
 
 .work-filter-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.6rem 0.75rem;
   flex-wrap: wrap;
   width: 100%;
+}
+
+/* Phones: thirteen pills wrapped into eight ragged rows. One swipeable row
+   instead, bleeding to the screen edges (the shell pads 20px each side),
+   with the edges faded so it reads as scrollable. */
+@media (max-width: 767px) {
+  .work-filter-wrapper {
+    margin: 0 -20px 1.75rem;
+  }
+
+  .work-filter-row {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    padding: 4px 20px 10px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 32px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 32px), transparent 100%);
+  }
+
+  .work-filter-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .work-tab-btn {
+    flex: none;
+    scroll-snap-align: center;
+  }
 }
 
 .work-tab-btn {
@@ -3135,3 +3211,56 @@ a.pill:hover {
 }
 
 
+
+/* Whole photo card is one link (used for the home page glimpse). */
+.wcard-shot-link {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.wcard-shot-link:focus-visible {
+  outline: 3px solid var(--color-clay);
+  outline-offset: -3px;
+}
+
+/* Phones: the lens block has a fixed height, so everything inside it has to
+   shrink to fit rather than size the block. A grid row grows to its content
+   by default, and the width-sized fallback lens (up to 520px) was stretching
+   the stage, and with it the 3D canvas, past the block. */
+@media (max-width: 767px) {
+  .hero-optic {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .lens-stage {
+    grid-template-rows: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .lens-flat {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .lens-optic {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Services page: body copy in the darker ink tone rather than the lighter
+   brown used for secondary text elsewhere. Scoped to the page so the service
+   cards on dark sections keep their own colours. */
+.svc-page .t-lead,
+.svc-page .svc-list li,
+.svc-page .kw {
+  color: var(--color-ink-3);
+}
+
+.svc-desc {
+  margin: 0;
+  color: var(--color-ink-3);
+}

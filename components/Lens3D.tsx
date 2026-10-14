@@ -135,35 +135,50 @@ export default function Lens3D() {
 
         sceneRef.current = lens;
 
-        const ctx = gsap.context(() => {
-          if (reduced) return;
-          const hero = el.closest('.hero') as HTMLElement | null;
-          if (!hero) return;
-
+        const mm = gsap.matchMedia();
+        const hero = el.closest('.hero') as HTMLElement | null;
+        if (!reduced && hero) {
           const stageEl = el.parentElement;
           const span = () => window.innerHeight * 0.62;
 
-          // The lens holds its place on screen while the hero copy scrolls
-          // away, so the zoom is watched happening instead of the whole
-          // thing sliding off first. It dissolves as the dive completes.
-          // scrub is true (no lag) so the 1:1 counter-scroll never drifts.
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: hero,
-                start: 'top top',
-                end: () => `+=${span()}`,
-                scrub: true,
-                invalidateOnRefresh: true,
-                onUpdate: (self) => lens.setProgress(self.progress),
-              },
-            })
-            .to(stageEl, { y: () => span(), ease: 'none', duration: 1 }, 0)
-            .to(stageEl, { opacity: 0, ease: 'power1.in', duration: 0.15 }, 0.88);
-        });
+          // Wide screens: the lens holds its place on screen while the hero
+          // copy scrolls away, so the zoom is watched happening instead of
+          // the whole thing sliding off first. It dissolves as the dive
+          // completes. scrub is true (no lag) so the 1:1 counter-scroll
+          // never drifts.
+          mm.add('(min-width: 768px)', () => {
+            gsap
+              .timeline({
+                scrollTrigger: {
+                  trigger: hero,
+                  start: 'top top',
+                  end: () => `+=${span()}`,
+                  scrub: true,
+                  invalidateOnRefresh: true,
+                  onUpdate: (self) => lens.setProgress(self.progress),
+                },
+              })
+              .to(stageEl, { y: () => span(), ease: 'none', duration: 1 }, 0)
+              .to(stageEl, { opacity: 0, ease: 'power1.in', duration: 0.15 }, 0.88);
+          });
+
+          // Phones: the lens has its own block above the copy, so it scrolls
+          // away with the page like everything else. Holding it in place
+          // would drag it over the text. The zoom still follows the scroll.
+          mm.add('(max-width: 767px)', () => {
+            ScrollTrigger.create({
+              trigger: hero,
+              start: 'top top',
+              end: () => `+=${span()}`,
+              scrub: true,
+              invalidateOnRefresh: true,
+              onUpdate: (self) => lens.setProgress(self.progress),
+            });
+          });
+        }
 
         cleanup = () => {
-          ctx.revert();
+          mm.revert();
           wide.removeEventListener('change', applyFraming);
           ro.disconnect();
           io.disconnect();

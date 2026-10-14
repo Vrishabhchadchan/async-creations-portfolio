@@ -156,8 +156,47 @@ function renderGallery(items) {
       handleToggleVisibility(btn.getAttribute('data-id'), btn.getAttribute('data-visible') !== 'true');
     });
   });
+  portalGallery.querySelectorAll('.tile-home').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (btn.disabled) return;
+      handleToggleHome(btn.getAttribute('data-id'), btn.getAttribute('data-on-home') !== 'true');
+    });
+  });
   wireDragAndDrop();
   applyFilter();
+  updateHomeCount(items);
+}
+
+// Keep in step with HOME_MAX in lib/manifest.ts (the server enforces it).
+const HOME_MAX = 6;
+
+function updateHomeCount(items) {
+  const el = document.getElementById('homeCount');
+  if (!el) return;
+  const chosen = items.filter((i) => i.onHome === true && i.visible !== false && i.imageUrl).length;
+  el.classList.toggle('is-full', chosen >= HOME_MAX);
+  el.textContent = chosen
+    ? `Home page: ${chosen} of ${HOME_MAX} photos chosen. Hover a photo and use the house icon to add or remove one.`
+    : `Home page: no photos chosen yet, so it shows your ${HOME_MAX} newest photos. Hover a photo and use the house icon to choose.`;
+}
+
+async function handleToggleHome(id, nextOnHome) {
+  if (!id) return;
+  try {
+    const res = await fetch('/api/gallery-home', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, onHome: nextOnHome }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not update the home page');
+    renderGallery(data.items || []);
+    showToast(nextOnHome ? 'Photo added to the home page.' : 'Photo removed from the home page.');
+  } catch (err) {
+    if (String(err.message).includes('log in')) return showLogin();
+    showToast(err.message, 'error');
+  }
 }
 
 async function handleToggleVisibility(id, nextVisible) {

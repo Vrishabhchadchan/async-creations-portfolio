@@ -20,7 +20,7 @@ export default function ServicesPage() {
     <>
       <JsonLd data={services.map((s) => serviceSchema(s.slug)).filter(Boolean) as object[]} />
 
-      <section className="page-hero">
+      <section className="page-hero svc-page">
         <div className="shell">
           <Breadcrumbs trail={[{ name: 'Services', path: '/services' }]} />
           <SectionHead
@@ -36,7 +36,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section svc-page" style={{ paddingTop: 0 }}>
         <div className="shell">
           {services.map((s, i) => (
             <article key={s.slug} id={s.slug} className="svc-row" data-reveal>
@@ -49,7 +49,7 @@ export default function ServicesPage() {
               </div>
 
               <div>
-                <p style={{ margin: 0, color: 'var(--color-muted)' }}>{s.description}</p>
+                <p className="svc-desc">{s.description}</p>
 
                 <h3 className="t-label" style={{ display: 'block', marginTop: '2rem', marginBottom: '1rem' }}>
                   What you receive

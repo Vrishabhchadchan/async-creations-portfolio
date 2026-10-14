@@ -18,10 +18,13 @@
   const EYE_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
   const EYE_OFF_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.9 19.9 0 0 1 4.22-5.44M9.9 4.24A10.6 10.6 0 0 1 12 4c7 0 11 8 11 8a19.9 19.9 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 
+  const HOME_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>';
+
   function galleryTileHTML(item, opts = {}) {
     const sizeClass = item.size && item.size !== 'normal' ? ' ' + item.size : '';
     const isHidden = item.visible === false;
     const hiddenClass = opts.editable && isHidden ? ' is-hidden' : '';
+    const isHome = item.onHome === true && !isHidden;
     const mediaHTML = item.imageUrl
       ? `<div class="tile-media" style="background-image:url('${escapeAttr(item.imageUrl)}')"></div>`
       : `<div class="tile-media placeholder-tile ${escapeAttr(item.placeholderVariant || 'ph-1')}">${PLACEHOLDER_ICON}</div>`;
@@ -31,8 +34,10 @@
       adminHTML = `
       <span class="tile-drag-handle" aria-label="Drag to reorder" title="Drag to reorder">${DRAG_ICON}</span>
       <button type="button" class="tile-visibility" data-id="${escapeAttr(item.id)}" data-visible="${isHidden ? 'false' : 'true'}" aria-label="${isHidden ? 'Show on live site' : 'Hide from live site'}" title="${isHidden ? 'Hidden — click to show on live site' : 'Visible — click to hide from live site'}">${isHidden ? EYE_OFF_ICON : EYE_ICON}</button>
+      <button type="button" class="tile-home${isHome ? ' is-on' : ''}" data-id="${escapeAttr(item.id)}" data-on-home="${isHome ? 'true' : 'false'}"${isHidden || !item.imageUrl ? ' disabled' : ''} aria-label="${isHome ? 'Remove from home page' : 'Show on home page'}" title="${isHidden ? 'Show this photo on the live site first' : isHome ? 'On the home page — click to remove' : 'Click to show on the home page'}">${HOME_ICON}</button>
       <button type="button" class="tile-delete" data-id="${escapeAttr(item.id)}" aria-label="Delete photo">${CLOSE_ICON}</button>
-      ${isHidden ? '<span class="tile-hidden-badge">Hidden</span>' : ''}`;
+      ${isHidden ? '<span class="tile-hidden-badge">Hidden</span>' : ''}
+      ${isHome ? '<span class="tile-home-badge">On home</span>' : ''}`;
     }
 
     return `<div class="gallery-item${sizeClass}${hiddenClass}" data-cat="${escapeAttr(item.category)}" data-id="${escapeAttr(item.id)}"${opts.editable ? ' draggable="true"' : ''}>

@@ -58,11 +58,34 @@ export type GalleryItem = {
   // Absent/undefined means visible — keeps items saved before this field
   // existed showing up on the live site exactly as before.
   visible?: boolean;
+  // Picked by the team (in the portal) to appear in the home page's
+  // recent-work glimpse. Absent means not picked.
+  onHome?: boolean;
 };
 
 /** Whether an item should render on the public site. */
 export function isVisible(item: GalleryItem) {
   return item.visible !== false;
+}
+
+/** How many images the home page's recent-work glimpse shows. */
+export const HOME_MAX = 6;
+
+/** Whether the team has picked this item for the home page. */
+export function isOnHome(item: GalleryItem) {
+  return item.onHome === true;
+}
+
+/**
+ * Images for the home page glimpse: the team's picks (in gallery order), up
+ * to HOME_MAX. Until anything has been picked it falls back to the newest
+ * uploads so the section is never empty.
+ */
+export function pickHomeItems(items: GalleryItem[]): GalleryItem[] {
+  const usable = items.filter((i) => i.imageUrl && isVisible(i));
+  const picked = usable.filter(isOnHome);
+  if (picked.length) return picked.slice(0, HOME_MAX);
+  return [...usable].sort((a, b) => b.createdAt - a.createdAt).slice(0, HOME_MAX);
 }
 
 const SEED_ITEMS: GalleryItem[] = (

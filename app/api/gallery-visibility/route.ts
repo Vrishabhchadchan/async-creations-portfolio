@@ -16,7 +16,10 @@ export async function POST(request: Request) {
 
   try {
     const items = await updateManifest(
-      (current) => current.map((item) => (item.id === id ? { ...item, visible } : item)),
+      (current) =>
+        current.map((item) =>
+          item.id === id ? { ...item, visible, ...(visible ? {} : { onHome: false }) } : item
+        ),
       (check) => {
         const target = check.find((item) => item.id === id);
         // Undefined reads as visible, so only require an exact match when hiding.

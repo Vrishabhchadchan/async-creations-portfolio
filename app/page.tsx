@@ -9,13 +9,13 @@ import CtaBand from '@/components/CtaBand';
 import FaqList from '@/components/FaqList';
 import Testimonials from '@/components/Testimonials';
 import ClientsSection from '@/components/ClientsSection';
-import { ServiceCard } from '@/components/WorkCards';
+import { ShotCard } from '@/components/WorkCards';
 import JsonLd from '@/components/JsonLd';
 import { faqSchema } from '@/lib/seo';
 import { site, services, whyAsync, processSteps as steps, stats } from '@/lib/site';
 import { getTestimonials, isVisible } from '@/lib/testimonials';
 import { getClients } from '@/lib/clients';
-import { WORK_SECTIONS } from '@/lib/workSections';
+import { getManifest, pickHomeItems } from '@/lib/manifest';
 
 /* The four headline services the brief calls for, then the rest of the
    offer. All ten stay in the served HTML, so the strip keeps carrying the
@@ -37,6 +37,8 @@ export default async function HomePage() {
   const allTestimonials = (await getTestimonials().catch(() => [])) || [];
   const testimonials = allTestimonials.filter((t) => t && isVisible(t)).slice(0, 4);
   const allClients = (await getClients().catch(() => [])) || [];
+  // The photos the team picked in the portal (up to six) for the work glimpse.
+  const homeShots = pickHomeItems((await getManifest().catch(() => [])) || []);
   return (
     <>
       <JsonLd data={faqSchema()} />
@@ -241,11 +243,13 @@ export default async function HomePage() {
             }
             lede="Event coverage, brand launches and campaign photography shot across Pune and Maharashtra."
           />
-          <div className="work-grid" data-reveal-stagger>
-            {WORK_SECTIONS.map((section) => (
-              <ServiceCard key={section.slug} section={section} href={`/portfolio/${section.slug}`} />
-            ))}
-          </div>
+          {homeShots.length > 0 && (
+            <div className="work-grid" data-reveal-stagger>
+              {homeShots.map((item, i) => (
+                <ShotCard key={item.id} item={item} priority={i < 3} href="/portfolio" />
+              ))}
+            </div>
+          )}
           <div style={{ marginTop: '3rem' }} data-reveal>
             <Link href="/portfolio" className="btn btn-ghost">
               View the full portfolio

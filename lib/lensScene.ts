@@ -542,17 +542,24 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
   // A soft bar that crosses the front element every few seconds, as if a
   // studio light had panned across it. Additive and depth-free so it
   // never darkens the glass it travels over.
+  // The bar sits in the middle third of a wide, otherwise clear texture. It
+  // is drawn on a fixed disc the size of the glass opening and moved by
+  // scrolling the texture, so it can never spill past the edge of the glass
+  // (a loose sliding quad did, and showed as a pale wedge beside the lens).
   const sweepTex = (() => {
-    const { canvas, ctx } = makeCanvas(256, 256);
-    const g = ctx.createLinearGradient(0, 0, 256, 0);
+    const { canvas, ctx } = makeCanvas(768, 64);
+    const g = ctx.createLinearGradient(256, 0, 512, 0);
     g.addColorStop(0, 'rgba(255,255,255,0)');
     g.addColorStop(0.42, 'rgba(226,214,255,0.5)');
     g.addColorStop(0.5, 'rgba(255,255,255,0.85)');
     g.addColorStop(0.58, 'rgba(226,214,255,0.5)');
     g.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 256, 256);
-    return track(new THREE.CanvasTexture(canvas));
+    ctx.fillRect(256, 0, 256, 64);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.center.set(0.5, 0.5);
+    tex.rotation = rad(-24);
+    return track(tex);
   })();
   const sweepMat = track(
     new THREE.MeshBasicMaterial({
@@ -565,9 +572,8 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
       toneMapped: false,
     }),
   );
-  const sweep = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 1.5), sweepMat);
+  const sweep = new THREE.Mesh(new THREE.CircleGeometry(0.7, 64), sweepMat);
   sweep.position.z = 2.33;
-  sweep.rotation.z = rad(-24);
   front.add(sweep);
   disposables.push(sweep.geometry);
 
@@ -663,9 +669,11 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     const el = rad(lerp(13, 3, e));
     // 7.8 rather than 9.4 at rest: the lens reads about a fifth larger and
     // holds the viewfinder frame as its focal point.
-    // 0.795 on mobile is 7.8 x 0.795 = 6.2, which is what 9.4 x 0.66 gave
-    // before the desktop lens was enlarged: the phone framing is unchanged.
-    const dist = (lerp(7.8, 4.1, e) / fit) * lerp(1, 0.795, blockFraming);
+    // On phones the lens has a full-width block of its own, wider than tall,
+    // and the whole barrel must fit in it. 0.92 pulls the camera back far
+    // enough that the 3/4-view barrel keeps a margin on both sides, with
+    // room left for the idle drift and tilt.
+    const dist = (lerp(7.8, 4.1, e) / fit) * lerp(1, 0.92, blockFraming);
     const zc = lerp(0.35, 2.15 + front.position.z, e);
     look.set(0, 0, zc);
     camera.position.set(
@@ -677,8 +685,11 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
     // The canvas spans the whole hero, but the lens rests inside the
     // viewfinder frame on the right and drifts to centre as it dives. The
     // mobile block keeps its own fixed aim.
-    const ax = blockFraming ? 0.26 * 0.34 : aimX;
-    const ay = blockFraming ? 0 : aimY;
+    // In its phone block the 3/4-view barrel recedes to the left, so a
+    // dead-centre aim leaves the lens visibly right-heavy and low; these
+    // offsets (measured from rendered frames) centre what you actually see.
+    const ax = blockFraming ? -0.05 : aimX;
+    const ay = blockFraming ? -0.035 : aimY;
     camera.setViewOffset(viewW, viewH, -viewW * ax * (1 - e), -viewH * ay * (1 - e), viewW, viewH);
     camera.lookAt(look);
 
@@ -707,8 +718,8 @@ export function createLensScene(container: HTMLElement, opts: { reduced: boolean
       const phase = (elapsed % SWEEP_PERIOD) / SWEEP_PERIOD;
       const travel = clamp01(phase / 0.26); // the pass itself takes ~1.3s
       sweepMat.opacity = phase < 0.26 ? Math.sin(travel * Math.PI) * 0.5 : 0;
-      sweep.position.x = lerp(-0.82, 0.82, travel);
-      sweep.position.y = lerp(0.5, -0.5, travel);
+      // Offset runs opposite to the bar's travel across the glass.
+      sweepTex.offset.x = lerp(0.66, -0.66, travel);
 
       // Gentle breathing glow on the clay accents.
       const pulse = 0.22 + (Math.sin(elapsed * 1.15) * 0.5 + 0.5) * 0.5;

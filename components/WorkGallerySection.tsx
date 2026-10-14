@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import type { GalleryItem } from '@/lib/manifest';
 
@@ -23,6 +23,17 @@ const CATEGORY_TABS = [
 export default function WorkGallerySection({ items }: { items: GalleryItem[] }) {
   const [activeTab, setActiveTab] = useState('all');
   const [activeLightbox, setActiveLightbox] = useState<GalleryItem | null>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  // On phones the pills are a swipeable row; keep the selected one centred.
+  // Only the row is scrolled, never the page. On wide screens the pills wrap
+  // and nothing overflows, so this does nothing there.
+  useEffect(() => {
+    const row = rowRef.current;
+    const pill = row?.querySelector<HTMLElement>('.work-tab-btn.active');
+    if (!row || !pill || row.scrollWidth <= row.clientWidth) return;
+    row.scrollTo({ left: pill.offsetLeft - (row.clientWidth - pill.offsetWidth) / 2, behavior: 'smooth' });
+  }, [activeTab]);
 
   const filteredItems = items.filter((item) => {
     if (item.visible === false) return false;
@@ -37,13 +48,14 @@ export default function WorkGallerySection({ items }: { items: GalleryItem[] }) 
     <div className="work-gallery-section">
       {/* ---------------- CATEGORY TABS ---------------- */}
       <div className="work-filter-wrapper">
-        <div className="work-filter-row">
+        <div className="work-filter-row" ref={rowRef} role="group" aria-label="Filter work by category">
           {CATEGORY_TABS.map((tab) => {
             const isActive = activeTab === tab.key;
             return (
               <button
                 key={tab.key}
                 type="button"
+                aria-pressed={isActive}
                 className={`work-tab-btn ${isActive ? 'active' : ''}`}
                 onClick={() => setActiveTab(tab.key)}
               >
