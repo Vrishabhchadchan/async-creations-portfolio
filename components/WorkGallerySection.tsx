@@ -7,17 +7,16 @@ import type { GalleryItem } from '@/lib/manifest';
 const CATEGORY_TABS = [
   { key: 'all', label: 'Featured Works' },
   { key: 'photography', label: 'Photography' },
-  { key: 'wedding', label: 'Weddings' },
-  { key: 'prewedding', label: 'Pre-Weddings' },
-  { key: 'drone', label: 'Drone & Aerial' },
   { key: 'corporate', label: 'Corporate & Commercial' },
   { key: 'event', label: 'Events & Concerts' },
+  { key: 'drone', label: 'Drone & Aerial' },
   { key: 'film', label: 'Cinematic Films & Reels' },
+  { key: 'wedding', label: 'Weddings' },
+  { key: 'prewedding', label: 'Pre-Weddings' },
+  { key: 'social', label: 'Social Media & Brand Content' },
   { key: 'institutional', label: 'Institutional & Education' },
   { key: 'travel', label: 'Travel & Lifestyle' },
-  { key: 'social', label: 'Social Media & Brand Content' },
   { key: 'realestate', label: 'Real Estate' },
-  { key: 'droneshoot', label: 'Drone Shoot' },
 ];
 
 /** Dedicated Reel-sized modal player card that pops up on click */
@@ -275,17 +274,23 @@ export default function WorkGallerySection({ items }: { items: GalleryItem[] }) 
         </div>
       ) : (
         <div className="work-gallery-empty">
-          <p className="t-lead">No photos or videos uploaded for this category yet.</p>
-          <p className="t-sub">Photos and videos uploaded by your team in the Team Portal will appear here live.</p>
-          <a
-            href="/team-portal"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary"
+          <div className="work-gallery-empty-icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </div>
+          <p className="t-lead">Curating this collection</p>
+          <p className="t-sub">Selected work for this category will be featured here soon. In the meantime, explore our other projects.</p>
+          <button
+            type="button"
+            className="btn btn-secondary"
             style={{ marginTop: '1.25rem' }}
+            onClick={() => setActiveTab('all')}
           >
-            Upload via Team Portal
-          </a>
+            Explore All Works
+          </button>
         </div>
       )}
 

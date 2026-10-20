@@ -19,7 +19,6 @@ export const CATEGORY_ORDER = [
   'travel',
   'social',
   'realestate',
-  'droneshoot',
 ] as const;
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -34,17 +33,75 @@ export const CATEGORY_LABELS: Record<string, string> = {
   travel: 'Travel & Lifestyle',
   social: 'Social Media & Brand Content',
   realestate: 'Real Estate',
-  droneshoot: 'Drone Shoot',
-  // Legacy / fallback labels so existing uploads remain properly labeled
-  product: 'Product & Food',
-  influencer: 'Influencer & Creators',
-  branding: 'Brand Identity & Design',
-  strategy: 'Content Strategy',
-  motion: 'Motion Graphics & Editing',
-  portrait: 'Portraits',
-  fashion: 'Fashion',
-  brand: 'Brand Launch',
+  droneshoot: 'Drone & Aerial',
+  // Legacy / fallback labels
+  product: 'Photography',
+  influencer: 'Social Media & Brand Content',
+  branding: 'Corporate & Commercial',
+  strategy: 'Corporate & Commercial',
+  motion: 'Cinematic Films & Reels',
+  portrait: 'Photography',
+  fashion: 'Photography',
+  brand: 'Corporate & Commercial',
 };
+
+export const LEGACY_CATEGORY_MAP: Record<string, { category: string; label: string }> = {
+  brand: { category: 'corporate', label: 'Corporate & Commercial' },
+  branding: { category: 'corporate', label: 'Corporate & Commercial' },
+  strategy: { category: 'corporate', label: 'Corporate & Commercial' },
+  corporate: { category: 'corporate', label: 'Corporate & Commercial' },
+
+  fashion: { category: 'photography', label: 'Photography' },
+  portrait: { category: 'photography', label: 'Photography' },
+  portraits: { category: 'photography', label: 'Photography' },
+  product: { category: 'photography', label: 'Photography' },
+  photography: { category: 'photography', label: 'Photography' },
+
+  event: { category: 'event', label: 'Events & Concerts' },
+  events: { category: 'event', label: 'Events & Concerts' },
+
+  drone: { category: 'drone', label: 'Drone & Aerial' },
+  droneshoot: { category: 'drone', label: 'Drone & Aerial' },
+
+  film: { category: 'film', label: 'Cinematic Films & Reels' },
+  motion: { category: 'film', label: 'Cinematic Films & Reels' },
+
+  social: { category: 'social', label: 'Social Media & Brand Content' },
+  influencer: { category: 'social', label: 'Social Media & Brand Content' },
+
+  wedding: { category: 'wedding', label: 'Weddings' },
+  weddings: { category: 'wedding', label: 'Weddings' },
+  prewedding: { category: 'prewedding', label: 'Pre-Weddings' },
+  'pre-wedding': { category: 'prewedding', label: 'Pre-Weddings' },
+
+  institutional: { category: 'institutional', label: 'Institutional & Education' },
+  education: { category: 'institutional', label: 'Institutional & Education' },
+
+  travel: { category: 'travel', label: 'Travel & Lifestyle' },
+  lifestyle: { category: 'travel', label: 'Travel & Lifestyle' },
+
+  realestate: { category: 'realestate', label: 'Real Estate' },
+  'real-estate': { category: 'realestate', label: 'Real Estate' },
+};
+
+export function normalizeItem(item: GalleryItem): GalleryItem {
+  const mapping = LEGACY_CATEGORY_MAP[item.category];
+  const category = mapping ? mapping.category : item.category;
+  let categoryLabel = mapping ? mapping.label : (CATEGORY_LABELS[category] || item.categoryLabel || category);
+
+  let finalCategory = category;
+  if (item.id === 'seed-2' || (item.title && item.title.toLowerCase().includes('live event'))) {
+    finalCategory = 'event';
+    categoryLabel = 'Events & Concerts';
+  }
+
+  return {
+    ...item,
+    category: finalCategory,
+    categoryLabel,
+    size: 'normal',
+  };
+}
 
 export type GalleryItem = {
   id: string;
@@ -60,11 +117,7 @@ export type GalleryItem = {
   mediaType?: 'image' | 'video';
   placeholderVariant?: string;
   createdAt: number;
-  // Absent/undefined means visible — keeps items saved before this field
-  // existed showing up on the live site exactly as before.
   visible?: boolean;
-  // Picked by the team (in the portal) to appear in the home page's
-  // recent-work glimpse. Absent means not picked.
   onHome?: boolean;
 };
 
@@ -87,45 +140,156 @@ export function isOnHome(item: GalleryItem) {
  * uploads so the section is never empty.
  */
 export function pickHomeItems(items: GalleryItem[]): GalleryItem[] {
-  // Videos without a poster are still valid home items; imageUrl check is skipped for them.
   const usable = items.filter((i) => (i.imageUrl || i.mediaType === 'video') && isVisible(i));
   const picked = usable.filter(isOnHome);
   if (picked.length) return picked.slice(0, HOME_MAX);
   return [...usable].sort((a, b) => b.createdAt - a.createdAt).slice(0, HOME_MAX);
 }
 
-const SEED_ITEMS: GalleryItem[] = (
-  [
-    { id: 'seed-1', category: 'corporate', title: 'Viksit Bharat — Team On Stage', size: 'big', imageUrl: '/images/work/brand-launch-4.jpg' },
-    { id: 'seed-2', category: 'event', title: 'Live Event Coverage', size: 'tall', imageUrl: '/images/work/brand-launch-5.jpg' },
-    { id: 'seed-5', category: 'event', title: 'Persona Fest — Showstopper Fashion Show', size: 'big', imageUrl: '/images/work/events3.jpg' },
-    { id: 'seed-6', category: 'event', title: 'On-Stage Ensemble', size: 'tall', imageUrl: '/images/work/events1.jpg' },
-    { id: 'seed-7', category: 'event', title: 'Persona Fest 2026', size: 'normal', imageUrl: '/images/work/events2.jpg' },
-    { id: 'seed-8', category: 'event', title: 'Spotlight Moment', size: 'normal', imageUrl: '/images/work/events4.jpg' },
-    { id: 'seed-9', category: 'event', title: 'Winning Moment — Closing Ceremony', size: 'wide', imageUrl: '/images/work/events5.jpg' },
-    { id: 'seed-13', category: 'corporate', title: 'Brand Launch Coverage', size: 'normal', imageUrl: '/images/work/brand-launch-1.jpg' },
-    { id: 'seed-14', category: 'event', title: 'Stage & Audience', size: 'normal', imageUrl: '/images/work/brand-launch-2.jpg' },
-    { id: 'seed-15', category: 'corporate', title: 'Event Documentation', size: 'normal', imageUrl: '/images/work/brand-launch-3.jpg' },
-  ] as const
-).map((item) => ({
-  ...item,
-  categoryLabel: CATEGORY_LABELS[item.category],
-  createdAt: 0,
-})) as GalleryItem[];
+const SEED_ITEMS: GalleryItem[] = [
+  {
+    id: 'seed-photo-1',
+    category: 'photography',
+    categoryLabel: 'Photography',
+    title: 'Editorial & Fashion Portraiture',
+    size: 'normal',
+    imageUrl: '/images/work/service-photo.jpg',
+    createdAt: 14,
+    onHome: true,
+  },
+  {
+    id: 'seed-1',
+    category: 'corporate',
+    categoryLabel: 'Corporate & Commercial',
+    title: 'Viksit Bharat — Team On Stage',
+    size: 'normal',
+    imageUrl: '/images/work/brand-launch-4.jpg',
+    createdAt: 13,
+    onHome: true,
+  },
+  {
+    id: 'seed-drone-1',
+    category: 'drone',
+    categoryLabel: 'Drone & Aerial',
+    title: 'Cinematic Aerial Survey & Landscapes',
+    size: 'normal',
+    imageUrl: '/images/work/service-drone.jpg',
+    createdAt: 12,
+    onHome: true,
+  },
+  {
+    id: 'seed-film-1',
+    category: 'film',
+    categoryLabel: 'Cinematic Films & Reels',
+    title: 'Commercial Film Production & Color Grading',
+    size: 'normal',
+    imageUrl: '/images/work/service-cine.jpg',
+    createdAt: 11,
+    onHome: true,
+  },
+  {
+    id: 'seed-2',
+    category: 'event',
+    categoryLabel: 'Events & Concerts',
+    title: 'Live Cultural Concert Coverage',
+    size: 'normal',
+    imageUrl: '/images/work/brand-launch-5.jpg',
+    createdAt: 10,
+    onHome: true,
+  },
+  {
+    id: 'seed-5',
+    category: 'event',
+    categoryLabel: 'Events & Concerts',
+    title: 'Persona Fest — Showstopper Fashion Show',
+    size: 'normal',
+    imageUrl: '/images/work/events3.jpg',
+    createdAt: 9,
+    onHome: true,
+  },
+  {
+    id: 'seed-social-1',
+    category: 'social',
+    categoryLabel: 'Social Media & Brand Content',
+    title: 'Dynamic Social Media Content & Reels',
+    size: 'normal',
+    imageUrl: '/images/work/service-reels.jpg',
+    createdAt: 8,
+  },
+  {
+    id: 'seed-13',
+    category: 'corporate',
+    categoryLabel: 'Corporate & Commercial',
+    title: 'Visual Identity & Brand Campaign',
+    size: 'normal',
+    imageUrl: '/images/work/brand-launch-1.jpg',
+    createdAt: 7,
+  },
+  {
+    id: 'seed-6',
+    category: 'event',
+    categoryLabel: 'Events & Concerts',
+    title: 'On-Stage Ensemble & Lighting',
+    size: 'normal',
+    imageUrl: '/images/work/events1.jpg',
+    createdAt: 6,
+  },
+  {
+    id: 'seed-7',
+    category: 'event',
+    categoryLabel: 'Events & Concerts',
+    title: 'Persona Fest 2026 Live Performance',
+    size: 'normal',
+    imageUrl: '/images/work/events2.jpg',
+    createdAt: 5,
+  },
+  {
+    id: 'seed-8',
+    category: 'event',
+    categoryLabel: 'Events & Concerts',
+    title: 'Spotlight Moment — Stage Finale',
+    size: 'normal',
+    imageUrl: '/images/work/events4.jpg',
+    createdAt: 4,
+  },
+  {
+    id: 'seed-9',
+    category: 'event',
+    categoryLabel: 'Events & Concerts',
+    title: 'Winning Moment — Closing Ceremony',
+    size: 'normal',
+    imageUrl: '/images/work/events5.jpg',
+    createdAt: 3,
+  },
+  {
+    id: 'seed-14',
+    category: 'corporate',
+    categoryLabel: 'Corporate & Commercial',
+    title: 'Corporate Conference & Keynote',
+    size: 'normal',
+    imageUrl: '/images/work/brand-launch-2.jpg',
+    createdAt: 2,
+  },
+  {
+    id: 'seed-15',
+    category: 'corporate',
+    categoryLabel: 'Corporate & Commercial',
+    title: 'Executive Summit Documentation',
+    size: 'normal',
+    imageUrl: '/images/work/brand-launch-3.jpg',
+    createdAt: 1,
+  },
+];
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// Vercel's public Blob CDN caches by path only, so re-reading the same URL
-// after a write can serve a stale copy for minutes. Every save writes a
-// brand-new file and reads always take the newest via list(), which is a
-// control-plane call rather than the cached CDN path.
 async function listManifestBlobs() {
   const { blobs } = await list({ prefix: MANIFEST_PREFIX, limit: 50 });
   return blobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
 }
 
 export async function getManifest(): Promise<GalleryItem[]> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return SEED_ITEMS;
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return SEED_ITEMS.map(normalizeItem);
 
   try {
     const blobs = await listManifestBlobs();
@@ -133,13 +297,16 @@ export async function getManifest(): Promise<GalleryItem[]> {
       const res = await fetch(blobs[0].url, { cache: 'no-store' });
       if (res.ok) {
         const items = await res.json();
-        if (Array.isArray(items)) return items;
+        if (Array.isArray(items)) {
+          // Normalize every item to the proper category, label, and clean size
+          return items.map(normalizeItem);
+        }
       }
     }
-    return saveManifest(SEED_ITEMS);
+    return saveManifest(SEED_ITEMS.map(normalizeItem));
   } catch (err) {
     console.error('getManifest failed, serving seed items', err);
-    return SEED_ITEMS;
+    return SEED_ITEMS.map(normalizeItem);
   }
 }
 
