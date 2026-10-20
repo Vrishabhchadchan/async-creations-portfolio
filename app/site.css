@@ -3072,90 +3072,192 @@ a.pill:hover {
   margin: 0;
 }
 
-/* ---- Video card (natural aspect ratio) ---- */
-.work-gallery-card-wrapper {
-  grid-column: span 1;
+/* ---------------- Reel Lightbox Modal Card ---------------- */
+.work-reel-modal-card {
+  position: relative;
+  width: min(390px, 92vw);
+  height: min(82vh, 730px);
+  aspect-ratio: 9 / 16;
+  max-width: 420px;
+  background: #000;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  animation: reelModalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.work-gallery-card-wrapper.big {
-  grid-column: span 1;
-}
-
-@media (min-width: 1024px) {
-  .work-gallery-card-wrapper.big,
-  .work-gallery-card-wrapper.wide {
-    grid-column: span 2;
+@keyframes reelModalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
-.work-gallery-video-card {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #0f0f12;
-  border: 1px solid var(--color-line, rgba(22, 18, 14, 0.14));
+.work-reel-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: transform 0.4s var(--ease-out-soft), box-shadow 0.4s var(--ease-out-soft), border-color 0.4s var(--ease-out-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
-.work-gallery-video-card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(194, 97, 47, 0.2);
-  border-color: var(--color-clay, #c2612f);
+.work-reel-close-btn:hover {
+  background: var(--color-clay, #c2612f);
+  border-color: transparent;
+  transform: scale(1.08);
 }
 
-.work-video-wrap {
+.work-reel-video-container {
   position: relative;
   width: 100%;
-  /* video fills its own natural height */
-}
-
-.work-gallery-video {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 80vh;
-  object-fit: contain;
+  height: 100%;
+  overflow: hidden;
   background: #000;
   cursor: pointer;
 }
 
-/* Big centered play button (before first tap) */
-.work-video-play-center {
+.work-reel-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.work-reel-center-play {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.35);
-  border: none;
-  cursor: pointer;
+  background: rgba(0, 0, 0, 0.4);
   color: #fff;
-  transition: background 0.25s ease;
   z-index: 5;
+  pointer-events: none;
 }
 
-.work-video-play-center svg {
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
-  transition: transform 0.2s ease;
+.work-reel-center-play svg {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  padding: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  width: 68px;
+  height: 68px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
-.work-video-play-center:hover svg {
-  transform: scale(1.15);
+.work-reel-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  border-radius: 9999px;
+  padding: 0.25rem 0.65rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* Bottom controls bar */
-.work-video-controls {
+.work-reel-bottom {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 10;
+  padding: 1.25rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.work-reel-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.work-reel-title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.work-reel-controls {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 0.9rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
-  z-index: 6;
+}
+
+/* ---------------- Grid Video Tile ---------------- */
+.work-gallery-video-tile {
+  cursor: pointer;
+}
+
+.work-gallery-video-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #0f0f12;
+}
+
+.work-video-tile-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  color: #fff;
+  pointer-events: none;
+  transition: transform 0.25s ease;
+}
+
+.work-video-tile-play svg {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  padding: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  width: 52px;
+  height: 52px;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.work-gallery-card:hover .work-video-tile-play svg {
+  transform: scale(1.15);
+  background: var(--color-clay, #c2612f);
+  border-color: transparent;
 }
 
 .work-video-btn {
@@ -3179,14 +3281,12 @@ a.pill:hover {
   background: rgba(0, 0, 0, 0.7);
 }
 
-/* "Tap for sound" text beside the mute icon */
 .work-video-tap-sound {
   font-family: var(--font-sans);
   font-size: 0.78rem;
   white-space: nowrap;
 }
 
-/* VIDEO badge on poster */
 .work-video-badge {
   position: absolute;
   top: 12px;
@@ -3204,8 +3304,9 @@ a.pill:hover {
   font-size: 0.68rem;
   letter-spacing: 0.1em;
   font-weight: 600;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
+
 
 
 /* ---------------- Work Sticky Navigation ---------------- */

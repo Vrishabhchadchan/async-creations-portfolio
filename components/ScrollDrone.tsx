@@ -56,20 +56,24 @@ export default function ScrollDrone() {
   const reset = useRef<() => void>(() => {});
   const [ready, setReady] = useState(false);
   const pathname = usePathname();
+  const isHome = pathname === '/';
 
-  // The artwork is only worth shipping to visitors who will see it fly.
+  // Only run on the home page, for visitors who want motion, and only if not flown yet
   useEffect(() => {
+    if (!isHome) return;
+    try {
+      if (sessionStorage.getItem('async_drone_flown') === '1') return;
+    } catch {}
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) setReady(true);
-  }, []);
-
-  // A new page starts with no drone in the air.
-  useEffect(() => {
-    reset.current();
-  }, [pathname]);
+  }, [isHome]);
 
   useEffect(() => {
+    if (!isHome || !ready) return;
     const el = root.current;
-    if (!ready || !el) return;
+    if (!el) return;
+
+    let hasFlown = false;
+
 
     const flight = { progress: 0 }; // where the drone is headed: 0 = bottom edge, 1 = top edge
     let shown = 0; // where it is drawn, eased toward `progress`
@@ -137,15 +141,15 @@ export default function ScrollDrone() {
     };
 
     const finish = () => {
+      hasFlown = true;
+      try { sessionStorage.setItem('async_drone_flown', '1'); } catch {}
       autopilot?.kill();
       autopilot = null;
       window.clearTimeout(autoTimer);
+      window.clearTimeout(gapTimer);
       hide();
-      flight.progress = 0;
-      shown = 0;
-      speed = 0;
-      // Scrolling that is still going on launches the next one right after this.
-      cooldownUntil = performance.now() + COOLDOWN_MS;
+      window.removeEventListener('scroll', onScroll);
+      gsap.ticker.remove(tick);
     };
 
     const engageAutopilot = () => {
@@ -161,6 +165,7 @@ export default function ScrollDrone() {
     };
 
     const onScroll = () => {
+      if (hasFlown) return;
       const now = performance.now();
       const y = window.scrollY;
       const dy = Math.abs(y - lastY);
@@ -177,7 +182,6 @@ export default function ScrollDrone() {
       }, GESTURE_GAP_MS);
 
       if (!visible) {
-        if (now < cooldownUntil) return;
         flight.progress = 0;
         shown = 0;
         speed = 0;
