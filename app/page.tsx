@@ -73,7 +73,7 @@ export default async function HomePage() {
               </span>
             </h1>
             <p className="t-lead hero-desc" data-split="lines">
-              Async Creation is a photography, videography and branding studio in {site.city}. We shoot it, cut it,
+              Async Creations is a photography, videography and branding studio in {site.city}. We shoot it, cut it,
               design it and run the campaign — so your brand shows up everywhere looking like it means it.
             </p>
             <div className="hero-actions" data-reveal>
@@ -137,7 +137,7 @@ export default async function HomePage() {
               silence until June.
             </p>
             <p className="t-lead" style={{ marginTop: '1.25rem' }}>
-              Async Creation was built to close that gap. Strategy, photography, video, design and distribution sit in
+              Async Creations was built to close that gap. Strategy, photography, video, design and distribution sit in
               one team, so what gets planned actually gets made, and what gets made actually gets published. We work
               with builders, restaurants, D2C labels and service brands across {site.city} and the rest of India.
             </p>
@@ -384,7 +384,7 @@ export default async function HomePage() {
           <SectionHead
             chapter="04"
             variant="alt"
-            label="Why Async Creation"
+            label="Why Async Creations"
             title={
               <>
                 Six reasons brands <span className="italic-serif">stay with us</span>

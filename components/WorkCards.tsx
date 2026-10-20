@@ -83,7 +83,7 @@ export function ShotCard({
       <div className="wcard-art">
         <Image
           src={item.imageUrl as string}
-          alt={`${item.title} — ${item.categoryLabel} by Async Creation, Pune`}
+          alt={`${item.title} — ${item.categoryLabel} by Async Creations, Pune`}
           fill
           sizes={SIZES}
           quality={88}

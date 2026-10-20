@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import type { GalleryItem } from '@/lib/manifest';
 
@@ -19,6 +19,127 @@ const CATEGORY_TABS = [
   { key: 'realestate', label: 'Real Estate' },
   { key: 'droneshoot', label: 'Drone Shoot' },
 ];
+
+/** Inline video player card — plays inside the card, natural aspect ratio. */
+function VideoCard({ item }: { item: GalleryItem }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [started, setStarted] = useState(false);
+
+  const togglePlay = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const vid = videoRef.current;
+    if (!vid) return;
+    if (vid.paused) {
+      vid.play().catch(() => {});
+      setPlaying(true);
+      setStarted(true);
+    } else {
+      vid.pause();
+      setPlaying(false);
+    }
+  }, []);
+
+  const toggleMute = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const vid = videoRef.current;
+    if (!vid) return;
+    vid.muted = !vid.muted;
+    setMuted(vid.muted);
+  }, []);
+
+  return (
+    <div className="work-gallery-video-card">
+      <div className="work-video-wrap">
+        <video
+          ref={videoRef}
+          src={item.videoUrl as string}
+          poster={item.imageUrl || undefined}
+          muted
+          playsInline
+          loop
+          preload="metadata"
+          className="work-gallery-video"
+          onPlay={() => { setPlaying(true); setStarted(true); }}
+          onPause={() => setPlaying(false)}
+          onClick={togglePlay}
+        />
+
+        {/* Big centered play button — shown before first play */}
+        {!started && (
+          <button
+            type="button"
+            className="work-video-play-center"
+            onClick={togglePlay}
+            aria-label="Play video"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" width="42" height="42">
+              <path d="M8 5v14l11-7L8 5z"/>
+            </svg>
+          </button>
+        )}
+
+        {/* Bottom controls bar */}
+        {started && (
+          <div className="work-video-controls">
+            <button
+              type="button"
+              className="work-video-btn"
+              onClick={togglePlay}
+              aria-label={playing ? 'Pause' : 'Play'}
+            >
+              {playing ? (
+                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                  <path d="M8 5v14l11-7L8 5z"/>
+                </svg>
+              )}
+            </button>
+            <button
+              type="button"
+              className="work-video-btn work-video-mute-btn"
+              onClick={toggleMute}
+              aria-label={muted ? 'Unmute' : 'Mute'}
+            >
+              {muted ? (
+                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                  <path d="M3.63 3.63a.996.996 0 000 1.41L7.29 8.7 7 9H4c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1h3l3.29 3.29c.63.63 1.71.18 1.71-.71v-4.17l4.18 4.18c-.49.37-1.02.68-1.6.91-.36.15-.58.53-.58.92 0 .72.73 1.18 1.39.91.8-.33 1.55-.77 2.22-1.31l1.34 1.34a.996.996 0 101.41-1.41L5.05 3.63a.996.996 0 00-1.42 0zM19 12c0 .82-.15 1.61-.41 2.34l1.53 1.53c.56-1.17.88-2.48.88-3.87 0-3.83-2.4-7.11-5.78-8.4-.59-.23-1.22.2-1.22.83v.03c0 .41.25.77.62.91C17.1 6.54 19 9.06 19 12zm-8.71-6.29l-.17.17L12 7.76V6.41c0-.89-1.08-1.33-1.71-.7zM16.5 12A4.5 4.5 0 0014 7.97v1.79l2.48 2.48c.01-.08.02-.16.02-.24z"/>
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                </svg>
+              )}
+              {muted && <span className="work-video-tap-sound">Tap for sound</span>}
+            </button>
+          </div>
+        )}
+
+        {/* Video badge — shown on poster before first play */}
+        {!started && (
+          <div className="work-video-badge">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
+              <path d="M8 5v14l11-7L8 5z"/>
+            </svg>
+            VIDEO
+          </div>
+        )}
+      </div>
+
+      <div className="work-gallery-overlay" style={{ pointerEvents: 'none' }}>
+        <span className="work-gallery-cat">{item.categoryLabel}</span>
+        <h3 className="work-gallery-title">{item.title}</h3>
+      </div>
+    </div>
+  );
+}
+
+
+
 
 export default function WorkGallerySection({ items }: { items: GalleryItem[] }) {
   const [activeTab, setActiveTab] = useState('all');
@@ -69,32 +190,42 @@ export default function WorkGallerySection({ items }: { items: GalleryItem[] }) 
       {/* ---------------- PHOTO & VIDEO GRID ---------------- */}
       {filteredItems.length > 0 ? (
         <div className="work-gallery-grid">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className={`work-gallery-card ${item.size || 'normal'}`}
-              onClick={() => setActiveLightbox(item)}
-            >
-              {item.imageUrl ? (
-                <Image
-                  src={item.imageUrl}
-                  alt={item.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="work-gallery-img"
-                  quality={85}
-                />
-              ) : (
-                <div className="work-gallery-placeholder">
-                  <span>📷</span>
+          {filteredItems.map((item) => {
+            const isVideo = item.mediaType === 'video';
+            if (isVideo) {
+              return (
+                <div key={item.id} className={`work-gallery-card-wrapper ${item.size || 'normal'}`}>
+                  <VideoCard item={item} />
                 </div>
-              )}
-              <div className="work-gallery-overlay">
-                <span className="work-gallery-cat">{item.categoryLabel}</span>
-                <h3 className="work-gallery-title">{item.title}</h3>
+              );
+            }
+            return (
+              <div
+                key={item.id}
+                className={`work-gallery-card ${item.size || 'normal'}`}
+                onClick={() => setActiveLightbox(item)}
+              >
+                {item.imageUrl ? (
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="work-gallery-img"
+                    quality={85}
+                  />
+                ) : (
+                  <div className="work-gallery-placeholder">
+                    <span>📷</span>
+                  </div>
+                )}
+                <div className="work-gallery-overlay">
+                  <span className="work-gallery-cat">{item.categoryLabel}</span>
+                  <h3 className="work-gallery-title">{item.title}</h3>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="work-gallery-empty">

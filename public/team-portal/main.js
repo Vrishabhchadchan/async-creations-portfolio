@@ -54,7 +54,7 @@ const ADD_TILE_HTML = `<button type="button" class="gallery-item add-tile" id="a
   <span class="add-tile-plus">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
   </span>
-  <span class="add-tile-label">Add Photo</span>
+  <span class="add-tile-label">Add Photo / Video</span>
 </button>`;
 
 function showToast(message, type = 'success') {
@@ -318,7 +318,10 @@ function openModal() {
   uploadForm.reset();
   uploadError.textContent = '';
   uploadPreview.hidden = true;
-  uploadPreviewImg.src = '';
+  const previewImg = document.getElementById('uploadPreviewImg');
+  const previewVid = document.getElementById('uploadPreviewVid');
+  if (previewImg) { previewImg.src = ''; previewImg.style.display = 'none'; }
+  if (previewVid) { previewVid.src = ''; previewVid.style.display = 'none'; }
   const filter = activeFilter();
   if (filter !== 'all') {
     document.getElementById('photoCategory').value = filter;
@@ -328,6 +331,8 @@ function openModal() {
 
 function closeModal() {
   uploadModal.classList.remove('open');
+  const previewVid = document.getElementById('uploadPreviewVid');
+  if (previewVid) { previewVid.pause(); previewVid.src = ''; }
 }
 
 closeModalBtn.addEventListener('click', closeModal);
@@ -335,10 +340,69 @@ uploadModal.addEventListener('click', (e) => { if (e.target === uploadModal) clo
 
 photoFile.addEventListener('change', () => {
   const file = photoFile.files[0];
-  if (!file) { uploadPreview.hidden = true; return; }
-  uploadPreviewImg.src = URL.createObjectURL(file);
+  const previewImg = document.getElementById('uploadPreviewImg');
+  const previewVid = document.getElementById('uploadPreviewVid');
+  if (!file) {
+    uploadPreview.hidden = true;
+    previewImg.style.display = 'none';
+    previewVid.style.display = 'none';
+    return;
+  }
+  const isVideo = file.type.startsWith('video/');
+  const objUrl = URL.createObjectURL(file);
+  if (isVideo) {
+    previewImg.style.display = 'none';
+    previewImg.src = '';
+    previewVid.src = objUrl;
+    previewVid.style.display = 'block';
+  } else {
+    previewVid.style.display = 'none';
+    previewVid.src = '';
+    previewImg.src = objUrl;
+    previewImg.style.display = 'block';
+  }
   uploadPreview.hidden = false;
 });
+
+async function uploadMediaFile(file, folder) {
+  // 1. Try Cloudflare R2 direct S3 presigned upload
+  try {
+    const presignRes = await fetch('/api/r2-presign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type,
+        folder,
+      }),
+    });
+    if (presignRes.ok) {
+      const { uploadUrl, publicUrl } = await presignRes.json();
+      if (uploadUrl && publicUrl) {
+        const uploadRes = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file,
+        });
+        if (uploadRes.ok) {
+          return { url: publicUrl };
+        }
+        console.warn('R2 upload failed with status:', uploadRes.status, 'Falling back to blob.');
+      }
+    }
+  } catch (r2Err) {
+    console.warn('R2 upload attempt failed, falling back to blob:', r2Err);
+  }
+
+  // 2. Fallback to Vercel Blob
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+  const blob = await upload(`${folder}/${Date.now()}-${safeName}`, file, {
+    access: 'public',
+    handleUploadUrl: '/api/blob-upload',
+    contentType: file.type,
+  });
+  return { url: blob.url };
+}
 
 uploadForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -347,32 +411,33 @@ uploadForm.addEventListener('submit', async (e) => {
   const category = document.getElementById('photoCategory').value;
   const title = document.getElementById('photoTitle').value.trim();
   const size = document.getElementById('photoSize').value;
+  const isVideo = file && file.type.startsWith('video/');
 
-  if (!file) { uploadError.textContent = 'Please choose a photo.'; return; }
+  if (!file) { uploadError.textContent = 'Please choose a photo or video.'; return; }
   if (!title) { uploadError.textContent = 'Please add a title.'; return; }
 
   uploadSubmitBtn.disabled = true;
-  uploadSubmitBtn.textContent = 'Uploading…';
+  uploadSubmitBtn.textContent = isVideo ? 'Uploading video…' : 'Uploading…';
 
   try {
-    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
-    const blob = await upload(`gallery/photos/${Date.now()}-${safeName}`, file, {
-      access: 'public',
-      handleUploadUrl: '/api/blob-upload',
-      contentType: file.type,
-    });
+    const folder = isVideo ? 'gallery/videos' : 'gallery/photos';
+    const media = await uploadMediaFile(file, folder);
+
+    const body = isVideo
+      ? { videoUrl: media.url, url: null, mediaType: 'video', category, title, size }
+      : { url: media.url, mediaType: 'image', category, title, size };
 
     const res = await fetch('/api/gallery-add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: blob.url, category, title, size }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Could not save photo');
+    if (!res.ok) throw new Error(data.error || 'Could not save media');
 
     renderGallery(data.items || []);
     closeModal();
-    showToast('Photo published to the live site.');
+    showToast(isVideo ? 'Video published to the live site.' : 'Photo published to the live site.');
   } catch (err) {
     if (String(err.message).includes('Unauthorized') || String(err.message).includes('log in')) {
       closeModal();

@@ -52,7 +52,12 @@ export type GalleryItem = {
   categoryLabel: string;
   title: string;
   size: 'normal' | 'big' | 'tall' | 'wide';
+  /** For images: the image URL. For videos: the poster/thumbnail URL (may be null). */
   imageUrl: string | null;
+  /** Present only for video items — the URL of the uploaded video file. */
+  videoUrl?: string | null;
+  /** 'image' (default, keeps backwards-compat) or 'video'. */
+  mediaType?: 'image' | 'video';
   placeholderVariant?: string;
   createdAt: number;
   // Absent/undefined means visible — keeps items saved before this field
@@ -82,7 +87,8 @@ export function isOnHome(item: GalleryItem) {
  * uploads so the section is never empty.
  */
 export function pickHomeItems(items: GalleryItem[]): GalleryItem[] {
-  const usable = items.filter((i) => i.imageUrl && isVisible(i));
+  // Videos without a poster are still valid home items; imageUrl check is skipped for them.
+  const usable = items.filter((i) => (i.imageUrl || i.mediaType === 'video') && isVisible(i));
   const picked = usable.filter(isOnHome);
   if (picked.length) return picked.slice(0, HOME_MAX);
   return [...usable].sort((a, b) => b.createdAt - a.createdAt).slice(0, HOME_MAX);

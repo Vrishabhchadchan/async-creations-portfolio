@@ -13,9 +13,14 @@ export async function POST(request: Request) {
         const session = await getSession();
         if (!session) throw new Error('Unauthorized — please log in again.');
         return {
-          allowedContentTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'],
+          allowedContentTypes: [
+            // Images
+            'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif',
+            // Videos
+            'video/mp4', 'video/quicktime', 'video/webm', 'video/x-msvideo', 'video/mpeg',
+          ],
           addRandomSuffix: true,
-          maximumSizeInBytes: 30 * 1024 * 1024,
+          maximumSizeInBytes: 500 * 1024 * 1024, // 500 MB for videos
         };
       },
       // The portal appends the uploaded photo to the manifest itself once

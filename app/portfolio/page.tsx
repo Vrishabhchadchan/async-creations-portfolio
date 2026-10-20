@@ -11,7 +11,7 @@ import { getManifest } from '@/lib/manifest';
 export const metadata: Metadata = pageMetadata({
   title: `Portfolio — Photography & Videography Work in ${site.city}`,
   description:
-    'Our work, service by service: photography and videography, reels, drone shoots, real estate, social media, influencer campaigns, product and food, brand identity, content strategy and motion graphics by Async Creation, Pune.',
+    'Our work, service by service: photography and videography, reels, drone shoots, real estate, social media, influencer campaigns, product and food, brand identity, content strategy and motion graphics by Async Creations, Pune.',
   path: '/portfolio',
   keywords: [
     'photography portfolio Pune',

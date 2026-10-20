@@ -129,7 +129,7 @@ export default function LensOptic() {
       className="lens-optic"
       viewBox="0 0 600 600"
       role="img"
-      aria-label="Async Creation 35mm lens"
+      aria-label="Async Creations 35mm lens"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
@@ -239,7 +239,7 @@ export default function LensOptic() {
         <g className="ring-name">
           <text className="lens-engrave">
             <textPath href="#nameArc" startOffset="50%" textAnchor="middle">
-              ASYNC CREATION · 35mm 1:1.4 · PUNE
+              Async Creations · 35mm 1:1.4 · PUNE
             </textPath>
           </text>
         </g>

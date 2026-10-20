@@ -12,7 +12,7 @@ export const metadata: Metadata = pageMetadata({
   title: `Client Reviews & Testimonials — ${site.name}`,
   description: `Read what clients say about working with ${site.name} in ${site.city}, and share your own experience.`,
   path: '/testimonials',
-  keywords: ['client reviews Async Creation', 'photography studio reviews Pune', 'testimonials Async Creation'],
+  keywords: ['client reviews Async Creations', 'photography studio reviews Pune', 'testimonials Async Creations'],
 });
 
 // Reviews are team-editable and client-submitted, so revalidate rather

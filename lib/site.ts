@@ -8,12 +8,12 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://asynccreation.in';
 
 export const site = {
-  name: 'Async Creation',
-  legalName: 'Async Creation',
+  name: 'Async Creations',
+  legalName: 'Async Creations',
   tagline: 'We Create. You Grow.',
   role: 'Creative Content & Branding Studio',
   description:
-    'Async Creation is a creative content and branding studio in Pune offering photography, videography, reel creation, drone shoots, real estate shoots, social media management and brand identity design.',
+    'Async Creations is a creative content and branding studio in Pune offering photography, videography, reel creation, drone shoots, real estate shoots, social media management and brand identity design.',
   founded: '2022',
   city: 'Pune',
   state: 'Maharashtra',
@@ -323,11 +323,11 @@ export const testimonials = [
 
 export const faqs = [
   {
-    q: 'What services does Async Creation offer?',
-    a: 'Async Creation is a creative content and branding studio offering photography, videography, reel creation and editing, drone shoots, real estate photography and branding, social media management, influencer and creator management, product and food shoots, brand identity design, content strategy and motion graphics.',
+    q: 'What services does Async Creations offer?',
+    a: 'Async Creations is a creative content and branding studio offering photography, videography, reel creation and editing, drone shoots, real estate photography and branding, social media management, influencer and creator management, product and food shoots, brand identity design, content strategy and motion graphics.',
   },
   {
-    q: 'Where is Async Creation based and which areas do you serve?',
+    q: 'Where is Async Creations based and which areas do you serve?',
     a: 'We are based in Pune, Maharashtra, and regularly shoot across Pune, Pimpri-Chinchwad, Mumbai, Nashik and Kolhapur. We travel anywhere in India for full-scale projects and campaigns.',
   },
   {

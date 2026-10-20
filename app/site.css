@@ -3072,6 +3072,142 @@ a.pill:hover {
   margin: 0;
 }
 
+/* ---- Video card (natural aspect ratio) ---- */
+.work-gallery-card-wrapper {
+  grid-column: span 1;
+}
+
+.work-gallery-card-wrapper.big {
+  grid-column: span 1;
+}
+
+@media (min-width: 1024px) {
+  .work-gallery-card-wrapper.big,
+  .work-gallery-card-wrapper.wide {
+    grid-column: span 2;
+  }
+}
+
+.work-gallery-video-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0f0f12;
+  border: 1px solid var(--color-line, rgba(22, 18, 14, 0.14));
+  cursor: pointer;
+  transition: transform 0.4s var(--ease-out-soft), box-shadow 0.4s var(--ease-out-soft), border-color 0.4s var(--ease-out-soft);
+}
+
+.work-gallery-video-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(194, 97, 47, 0.2);
+  border-color: var(--color-clay, #c2612f);
+}
+
+.work-video-wrap {
+  position: relative;
+  width: 100%;
+  /* video fills its own natural height */
+}
+
+.work-gallery-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+  object-fit: contain;
+  background: #000;
+  cursor: pointer;
+}
+
+/* Big centered play button (before first tap) */
+.work-video-play-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  transition: background 0.25s ease;
+  z-index: 5;
+}
+
+.work-video-play-center svg {
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+  transition: transform 0.2s ease;
+}
+
+.work-video-play-center:hover svg {
+  transform: scale(1.15);
+}
+
+/* Bottom controls bar */
+.work-video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+  z-index: 6;
+}
+
+.work-video-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.work-video-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* "Tap for sound" text beside the mute icon */
+.work-video-tap-sound {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+/* VIDEO badge on poster */
+.work-video-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  border-radius: 9999px;
+  padding: 0.3rem 0.7rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+
 /* ---------------- Work Sticky Navigation ---------------- */
 .work-nav {
   position: sticky;
