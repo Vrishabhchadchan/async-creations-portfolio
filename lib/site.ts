@@ -5,7 +5,7 @@
  * actually rewards.
  */
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://asynccreation.in';
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://asynccreations.in';
 
 export const site = {
   name: 'Async Creations',
