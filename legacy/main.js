@@ -184,15 +184,85 @@ document.addEventListener('DOMContentLoaded', () => {
     return match ? match[1] : '';
   };
 
+  const lightboxVideoFrame = document.getElementById('lightboxVideoFrame');
+  const lightboxVideo = document.getElementById('lightboxVideo');
+  const lightboxMuteBtn = document.getElementById('lightboxMuteBtn');
+  const lightboxPlayBtn = document.getElementById('lightboxPlayBtn');
+
+  // Inline <svg> elements don't reliably honor the `hidden` property, so
+  // toggle the attribute explicitly.
+  const setHidden = (el, isHidden) => {
+    if (isHidden) el.setAttribute('hidden', '');
+    else el.removeAttribute('hidden');
+  };
+
+  const syncMuteUI = () => {
+    const unmuted = !lightboxVideo.muted;
+    lightboxMuteBtn.classList.toggle('is-unmuted', unmuted);
+    lightboxMuteBtn.setAttribute('aria-pressed', String(unmuted));
+    lightboxMuteBtn.setAttribute('aria-label', unmuted ? 'Mute video' : 'Unmute video');
+    setHidden(lightboxMuteBtn.querySelector('.icon-vol-mute'), unmuted);
+    setHidden(lightboxMuteBtn.querySelector('.icon-vol-on'), !unmuted);
+    setHidden(lightboxMuteBtn.querySelector('.mute-label-muted'), unmuted);
+    setHidden(lightboxMuteBtn.querySelector('.mute-label-on'), !unmuted);
+  };
+
+  const syncPlayUI = () => {
+    const paused = lightboxVideo.paused;
+    lightboxPlayBtn.setAttribute('aria-label', paused ? 'Play video' : 'Pause video');
+    setHidden(lightboxPlayBtn.querySelector('.icon-pause'), paused);
+    setHidden(lightboxPlayBtn.querySelector('.icon-play'), !paused);
+  };
+
+  const togglePlay = () => {
+    if (lightboxVideo.paused) lightboxVideo.play().catch(() => {});
+    else lightboxVideo.pause();
+  };
+
+  const stopLightboxVideo = () => {
+    lightboxVideo.pause();
+    lightboxVideo.removeAttribute('src');
+    lightboxVideo.load();
+  };
+
+  lightboxMuteBtn.addEventListener('click', () => {
+    lightboxVideo.muted = !lightboxVideo.muted;
+    syncMuteUI();
+  });
+  lightboxPlayBtn.addEventListener('click', togglePlay);
+  lightboxVideo.addEventListener('click', togglePlay);
+  lightboxVideo.addEventListener('play', syncPlayUI);
+  lightboxVideo.addEventListener('pause', syncPlayUI);
+  lightboxVideo.addEventListener('loadedmetadata', () => {
+    lightboxVideoFrame.classList.toggle('is-landscape', lightboxVideo.videoWidth > lightboxVideo.videoHeight);
+  });
+
   const openLightbox = (index) => {
     const items = Array.from(galleryEl.querySelectorAll('.gallery-item')).filter(i => !i.classList.contains('hide'));
     visibleItems = items;
     const item = visibleItems[index];
     if (!item) return;
     currentIndex = index;
-    const media = item.querySelector('.tile-media');
-    const bg = getBg(media);
-    lightboxImg.src = bg || 'images/icon/logo-icon-400.png';
+
+    const tileVideo = item.querySelector('video.tile-video');
+    if (tileVideo) {
+      lightboxImg.hidden = true;
+      lightboxImg.removeAttribute('src');
+      lightboxVideoFrame.hidden = false;
+      lightboxVideo.muted = true;
+      lightboxVideo.src = tileVideo.getAttribute('src');
+      syncMuteUI();
+      lightboxVideo.play().catch(() => {});
+      syncPlayUI();
+    } else {
+      stopLightboxVideo();
+      lightboxVideoFrame.hidden = true;
+      lightboxImg.hidden = false;
+      const media = item.querySelector('.tile-media');
+      const bg = getBg(media);
+      lightboxImg.src = bg || 'images/icon/logo-icon-400.png';
+    }
+
     lightboxCat.textContent = item.querySelector('.tile-cat')?.textContent || '';
     lightboxTitle.textContent = item.querySelector('.tile-title')?.textContent || '';
     lightbox.classList.add('open');
@@ -202,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeLightbox = () => {
     lightbox.classList.remove('open');
     document.body.style.overflow = '';
+    stopLightboxVideo();
   };
 
   lightboxClose.addEventListener('click', closeLightbox);
@@ -280,15 +351,40 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(step);
   }
 
-  /* ---------- Contact form (front-end only) ---------- */
+  /* ---------- Contact form: emailed to the studio inbox via /api/contact ---------- */
   const contactForm = document.getElementById('contactForm');
   const formSuccess = document.getElementById('formSuccess');
+  const formError = document.getElementById('formError');
+  const contactSubmitBtn = document.getElementById('contactSubmitBtn');
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      formSuccess.classList.add('show');
-      contactForm.reset();
-      setTimeout(() => formSuccess.classList.remove('show'), 6000);
+      formSuccess.classList.remove('show');
+      formError.classList.remove('show');
+
+      const idleLabel = contactSubmitBtn.textContent;
+      contactSubmitBtn.disabled = true;
+      contactSubmitBtn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(contactForm))),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Something went wrong — please try again.');
+
+        formSuccess.classList.add('show');
+        contactForm.reset();
+        setTimeout(() => formSuccess.classList.remove('show'), 8000);
+      } catch (err) {
+        formError.textContent = err.message || 'Something went wrong — please try again.';
+        formError.classList.add('show');
+      } finally {
+        contactSubmitBtn.disabled = false;
+        contactSubmitBtn.textContent = idleLabel;
+      }
     });
   }
 

@@ -22,9 +22,11 @@
     const sizeClass = item.size && item.size !== 'normal' ? ' ' + item.size : '';
     const isHidden = item.visible === false;
     const hiddenClass = opts.editable && isHidden ? ' is-hidden' : '';
-    const mediaHTML = item.imageUrl
-      ? `<div class="tile-media" style="background-image:url('${escapeAttr(item.imageUrl)}')"></div>`
-      : `<div class="tile-media placeholder-tile ${escapeAttr(item.placeholderVariant || 'ph-1')}">${PLACEHOLDER_ICON}</div>`;
+    const mediaHTML = item.mediaType === 'video' && item.imageUrl
+      ? `<video class="tile-media tile-video" src="${escapeAttr(item.imageUrl)}" autoplay muted loop playsinline preload="metadata"></video>`
+      : item.imageUrl
+        ? `<div class="tile-media" style="background-image:url('${escapeAttr(item.imageUrl)}')"></div>`
+        : `<div class="tile-media placeholder-tile ${escapeAttr(item.placeholderVariant || 'ph-1')}">${PLACEHOLDER_ICON}</div>`;
 
     let adminHTML = '';
     if (opts.editable) {

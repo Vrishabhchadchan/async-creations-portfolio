@@ -35,6 +35,18 @@ export const CATEGORY_LABELS: Record<string, string> = {
   social: 'Social Media & Brand Content',
   realestate: 'Real Estate',
   droneshoot: 'Drone Shoot',
+  // Main branch / hyphenated aliases
+  weddings: 'Weddings',
+  'pre-weddings': 'Pre-Weddings',
+  'drone-aerial': 'Drone & Aerial',
+  'corporate-commercial': 'Corporate & Commercial',
+  'events-concerts': 'Events & Concerts',
+  'cinematic-reels': 'Cinematic Films & Reels',
+  'institutional-education': 'Institutional & Education',
+  'travel-lifestyle': 'Travel & Lifestyle',
+  'social-media-brand': 'Social Media & Brand Content',
+  'real-estate': 'Real Estate',
+  'drone-shoot': 'Drone Shoot',
   // Legacy / fallback labels so existing uploads remain properly labeled
   product: 'Product & Food',
   influencer: 'Influencer & Creators',

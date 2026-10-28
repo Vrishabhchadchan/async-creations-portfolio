@@ -1,5 +1,3 @@
-import { upload } from 'https://esm.sh/@vercel/blob@0.27.1/client';
-
 const loginScreen = document.getElementById('loginScreen');
 const portalApp = document.getElementById('portalApp');
 const loginForm = document.getElementById('loginForm');
@@ -15,9 +13,35 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 const uploadForm = document.getElementById('uploadForm');
 const uploadSubmitBtn = document.getElementById('uploadSubmitBtn');
 const uploadError = document.getElementById('uploadError');
+const uploadProgress = document.getElementById('uploadProgress');
+const uploadProgressBar = document.getElementById('uploadProgressBar');
+const uploadProgressLabel = document.getElementById('uploadProgressLabel');
+
+function setUploadProgress(fraction) {
+  const pct = Math.round(fraction * 100);
+  uploadProgressBar.style.width = pct + '%';
+  uploadProgressLabel.textContent = pct + '%';
+  uploadSubmitBtn.textContent = 'Uploading… ' + pct + '%';
+}
+
+// fetch() can't report upload progress, so the file PUT uses XHR instead.
+function putFile(url, file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', url);
+    xhr.setRequestHeader('Content-Type', file.type);
+    xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded / e.total); };
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300
+      ? resolve()
+      : reject(new Error('Upload failed — please try again.')));
+    xhr.onerror = () => reject(new Error('Upload failed — please check your connection and try again.'));
+    xhr.send(file);
+  });
+}
 const photoFile = document.getElementById('photoFile');
 const uploadPreview = document.getElementById('uploadPreview');
 const uploadPreviewImg = document.getElementById('uploadPreviewImg');
+const uploadPreviewVideo = document.getElementById('uploadPreviewVideo');
 const portalFilterRow = document.getElementById('portalFilterRow');
 const filterBtns = portalFilterRow.querySelectorAll('.filter-btn');
 
@@ -280,6 +304,9 @@ function openModal() {
   uploadError.textContent = '';
   uploadPreview.hidden = true;
   uploadPreviewImg.src = '';
+  uploadPreviewImg.hidden = true;
+  uploadPreviewVideo.src = '';
+  uploadPreviewVideo.hidden = true;
   const filter = activeFilter();
   if (filter !== 'all') {
     document.getElementById('photoCategory').value = filter;
@@ -297,7 +324,15 @@ uploadModal.addEventListener('click', (e) => { if (e.target === uploadModal) clo
 photoFile.addEventListener('change', () => {
   const file = photoFile.files[0];
   if (!file) { uploadPreview.hidden = true; return; }
-  uploadPreviewImg.src = URL.createObjectURL(file);
+  const isVideo = file.type.startsWith('video/');
+  const objectUrl = URL.createObjectURL(file);
+  uploadPreviewImg.hidden = isVideo;
+  uploadPreviewVideo.hidden = !isVideo;
+  if (isVideo) {
+    uploadPreviewVideo.src = objectUrl;
+  } else {
+    uploadPreviewImg.src = objectUrl;
+  }
   uploadPreview.hidden = false;
 });
 
@@ -309,7 +344,7 @@ uploadForm.addEventListener('submit', async (e) => {
   const title = document.getElementById('photoTitle').value.trim();
   const size = document.getElementById('photoSize').value;
 
-  if (!file) { uploadError.textContent = 'Please choose a photo.'; return; }
+  if (!file) { uploadError.textContent = 'Please choose a photo or video.'; return; }
   if (!title) { uploadError.textContent = 'Please add a title.'; return; }
 
   uploadSubmitBtn.disabled = true;
@@ -317,23 +352,31 @@ uploadForm.addEventListener('submit', async (e) => {
 
   try {
     const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
-    const blob = await upload(`gallery/photos/${Date.now()}-${safeName}`, file, {
-      access: 'public',
-      handleUploadUrl: '/api/blob-upload',
-      contentType: file.type,
+
+    const presignRes = await fetch('/api/blob-upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: safeName, contentType: file.type, fileSize: file.size }),
     });
+    const presignData = await presignRes.json();
+    if (!presignRes.ok) throw new Error(presignData.error || 'Could not prepare upload');
+
+    uploadProgress.hidden = false;
+    setUploadProgress(0);
+    await putFile(presignData.uploadUrl, file, setUploadProgress);
+    uploadSubmitBtn.textContent = 'Publishing…';
 
     const res = await fetch('/api/gallery-add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: blob.url, category, title, size }),
+      body: JSON.stringify({ url: presignData.publicUrl, category, title, size, mediaType: presignData.mediaType }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Could not save photo');
 
     renderGallery(data.items || []);
     closeModal();
-    showToast('Photo published to the live site.');
+    showToast('Published to the live site.');
   } catch (err) {
     if (String(err.message).includes('Unauthorized') || String(err.message).includes('log in')) {
       closeModal();
@@ -343,6 +386,7 @@ uploadForm.addEventListener('submit', async (e) => {
   } finally {
     uploadSubmitBtn.disabled = false;
     uploadSubmitBtn.textContent = 'Upload & Publish';
+    uploadProgress.hidden = true;
   }
 });
 

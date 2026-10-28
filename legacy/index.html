@@ -561,16 +561,23 @@
           <span class="eyebrow">Selected Work</span>
           <h2 class="section-title">A glimpse into <span class="italic-accent grad-text">our lens</span></h2>
         </div>
-        <p class="section-sub">A curated set of recent projects across brand, portrait and campaign work.</p>
+        <p class="section-sub">A curated set of recent projects across photography, weddings, film and brand work.</p>
       </div>
 
       <div class="filter-row reveal">
-        <button class="filter-btn active" data-filter="all">All Work</button>
-        <button class="filter-btn" data-filter="brand">Brand Launch</button>
-        <button class="filter-btn" data-filter="portrait">Portraits</button>
-        <button class="filter-btn" data-filter="wedding">Weddings</button>
-        <button class="filter-btn" data-filter="event">Events</button>
-        <button class="filter-btn" data-filter="fashion">Fashion</button>
+        <button class="filter-btn active" data-filter="all">Featured Works</button>
+        <button class="filter-btn" data-filter="photography">Photography</button>
+        <button class="filter-btn" data-filter="weddings">Weddings</button>
+        <button class="filter-btn" data-filter="pre-weddings">Pre-Weddings</button>
+        <button class="filter-btn" data-filter="drone-aerial">Drone & Aerial</button>
+        <button class="filter-btn" data-filter="corporate-commercial">Corporate & Commercial</button>
+        <button class="filter-btn" data-filter="events-concerts">Events & Concerts</button>
+        <button class="filter-btn" data-filter="cinematic-reels">Cinematic Films & Reels</button>
+        <button class="filter-btn" data-filter="institutional-education">Institutional & Education</button>
+        <button class="filter-btn" data-filter="travel-lifestyle">Travel & Lifestyle</button>
+        <button class="filter-btn" data-filter="social-media-brand">Social Media & Brand Content</button>
+        <button class="filter-btn" data-filter="real-estate">Real Estate</button>
+        <button class="filter-btn" data-filter="drone-shoot">Drone Shoot</button>
       </div>
 
       <div class="gallery" id="gallery">
@@ -595,6 +602,28 @@
       </svg></button>
     <div class="lightbox-content">
       <img src="" alt="" id="lightboxImg">
+      <div class="lightbox-video-frame" id="lightboxVideoFrame" hidden>
+        <video id="lightboxVideo" loop muted playsinline preload="auto"></video>
+        <button type="button" class="video-mute-btn" id="lightboxMuteBtn" aria-label="Unmute video" aria-pressed="false">
+          <svg class="icon-vol-mute" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z" />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+          </svg>
+          <svg class="icon-vol-on" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" hidden>
+            <path d="M11 5L6 9H2v6h4l5 4V5z" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" />
+          </svg>
+          <span class="mute-label-muted">Tap for sound</span>
+          <span class="mute-label-on" hidden>Sound on</span>
+        </button>
+        <button type="button" class="lightbox-play-btn" id="lightboxPlayBtn" aria-label="Pause video">
+          <svg class="icon-pause" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+          <svg class="icon-play" viewBox="0 0 24 24" fill="#fff" hidden><path d="M8 5v14l11-7z" /></svg>
+        </button>
+      </div>
       <div class="lightbox-caption">
         <span class="tile-cat" id="lightboxCat"></span>
         <h3 id="lightboxTitle"></h3>
@@ -1035,15 +1064,16 @@
             <textarea id="cf-message" name="message"
               placeholder="Tell us a bit about your project, date and location..." required></textarea>
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Send Message</button>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"
+            style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+          <button type="submit" class="btn btn-primary" id="contactSubmitBtn" style="width:100%;justify-content:center;">Send Message</button>
           <div class="form-success" id="formSuccess">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 6L9 17l-5-5" />
             </svg>
-            Thanks! Your message has been noted — we'll reach out shortly.
+            Thanks! Your message has been sent — we'll reach out shortly.
           </div>
-          <p class="form-note">This form is currently front-end only — connect it to an email or CRM service to start
-            receiving submissions.</p>
+          <div class="form-error" id="formError" role="alert"></div>
         </form>
       </div>
     </div>
@@ -1103,9 +1133,8 @@
         <div class="footer-col">
           <h4>Contact</h4>
           <ul>
-            <li><a href="tel:+919960899135">Abhijeet — 99608 99135</a></li>
-            <li><a href="tel:+918055538888">Ritesh — 80555 38888</a></li>
-            <li><a href="mailto:hello@asynccreations.com">hello@asynccreations.com</a></li>
+            <li><a href="tel:+919960899135">99608 99135</a></li>
+            <li><a href="mailto:asynccreations@gmail.com">asynccreations@gmail.com</a></li>
           </ul>
         </div>
       </div>
@@ -1113,6 +1142,7 @@
       <div class="footer-bottom">
         <span>&copy; <span id="year"></span> Async Creations. All rights reserved.</span>
         <span>Designed with intention.</span>
+        <span>Powered by VSV Code</span>
       </div>
     </div>
   </footer>

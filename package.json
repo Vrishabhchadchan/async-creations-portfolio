@@ -2,7 +2,7 @@
   "name": "async-creation-studio",
   "version": "2.0.0",
   "private": true,
-  "description": "Async Creation \u2014 Creative Content & Branding Studio. Next.js site with 3D/GSAP motion and a team-only gallery manager backed by Vercel Blob.",
+  "description": "Async Creation — Creative Content & Branding Studio. Next.js site with 3D/GSAP motion and a team-only gallery manager backed by Vercel Blob and Cloudflare R2 / Postgres.",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -11,13 +11,17 @@
     "dev:webpack": "next dev"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1137.0",
+    "@aws-sdk/s3-request-presigner": "3.1137.0",
     "@gsap/react": "^2.1.2",
     "@react-three/drei": "^10.0.0",
     "@react-three/fiber": "^9.1.0",
     "@vercel/blob": "^0.27.1",
+    "@vercel/postgres": "^0.10.0",
     "gsap": "^3.13.0",
     "lenis": "^1.1.20",
     "next": "^15.1.6",
+    "nodemailer": "^10.0.10",
     "react": "~19.2.0",
     "react-dom": "~19.2.0",
     "three": "^0.172.0"
