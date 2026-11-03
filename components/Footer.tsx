@@ -59,9 +59,6 @@ export default function Footer() {
                 <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
               </li>
               <li>
-                <a href={`tel:${site.altPhone}`}>{site.altPhoneDisplay}</a>
-              </li>
-              <li>
                 <a href={site.mailto} target="_blank" rel="noopener noreferrer" className="break-anywhere">
                   {site.email}
                 </a>

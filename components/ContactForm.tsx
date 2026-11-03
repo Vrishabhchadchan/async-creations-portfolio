@@ -44,7 +44,9 @@ export default function ContactForm() {
   });
   const [errors, setErrors] = useState<Errors>({});
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
+  const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const summaryRef = useRef<HTMLDivElement>(null);
 
   const set = (field: Field, value: string) => {
@@ -63,11 +65,12 @@ export default function ContactForm() {
     setErrors((e) => ({ ...e, [field]: next[field] }));
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const found = validate(values);
     setErrors(found);
     setTouched({ name: true, phone: true, email: true, message: true });
+    setSubmitError('');
 
     const keys = Object.keys(found) as Field[];
     if (keys.length) {
@@ -76,6 +79,40 @@ export default function ContactForm() {
       return;
     }
 
+    setSending(true);
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: values.name.trim(),
+          phone: values.phone.trim(),
+          email: values.email.trim(),
+          service: values.service,
+          message: values.message.trim(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        setSent(true);
+      } else {
+        setSubmitError(
+          data.error || 'Something went wrong — please try again or reach out via WhatsApp.'
+        );
+      }
+    } catch {
+      setSubmitError(
+        'Could not reach the server. Please try again, or send your enquiry via WhatsApp instead.'
+      );
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const openWhatsApp = () => {
     const text = [
       `New enquiry from the Async Creations website`,
       ``,
@@ -86,9 +123,11 @@ export default function ContactForm() {
       ``,
       `Details: ${values.message}`,
     ].join('\n');
-
-    window.open(`https://wa.me/${site.phone.replace('+', '')}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
-    setSent(true);
+    window.open(
+      `https://wa.me/${site.phone.replace('+', '')}?text=${encodeURIComponent(text)}`,
+      '_blank',
+      'noopener'
+    );
   };
 
   const errorList = (Object.keys(errors) as Field[]).filter((k) => errors[k]);
@@ -97,16 +136,16 @@ export default function ContactForm() {
     return (
       <div className="form-ok" role="status">
         <div>
-          <h2 className="t-h3">Enquiry ready to send</h2>
+          <h2 className="t-h3">Enquiry sent!</h2>
           <p style={{ marginTop: '0.75rem', color: 'var(--color-muted)' }}>
-            We opened WhatsApp with your details filled in — press send there and we will reply the same working day. If
-            the window did not open, email us at{' '}
-            <a href={site.mailto} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
-              {site.email}
+            We have received your details and will reply the same working day. If you need an
+            immediate response, message us on{' '}
+            <a href={site.whatsapp} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+              WhatsApp
             </a>
             .
           </p>
-          <button type="button" className="btn btn-ghost" style={{ marginTop: '1.5rem' }} onClick={() => setSent(false)}>
+          <button type="button" className="btn btn-ghost" style={{ marginTop: '1.5rem' }} onClick={() => { setSent(false); setSubmitError(''); }}>
             Send another enquiry
           </button>
         </div>
@@ -221,13 +260,28 @@ export default function ContactForm() {
         )}
       </div>
 
-      <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-        Send enquiry via WhatsApp
+      {/* Honeypot — hidden from real users */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} aria-hidden="true">
+        <label htmlFor="cf-website">Website</label>
+        <input id="cf-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
+
+      {submitError && (
+        <p className="field-error" role="alert" style={{ marginBottom: '1rem' }}>
+          {submitError}{' '}
+          <button type="button" onClick={openWhatsApp} style={{ textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', color: 'inherit', padding: 0 }}>
+            Send via WhatsApp instead
+          </button>
+        </p>
+      )}
+
+      <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={sending}>
+        {sending ? 'Sending…' : 'Send enquiry'}
       </button>
       <p className="field-hint" style={{ marginTop: '1rem' }}>
-        Opens WhatsApp with your details filled in. Prefer email?{' '}
-        <a href={site.mailto} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
-          Write to {site.email}
+        Your enquiry goes directly to our inbox. Prefer WhatsApp?{' '}
+        <a href={site.whatsapp} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+          Message us directly
         </a>
         .
       </p>

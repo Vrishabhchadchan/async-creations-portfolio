@@ -70,7 +70,7 @@ export default function ContactPage() {
             </div>
             <div className="info-row">
               <b>Call</b>
-              <a href={`tel:${site.altPhone}`}>{site.altPhoneDisplay}</a>
+              <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
             </div>
             <div className="info-row">
               <b>Email</b>
