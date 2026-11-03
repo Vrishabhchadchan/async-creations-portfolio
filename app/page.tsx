@@ -28,6 +28,10 @@ const MARQUEE = [
   'Reels',
   'Real Estate',
   'Social Media',
+  'Website Design',
+  'Graphic Design',
+  'Meta Ads',
+  'SEO & GEO',
   'Influencer Campaigns',
   'Product & Food',
   'Motion Graphics',
@@ -200,7 +204,7 @@ export default async function HomePage() {
               label="Services"
               title={
                 <>
-                  Ten services, <span className="italic-serif">one pipeline</span>
+                  Creative & digital, <span className="italic-serif">one pipeline</span>
                 </>
               }
               lede="From the first strategy call to the final published reel — every part of the process is handled in-house."

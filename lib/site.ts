@@ -257,6 +257,86 @@ export const services: Service[] = [
       'explainer video production Pune',
     ],
   },
+  {
+    slug: 'website-design-development',
+    title: 'Website Designing & Development',
+    short: 'High-performance, modern websites crafted to turn visitors into paying clients.',
+    description:
+      'Custom website design and full-stack development tailored for modern brands. Fast load speeds, responsive mobile-first layouts, smooth interactions, and seamless user experiences that reflect your premium brand identity.',
+    deliverables: [
+      'Custom UI/UX website design & wireframing',
+      'Mobile-responsive, modern full-stack development',
+      'Interactive motion, animations & speed optimization',
+      'Domain, hosting & analytics integration',
+      'Conversion-focused landing pages & CMS',
+    ],
+    keywords: [
+      'website design Pune',
+      'web development studio India',
+      'custom landing page design',
+      'responsive web design agency',
+    ],
+  },
+  {
+    slug: 'graphic-designing',
+    title: 'Graphic Designing',
+    short: 'Striking visual collateral that keeps your brand consistent across every touchpoint.',
+    description:
+      'From advertising creatives and marketing collateral to brochures, hoardings, packaging, and digital banners. Every visual is engineered with intentional typography, hierarchy, and color balance to communicate value instantly.',
+    deliverables: [
+      'Marketing collateral & high-converting ad creatives',
+      'Brochures, flyers & brand stationery',
+      'Hoarding & print-ready large format graphics',
+      'Social media creatives & promotional banners',
+      'Packaging & merchandise artwork',
+    ],
+    keywords: [
+      'graphic design Pune',
+      'marketing collateral design',
+      'brochure design Maharashtra',
+      'print and digital design studio',
+    ],
+  },
+  {
+    slug: 'meta-ads-marketing',
+    title: 'Meta Ads & Performance Marketing',
+    short: 'Targeted Instagram and Facebook ad campaigns that drive measurable ROAS and qualified leads.',
+    description:
+      'Strategic paid advertising across Meta platforms (Instagram & Facebook). We handle audience targeting, creative ad copy, visual assets, A/B testing, and continuous budget optimization to deliver measurable returns and high-intent enquiries.',
+    deliverables: [
+      'Meta Ads campaign setup & account architecture',
+      'High-converting ad creatives, motion & copywriting',
+      'Audience research, retargeting & lookalikes',
+      'Pixel tracking & custom conversion setup',
+      'Weekly performance reporting & ROAS optimization',
+    ],
+    keywords: [
+      'Meta ads management Pune',
+      'Instagram advertising agency India',
+      'Facebook ad campaign services',
+      'performance marketing Maharashtra',
+    ],
+  },
+  {
+    slug: 'seo-geo-optimization',
+    title: 'SEO & GEO Optimization',
+    short: 'Be found where clients search — on Google and next-gen AI search engines.',
+    description:
+      'Modern search engine optimization paired with Generative Engine Optimization (GEO). We structure your digital presence to rank at the top of Google searches and ensure your brand is cited and recommended by AI assistants like ChatGPT, Perplexity, and Gemini.',
+    deliverables: [
+      'Technical SEO & site speed performance audit',
+      'On-page SEO, meta tags & structured data schema',
+      'Generative Engine Optimization (GEO) for AI search engines',
+      'Local SEO & Google Business Profile optimization',
+      'Keyword ranking & search visibility reporting',
+    ],
+    keywords: [
+      'SEO services Pune',
+      'Generative Engine Optimization India',
+      'local SEO Maharashtra',
+      'AI search ranking agency',
+    ],
+  },
 ];
 
 export const whyAsync = [
@@ -382,6 +462,6 @@ export const team = [
 export const stats = [
   { value: 150, suffix: '+', label: 'Projects delivered' },
   { value: 60, suffix: '+', label: 'Brands served' },
-  { value: 10, suffix: '', label: 'Creative services' },
+  { value: 14, suffix: '+', label: 'Services offered' },
   { value: 4, suffix: '+', label: 'Years in production' },
 ];

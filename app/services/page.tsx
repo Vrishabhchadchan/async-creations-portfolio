@@ -8,9 +8,9 @@ import { pageMetadata, serviceSchema } from '@/lib/seo';
 import { services, site } from '@/lib/site';
 
 export const metadata: Metadata = pageMetadata({
-  title: `Services — Photography, Videography, Drone & Branding in ${site.city}`,
+  title: `Services — Photography, Videography, Web, Branding & Marketing in ${site.city}`,
   description:
-    'Photography, videography, reel creation, drone shoots, real estate shoots, social media management, influencer campaigns, product and food photography, brand identity design, content strategy and motion graphics in Pune.',
+    'Photography, videography, reel creation, drone shoots, real estate shoots, social media management, website designing & development, graphic designing, Meta Ads, SEO/GEO optimization, and motion graphics in Pune.',
   path: '/services',
   keywords: services.flatMap((s) => s.keywords),
 });
@@ -28,10 +28,10 @@ export default function ServicesPage() {
             label="What we do"
             title={
               <>
-                Ten creative services, run by <span className="italic-serif">one studio</span>
+                Creative &amp; digital services, run by <span className="italic-serif">one studio</span>
               </>
             }
-            lede={`Every service below is delivered in-house from our base in ${site.city} — planned together, shot together and published together, so nothing gets lost between vendors.`}
+            lede={`Every service below is delivered in-house from our base in ${site.city} — planned together, produced together and scaled together, so nothing gets lost between vendors.`}
           />
         </div>
       </section>
