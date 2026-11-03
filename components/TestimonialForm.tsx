@@ -158,7 +158,7 @@ export default function TestimonialForm() {
         <textarea
           id="tf-quote"
           maxLength={600}
-          placeholder="Tell us about working with Async Creation — what stood out, what you'd tell a friend."
+          placeholder="Tell us about working with Async Creations — what stood out, what you'd tell a friend."
           value={quote}
           onChange={(e) => setQuote(e.target.value)}
           required

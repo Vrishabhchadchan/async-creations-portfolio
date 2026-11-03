@@ -16,7 +16,7 @@ export default function Testimonials({ items, showAll = false }: { items: Testim
               What clients say once the <span className="italic-serif">work is live</span>
             </>
           }
-          lede="Reviews from clients we have shot, edited and marketed for. Our team curates what appears here in the Team Portal."
+          lede="Reviews from clients we have shot, edited and marketed for across Maharashtra."
         />
 
         <div className="grid-2" data-cards>

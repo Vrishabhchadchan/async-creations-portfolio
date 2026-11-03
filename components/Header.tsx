@@ -35,7 +35,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className={`site-header${solid ? ' is-solid' : ''}`}>
+    <header className={`site-header${solid || open ? ' is-solid' : ''}${open ? ' is-menu-open' : ''}`}>
       <div className="shell header-inner">
         <Link href="/" className="brand" aria-label={`${site.name} — home`}>
           <Image src="/images/icon/logo.png" alt="" width={149} height={46} priority className="brand-logo" />

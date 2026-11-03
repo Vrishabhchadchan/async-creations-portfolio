@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import SmoothScroll from '@/components/SmoothScroll';
 import MotionEngine from '@/components/MotionEngine';
 import Cursor from '@/components/Cursor';
+import ScrollDrone from '@/components/ScrollDrone';
 import NavProgress from '@/components/NavProgress';
 import JsonLd from '@/components/JsonLd';
 import { organizationSchema, websiteSchema } from '@/lib/seo';
@@ -121,6 +122,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MotionEngine />
         <NavProgress />
         <Cursor />
+        <ScrollDrone />
         <Header />
         <main id="main">{children}</main>
         <Footer />

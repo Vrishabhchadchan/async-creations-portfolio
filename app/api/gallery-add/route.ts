@@ -9,10 +9,15 @@ export async function POST(request: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Please log in again.' }, { status: 401 });
 
-  const { url, category, title, size } = await request.json().catch(() => ({}));
+  const { url, videoUrl, mediaType, category, title, size } = await request.json().catch(() => ({}));
 
-  if (!url || typeof url !== 'string' || !/^https:\/\//.test(url)) {
+  const isVideo = mediaType === 'video';
+
+  if (!isVideo && (!url || typeof url !== 'string' || !/^https:\/\//.test(url))) {
     return NextResponse.json({ error: 'Missing or invalid image URL' }, { status: 400 });
+  }
+  if (isVideo && (!videoUrl || typeof videoUrl !== 'string' || !/^https:\/\//.test(videoUrl))) {
+    return NextResponse.json({ error: 'Missing or invalid video URL' }, { status: 400 });
   }
   if (!category || !CATEGORY_LABELS[category]) {
     return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
@@ -27,7 +32,9 @@ export async function POST(request: Request) {
     categoryLabel: categoryLabel(category),
     title: cleanTitle,
     size: VALID_SIZES.has(size) ? size : 'normal',
-    imageUrl: url,
+    mediaType: isVideo ? 'video' : 'image',
+    imageUrl: url || null,          // poster for videos, main image for photos
+    videoUrl: isVideo ? videoUrl : undefined,
     createdAt: Date.now(),
   };
 

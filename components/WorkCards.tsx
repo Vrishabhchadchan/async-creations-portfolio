@@ -69,13 +69,21 @@ export function ServiceCard({
 }
 
 /** A piece of uploaded work, at exactly the same size as a service card. */
-export function ShotCard({ item, priority = false }: { item: GalleryItem; priority?: boolean }) {
+export function ShotCard({
+  item,
+  priority = false,
+  href,
+}: {
+  item: GalleryItem;
+  priority?: boolean;
+  href?: string;
+}) {
   return (
     <figure className="wcard wcard-shot">
       <div className="wcard-art">
         <Image
           src={item.imageUrl as string}
-          alt={`${item.title} — ${item.categoryLabel} by Async Creation, Pune`}
+          alt={`${item.title} — ${item.categoryLabel} by Async Creations, Pune`}
           fill
           sizes={SIZES}
           quality={88}
@@ -86,6 +94,11 @@ export function ShotCard({ item, priority = false }: { item: GalleryItem; priori
         <span className="wcard-cat">{item.categoryLabel}</span>
         <b className="wcard-shot-title">{item.title}</b>
       </figcaption>
+      {href && (
+        <Link href={href} className="wcard-shot-link">
+          <span className="wcard-sr">View {item.title}</span>
+        </Link>
+      )}
     </figure>
   );
 }

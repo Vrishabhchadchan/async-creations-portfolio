@@ -9,7 +9,7 @@ import { SITE_URL, site } from '@/lib/site';
 export const metadata: Metadata = pageMetadata({
   title: `Contact — Get a Quote for Photography & Content in ${site.city}`,
   description:
-    'Get a quote from Async Creation in Pune for photography, videography, drone shoots, real estate shoots, reels, social media management or brand design. We reply the same working day.',
+    'Get a quote from Async Creations in Pune for photography, videography, drone shoots, real estate shoots, reels, social media management or brand design. We reply the same working day.',
   path: '/contact',
   keywords: [
     'contact photographer Pune',

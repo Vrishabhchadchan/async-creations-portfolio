@@ -11,11 +11,11 @@ import { SITE_URL, site, team, whyAsync, processSteps, stats } from '@/lib/site'
 export const metadata: Metadata = pageMetadata({
   title: `About — Creative Content & Branding Studio in ${site.city}`,
   description:
-    'Async Creation is a founder-led creative content and branding studio in Pune. Meet the team behind the photography, videography, social media and brand work.',
+    'Async Creations is a founder-led creative content and branding studio in Pune. Meet the team behind the photography, videography, social media and brand work.',
   path: '/about',
   keywords: [
     'creative studio Pune',
-    'about Async Creation',
+    'about Async Creations',
     'photography team Pune',
     'branding agency Maharashtra',
     'content studio founders Pune',
@@ -49,7 +49,7 @@ export default function AboutPage() {
                 A small team that would rather <span className="italic-serif">own the whole thing</span>
               </>
             }
-            lede={`Async Creation is a creative content and branding studio based in ${site.city}, ${site.state}. We handle strategy, photography, video, design and distribution in-house — because work suffers most in the gaps between vendors.`}
+            lede={`Async Creations is a creative content and branding studio based in ${site.city}, ${site.state}. We handle strategy, photography, video, design and distribution in-house — because work suffers most in the gaps between vendors.`}
           />
         </div>
       </section>
@@ -96,7 +96,7 @@ export default function AboutPage() {
             label="Studio leadership"
             title={
               <>
-                The directors behind <span className="italic-serif">Async Creation</span>
+                The directors behind <span className="italic-serif">Async Creations</span>
               </>
             }
             lede="Two specialists, one vision — and the same two people you will meet on your shoot day."
@@ -175,7 +175,7 @@ export default function AboutPage() {
       <section className="section">
         <div className="shell">
           <SectionHead
-            label="Why Async Creation"
+            label="Why Async Creations"
             title={
               <>
                 Six reasons brands <span className="italic-serif">stay with us</span>

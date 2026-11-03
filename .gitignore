@@ -19,3 +19,4 @@ public/images/videos/raw/
 
 # Raw source masters kept locally (originals live in public/images)
 /images/
+.env*

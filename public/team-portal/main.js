@@ -78,7 +78,7 @@ const ADD_TILE_HTML = `<button type="button" class="gallery-item add-tile" id="a
   <span class="add-tile-plus">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
   </span>
-  <span class="add-tile-label">Add Photo</span>
+  <span class="add-tile-label">Add Photo / Video</span>
 </button>`;
 
 function showToast(message, type = 'success') {
@@ -180,8 +180,47 @@ function renderGallery(items) {
       handleToggleVisibility(btn.getAttribute('data-id'), btn.getAttribute('data-visible') !== 'true');
     });
   });
+  portalGallery.querySelectorAll('.tile-home').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (btn.disabled) return;
+      handleToggleHome(btn.getAttribute('data-id'), btn.getAttribute('data-on-home') !== 'true');
+    });
+  });
   wireDragAndDrop();
   applyFilter();
+  updateHomeCount(items);
+}
+
+// Keep in step with HOME_MAX in lib/manifest.ts (the server enforces it).
+const HOME_MAX = 6;
+
+function updateHomeCount(items) {
+  const el = document.getElementById('homeCount');
+  if (!el) return;
+  const chosen = items.filter((i) => i.onHome === true && i.visible !== false && i.imageUrl).length;
+  el.classList.toggle('is-full', chosen >= HOME_MAX);
+  el.textContent = chosen
+    ? `Home page: ${chosen} of ${HOME_MAX} photos chosen. Hover a photo and use the house icon to add or remove one.`
+    : `Home page: no photos chosen yet, so it shows your ${HOME_MAX} newest photos. Hover a photo and use the house icon to choose.`;
+}
+
+async function handleToggleHome(id, nextOnHome) {
+  if (!id) return;
+  try {
+    const res = await fetch('/api/gallery-home', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, onHome: nextOnHome }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not update the home page');
+    renderGallery(data.items || []);
+    showToast(nextOnHome ? 'Photo added to the home page.' : 'Photo removed from the home page.');
+  } catch (err) {
+    if (String(err.message).includes('log in')) return showLogin();
+    showToast(err.message, 'error');
+  }
 }
 
 async function handleToggleVisibility(id, nextVisible) {
@@ -214,7 +253,7 @@ function wireDragAndDrop() {
       dragSourceId = tile.getAttribute('data-id');
       tile.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
-      try { e.dataTransfer.setData('text/plain', dragSourceId); } catch {}
+      try { e.dataTransfer.setData('text/plain', dragSourceId); } catch { }
     });
     tile.addEventListener('dragend', () => {
       tile.classList.remove('dragging');
@@ -303,10 +342,10 @@ function openModal() {
   uploadForm.reset();
   uploadError.textContent = '';
   uploadPreview.hidden = true;
-  uploadPreviewImg.src = '';
-  uploadPreviewImg.hidden = true;
-  uploadPreviewVideo.src = '';
-  uploadPreviewVideo.hidden = true;
+  const previewImg = document.getElementById('uploadPreviewImg');
+  const previewVid = document.getElementById('uploadPreviewVid');
+  if (previewImg) { previewImg.src = ''; previewImg.style.display = 'none'; }
+  if (previewVid) { previewVid.src = ''; previewVid.style.display = 'none'; }
   const filter = activeFilter();
   if (filter !== 'all') {
     document.getElementById('photoCategory').value = filter;
@@ -316,6 +355,8 @@ function openModal() {
 
 function closeModal() {
   uploadModal.classList.remove('open');
+  const previewVid = document.getElementById('uploadPreviewVid');
+  if (previewVid) { previewVid.pause(); previewVid.src = ''; }
 }
 
 closeModalBtn.addEventListener('click', closeModal);
@@ -323,18 +364,69 @@ uploadModal.addEventListener('click', (e) => { if (e.target === uploadModal) clo
 
 photoFile.addEventListener('change', () => {
   const file = photoFile.files[0];
-  if (!file) { uploadPreview.hidden = true; return; }
+  const previewImg = document.getElementById('uploadPreviewImg');
+  const previewVid = document.getElementById('uploadPreviewVid');
+  if (!file) {
+    uploadPreview.hidden = true;
+    previewImg.style.display = 'none';
+    previewVid.style.display = 'none';
+    return;
+  }
   const isVideo = file.type.startsWith('video/');
-  const objectUrl = URL.createObjectURL(file);
-  uploadPreviewImg.hidden = isVideo;
-  uploadPreviewVideo.hidden = !isVideo;
+  const objUrl = URL.createObjectURL(file);
   if (isVideo) {
-    uploadPreviewVideo.src = objectUrl;
+    previewImg.style.display = 'none';
+    previewImg.src = '';
+    previewVid.src = objUrl;
+    previewVid.style.display = 'block';
   } else {
-    uploadPreviewImg.src = objectUrl;
+    previewVid.style.display = 'none';
+    previewVid.src = '';
+    previewImg.src = objUrl;
+    previewImg.style.display = 'block';
   }
   uploadPreview.hidden = false;
 });
+
+async function uploadMediaFile(file, folder) {
+  // 1. Try Cloudflare R2 direct S3 presigned upload
+  try {
+    const presignRes = await fetch('/api/r2-presign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type,
+        folder,
+      }),
+    });
+    if (presignRes.ok) {
+      const { uploadUrl, publicUrl } = await presignRes.json();
+      if (uploadUrl && publicUrl) {
+        const uploadRes = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file,
+        });
+        if (uploadRes.ok) {
+          return { url: publicUrl };
+        }
+        console.warn('R2 upload failed with status:', uploadRes.status, 'Falling back to blob.');
+      }
+    }
+  } catch (r2Err) {
+    console.warn('R2 upload attempt failed, falling back to blob:', r2Err);
+  }
+
+  // 2. Fallback to Vercel Blob
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+  const blob = await upload(`${folder}/${Date.now()}-${safeName}`, file, {
+    access: 'public',
+    handleUploadUrl: '/api/blob-upload',
+    contentType: file.type,
+  });
+  return { url: blob.url };
+}
 
 uploadForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -343,40 +435,33 @@ uploadForm.addEventListener('submit', async (e) => {
   const category = document.getElementById('photoCategory').value;
   const title = document.getElementById('photoTitle').value.trim();
   const size = document.getElementById('photoSize').value;
+  const isVideo = file && file.type.startsWith('video/');
 
   if (!file) { uploadError.textContent = 'Please choose a photo or video.'; return; }
   if (!title) { uploadError.textContent = 'Please add a title.'; return; }
 
   uploadSubmitBtn.disabled = true;
-  uploadSubmitBtn.textContent = 'Uploading…';
+  uploadSubmitBtn.textContent = isVideo ? 'Uploading video…' : 'Uploading…';
 
   try {
-    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+    const folder = isVideo ? 'gallery/videos' : 'gallery/photos';
+    const media = await uploadMediaFile(file, folder);
 
-    const presignRes = await fetch('/api/blob-upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename: safeName, contentType: file.type, fileSize: file.size }),
-    });
-    const presignData = await presignRes.json();
-    if (!presignRes.ok) throw new Error(presignData.error || 'Could not prepare upload');
-
-    uploadProgress.hidden = false;
-    setUploadProgress(0);
-    await putFile(presignData.uploadUrl, file, setUploadProgress);
-    uploadSubmitBtn.textContent = 'Publishing…';
+    const body = isVideo
+      ? { videoUrl: media.url, url: null, mediaType: 'video', category, title, size }
+      : { url: media.url, mediaType: 'image', category, title, size };
 
     const res = await fetch('/api/gallery-add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: presignData.publicUrl, category, title, size, mediaType: presignData.mediaType }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Could not save photo');
+    if (!res.ok) throw new Error(data.error || 'Could not save media');
 
     renderGallery(data.items || []);
     closeModal();
-    showToast('Published to the live site.');
+    showToast(isVideo ? 'Video published to the live site.' : 'Photo published to the live site.');
   } catch (err) {
     if (String(err.message).includes('Unauthorized') || String(err.message).includes('log in')) {
       closeModal();

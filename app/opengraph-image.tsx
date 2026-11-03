@@ -62,7 +62,7 @@ export default async function OpengraphImage() {
             fontFamily: 'sans-serif',
           }}
         >
-          <div style={{ display: 'flex', color: '#f5f0e8', letterSpacing: '0.1em' }}>ASYNC CREATION</div>
+          <div style={{ display: 'flex', color: '#f5f0e8', letterSpacing: '0.1em' }}>Async Creations</div>
           <div style={{ display: 'flex' }}>
             {site.city}, {site.state} · India
           </div>

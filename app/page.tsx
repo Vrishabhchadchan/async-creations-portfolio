@@ -9,13 +9,13 @@ import CtaBand from '@/components/CtaBand';
 import FaqList from '@/components/FaqList';
 import Testimonials from '@/components/Testimonials';
 import ClientsSection from '@/components/ClientsSection';
-import { ServiceCard } from '@/components/WorkCards';
+import { ShotCard } from '@/components/WorkCards';
 import JsonLd from '@/components/JsonLd';
 import { faqSchema } from '@/lib/seo';
 import { site, services, whyAsync, processSteps as steps, stats } from '@/lib/site';
 import { getTestimonials, isVisible } from '@/lib/testimonials';
 import { getClients } from '@/lib/clients';
-import { WORK_SECTIONS } from '@/lib/workSections';
+import { getManifest, pickHomeItems } from '@/lib/manifest';
 
 /* The four headline services the brief calls for, then the rest of the
    offer. All ten stay in the served HTML, so the strip keeps carrying the
@@ -37,6 +37,8 @@ export default async function HomePage() {
   const allTestimonials = (await getTestimonials().catch(() => [])) || [];
   const testimonials = allTestimonials.filter((t) => t && isVisible(t)).slice(0, 4);
   const allClients = (await getClients().catch(() => [])) || [];
+  // The photos the team picked in the portal (up to six) for the work glimpse.
+  const homeShots = pickHomeItems((await getManifest().catch(() => [])) || []);
   return (
     <>
       <JsonLd data={faqSchema()} />
@@ -71,7 +73,7 @@ export default async function HomePage() {
               </span>
             </h1>
             <p className="t-lead hero-desc" data-split="lines">
-              Async Creation is a photography, videography and branding studio in {site.city}. We shoot it, cut it,
+              Async Creations is a photography, videography and branding studio in {site.city}. We shoot it, cut it,
               design it and run the campaign — so your brand shows up everywhere looking like it means it.
             </p>
             <div className="hero-actions" data-reveal>
@@ -135,7 +137,7 @@ export default async function HomePage() {
               silence until June.
             </p>
             <p className="t-lead" style={{ marginTop: '1.25rem' }}>
-              Async Creation was built to close that gap. Strategy, photography, video, design and distribution sit in
+              Async Creations was built to close that gap. Strategy, photography, video, design and distribution sit in
               one team, so what gets planned actually gets made, and what gets made actually gets published. We work
               with builders, restaurants, D2C labels and service brands across {site.city} and the rest of India.
             </p>
@@ -241,11 +243,13 @@ export default async function HomePage() {
             }
             lede="Event coverage, brand launches and campaign photography shot across Pune and Maharashtra."
           />
-          <div className="work-grid" data-reveal-stagger>
-            {WORK_SECTIONS.map((section) => (
-              <ServiceCard key={section.slug} section={section} href={`/portfolio/${section.slug}`} />
-            ))}
-          </div>
+          {homeShots.length > 0 && (
+            <div className="work-grid" data-reveal-stagger>
+              {homeShots.map((item, i) => (
+                <ShotCard key={item.id} item={item} priority={i < 3} href="/portfolio" />
+              ))}
+            </div>
+          )}
           <div style={{ marginTop: '3rem' }} data-reveal>
             <Link href="/portfolio" className="btn btn-ghost">
               View the full portfolio
@@ -380,7 +384,7 @@ export default async function HomePage() {
           <SectionHead
             chapter="04"
             variant="alt"
-            label="Why Async Creation"
+            label="Why Async Creations"
             title={
               <>
                 Six reasons brands <span className="italic-serif">stay with us</span>

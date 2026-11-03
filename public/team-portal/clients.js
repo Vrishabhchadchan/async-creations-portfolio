@@ -296,6 +296,46 @@ clientLogoFile.addEventListener('change', () => {
   clientLogoPreview.hidden = false;
 });
 
+async function uploadMediaFile(file, folder) {
+  // 1. Try Cloudflare R2 direct S3 presigned upload
+  try {
+    const presignRes = await fetch('/api/r2-presign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type,
+        folder,
+      }),
+    });
+    if (presignRes.ok) {
+      const { uploadUrl, publicUrl } = await presignRes.json();
+      if (uploadUrl && publicUrl) {
+        const uploadRes = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file,
+        });
+        if (uploadRes.ok) {
+          return { url: publicUrl };
+        }
+        console.warn('R2 upload failed with status:', uploadRes.status, 'Falling back to blob.');
+      }
+    }
+  } catch (r2Err) {
+    console.warn('R2 upload attempt failed, falling back to blob:', r2Err);
+  }
+
+  // 2. Fallback to Vercel Blob
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+  const blob = await upload(`${folder}/${Date.now()}-${safeName}`, file, {
+    access: 'public',
+    handleUploadUrl: '/api/blob-upload',
+    contentType: file.type,
+  });
+  return { url: blob.url };
+}
+
 clientForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   clientError.textContent = '';
@@ -310,17 +350,12 @@ clientForm.addEventListener('submit', async (e) => {
   clientSubmitBtn.textContent = 'Uploading…';
 
   try {
-    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
-    const blob = await upload(`clients/logos/${Date.now()}-${safeName}`, file, {
-      access: 'public',
-      handleUploadUrl: '/api/blob-upload',
-      contentType: file.type,
-    });
+    const media = await uploadMediaFile(file, 'clients/logos');
 
     const res = await fetch('/api/clients-add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, logoUrl: blob.url, website }),
+      body: JSON.stringify({ name, logoUrl: media.url, website }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to save client');

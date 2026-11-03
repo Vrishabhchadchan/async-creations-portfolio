@@ -77,7 +77,7 @@ export default function ContactForm() {
     }
 
     const text = [
-      `New enquiry from the Async Creation website`,
+      `New enquiry from the Async Creations website`,
       ``,
       `Name: ${values.name}`,
       `Phone: ${values.phone}`,

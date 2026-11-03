@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    /* Base Reset */
+    body,
+    html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* --- ROOM BACKGROUND STYLES --- */
+    .room-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .wall {
+        height: 65%;
+        background: radial-gradient(circle at 50% 30%, #f4f6f9 0%, #d8dce3 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Fake window light beam hitting the wall */
+    .wall::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -10%;
+        width: 50%;
+        height: 200%;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0) 100%);
+        transform: rotate(25deg);
+        pointer-events: none;
+    }
+
+    .baseboard {
+        height: 4%;
+        background: linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
+        border-top: 2px solid #fff;
+        box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05), 0 3px 6px rgba(0, 0, 0, 0.15);
+        position: relative;
+        z-index: 2;
+    }
+
+    .floor {
+        height: 31%;
+        background-color: #caced3;
+        /* Pure CSS Wood Floor Planks */
+        background-image: repeating-linear-gradient(90deg,
+                transparent,
+                transparent 60px,
+                rgba(0, 0, 0, 0.04) 60px,
+                rgba(0, 0, 0, 0.04) 62px);
+        position: relative;
+    }
+
+    /* Floor shadow directly under the baseboard */
+    .floor::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 30px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), transparent);
+    }
+
+    /* Dynamic shadow on the floor cast by the sign */
+    .sign-shadow {
+        position: absolute;
+        top: 20%;
+        /* Position on the floor */
+        left: 50%;
+        width: 450px;
+        height: 30px;
+        background: rgba(0, 0, 0, 1);
+        border-radius: 50%;
+        /* Animation perfectly timed with the sign dropping */
+        animation: shadowDrop 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    /* --- SIGN & ANIMATION STYLES --- */
+    .main-content {
+        position: relative;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        pointer-events: none;
+        /* Lets clicks pass through to background if needed */
+    }
+
+    .sign-container {
+        position: relative;
+        margin-top: 80px;
+        transform-origin: top center;
+        animation: dropIn 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        pointer-events: auto;
+        /* Re-enable interactions for the sign */
+    }
+
+    .strings {
+        position: absolute;
+        top: -500px;
+        left: 0;
+        width: 100%;
+        height: 500px;
+        z-index: 1;
+    }
+
+    .board {
+        position: relative;
+        z-index: 2;
+        background-color: #ffd800;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+        width: 500px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hazard {
+        height: 40px;
+        width: 100%;
+        background: repeating-linear-gradient(70deg,
+                #111,
+                #111 25px,
+                #ffd800 25px,
+                #ffd800 50px);
+    }
+
+    .content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 30px 40px;
+    }
+
+    .text-area {
+        color: #111;
+    }
+
+    .text-area h1 {
+        font-size: 3.5rem;
+        margin: 0;
+        line-height: 1;
+        letter-spacing: 1px;
+        font-weight: 900;
+    }
+
+    .text-area h2 {
+        font-size: 1.6rem;
+        margin: 5px 0 0 0;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+    }
+
+    .divider {
+        width: 4px;
+        height: 80px;
+        background-color: #111;
+        margin: 0 20px;
+        border-radius: 2px;
+    }
+
+    /* KEYFRAMES */
+    @keyframes dropIn {
+        0% {
+            transform: translateY(-800px) rotate(15deg);
+        }
+
+        60% {
+            transform: translateY(30px) rotate(-5deg);
+        }
+
+        80% {
+            transform: translateY(-10px) rotate(2deg);
+        }
+
+        100% {
+            transform: translateY(0) rotate(0deg);
+        }
+    }
+
+    @keyframes shadowDrop {
+        0% {
+            transform: translateX(-50%) scale(2.5);
+            filter: blur(30px);
+            opacity: 0;
+        }
+
+        60% {
+            transform: translateX(-50%) scale(0.9);
+            filter: blur(10px);
+            opacity: 0.25;
+        }
+
+        80% {
+            transform: translateX(-50%) scale(1.1);
+            filter: blur(14px);
+            opacity: 0.15;
+        }
+
+        100% {
+            transform: translateX(-50%) scale(1);
+            filter: blur(12px);
+            opacity: 0.2;
+        }
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 600px) {
+        .board {
+            width: 90%;
+        }
+
+        .content {
+            padding: 20px;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .divider {
+            width: 80px;
+            height: 4px;
+            margin: 20px 0;
+        }
+
+        .text-area h1 {
+            font-size: 2.5rem;
+        }
+
+        .text-area h2 {
+            font-size: 1.2rem;
+        }
+
+        .sign-shadow {
+            width: 80%;
+        }
+    }
+</style>
+
+<body>
+
+</body>
+
+</html>
+<div class="room-wrapper">
+    <div class="wall"></div>
+    <div class="baseboard"></div>
+    <div class="floor">
+        <div class="sign-shadow"></div>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="sign-container">
+        <svg class="strings" preserveAspectRatio="none">
+            <line x1="50%" y1="0" x2="15%" y2="100%" stroke="#444" stroke-width="4" />
+            <line x1="50%" y1="0" x2="85%" y2="100%" stroke="#444" stroke-width="4" />
+        </svg>
+
+        <div class="board">
+            <div class="hazard"></div>
+
+            <div class="content">
+                <div class="text-area">
+                    <h1>UNDER</h1>
+                    <h2>CONSTRUCTION</h2>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="icon-area">
+                    <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <g transform="rotate(45 50 50)">
+                            <rect x="42" y="20" width="16" height="60" fill="#111" rx="4" />
+                            <path
+                                d="M 50 10 A 15 15 0 0 0 35 25 L 43 25 A 7 7 0 0 1 57 25 L 65 25 A 15 15 0 0 0 50 10 Z"
+                                fill="#111" />
+                            <circle cx="50" cy="85" r="12" fill="#111" />
+                            <circle cx="50" cy="85" r="5" fill="#ffd800" />
+                        </g>
+                        <g transform="rotate(-45 50 50)">
+                            <rect x="46" y="10" width="8" height="45" fill="#111" rx="2" />
+                            <rect x="40" y="55" width="20" height="35" fill="#111" rx="6" />
+                            <rect x="43" y="60" width="2" height="25" fill="#ffd800" opacity="0.3" />
+                            <rect x="55" y="60" width="2" height="25" fill="#ffd800" opacity="0.3" />
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="hazard"></div>
+        </div>
+    </div>
+</div>
+</head>
+
+<body>
