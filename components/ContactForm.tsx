@@ -14,7 +14,7 @@ const LABELS: Record<Field, string> = {
   message: 'Project details',
 };
 
-const WEB3FORMS_KEY = '13740dd7-80a4-42f1-a1e0-e286b00475c7';
+const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || '86c446eb-7555-4a51-b1dd-efd342fb9bcd';
 
 function validate(values: Record<Field, string>): Errors {
   const errors: Errors = {};
