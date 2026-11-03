@@ -14,6 +14,8 @@ const LABELS: Record<Field, string> = {
   message: 'Project details',
 };
 
+const WEB3FORMS_KEY = '13740dd7-80a4-42f1-a1e0-e286b00475c7';
+
 function validate(values: Record<Field, string>): Errors {
   const errors: Errors = {};
 
@@ -39,7 +41,7 @@ export default function ContactForm() {
     name: '',
     phone: '',
     email: '',
-    service: services[0].title,
+    service: services[0]?.title || 'Photography & Videography',
     message: '',
   });
   const [errors, setErrors] = useState<Errors>({});
@@ -51,8 +53,6 @@ export default function ContactForm() {
 
   const set = (field: Field, value: string) => {
     setValues((v) => ({ ...v, [field]: value }));
-    // Clear an existing error as soon as it is fixed, but never introduce
-    // a new one mid-keystroke.
     if (errors[field]) {
       const next = validate({ ...values, [field]: value });
       if (!next[field]) setErrors((e) => ({ ...e, [field]: undefined }));
@@ -74,7 +74,6 @@ export default function ContactForm() {
 
     const keys = Object.keys(found) as Field[];
     if (keys.length) {
-      // Multiple errors: focus the summary. It links to each invalid field.
       requestAnimationFrame(() => summaryRef.current?.focus());
       return;
     }
@@ -82,30 +81,33 @@ export default function ContactForm() {
     setSending(true);
 
     try {
-      const res = await fetch('/api/contact', {
+      const formData = new FormData();
+      formData.append('access_key', WEB3FORMS_KEY);
+      formData.append('name', values.name.trim());
+      formData.append('phone', values.phone.trim());
+      formData.append('email', values.email.trim());
+      formData.append('service', values.service);
+      formData.append('message', values.message.trim());
+      formData.append('subject', `New Project Enquiry: ${values.name.trim()} — ${values.service}`);
+      formData.append('from_name', 'Async Creations Website');
+
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: values.name.trim(),
-          phone: values.phone.trim(),
-          email: values.email.trim(),
-          service: values.service,
-          message: values.message.trim(),
-        }),
+        body: formData,
       });
 
       const data = await res.json();
 
-      if (res.ok && data.ok) {
+      if (data.success) {
         setSent(true);
       } else {
         setSubmitError(
-          data.error || 'Something went wrong — please try again or reach out via WhatsApp.'
+          data.message || 'Something went wrong — please try again or contact us via WhatsApp.'
         );
       }
     } catch {
       setSubmitError(
-        'Could not reach the server. Please try again, or send your enquiry via WhatsApp instead.'
+        'Could not send right now. Please try again or message us directly via WhatsApp.'
       );
     } finally {
       setSending(false);
@@ -145,7 +147,15 @@ export default function ContactForm() {
             </a>
             .
           </p>
-          <button type="button" className="btn btn-ghost" style={{ marginTop: '1.5rem' }} onClick={() => { setSent(false); setSubmitError(''); }}>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            style={{ marginTop: '1.5rem' }}
+            onClick={() => {
+              setSent(false);
+              setSubmitError('');
+            }}
+          >
             Send another enquiry
           </button>
         </div>
@@ -262,14 +272,26 @@ export default function ContactForm() {
 
       {/* Honeypot — hidden from real users */}
       <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} aria-hidden="true">
-        <label htmlFor="cf-website">Website</label>
-        <input id="cf-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+        <label htmlFor="cf-botcheck">Don't fill this out</label>
+        <input id="cf-botcheck" name="botcheck" type="checkbox" tabIndex={-1} autoComplete="off" />
       </div>
 
       {submitError && (
         <p className="field-error" role="alert" style={{ marginBottom: '1rem' }}>
           {submitError}{' '}
-          <button type="button" onClick={openWhatsApp} style={{ textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', font: 'inherit', color: 'inherit', padding: 0 }}>
+          <button
+            type="button"
+            onClick={openWhatsApp}
+            style={{
+              textDecoration: 'underline',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              font: 'inherit',
+              color: 'inherit',
+              padding: 0,
+            }}
+          >
             Send via WhatsApp instead
           </button>
         </p>
