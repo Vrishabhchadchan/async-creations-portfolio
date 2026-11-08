@@ -1,3 +1,5 @@
+import { upload } from 'https://esm.sh/@vercel/blob@0.27.1/client';
+
 const loginScreen = document.getElementById('loginScreen');
 const portalApp = document.getElementById('portalApp');
 const loginForm = document.getElementById('loginForm');
@@ -341,6 +343,8 @@ async function handleDelete(id) {
 function openModal() {
   uploadForm.reset();
   uploadError.textContent = '';
+  uploadProgress.hidden = true;
+  setUploadProgress(0);
   uploadPreview.hidden = true;
   const previewImg = document.getElementById('uploadPreviewImg');
   const previewVid = document.getElementById('uploadPreviewVid');
@@ -389,6 +393,9 @@ photoFile.addEventListener('change', () => {
 });
 
 async function uploadMediaFile(file, folder) {
+  uploadProgress.hidden = false;
+  setUploadProgress(0);
+
   // 1. Try Cloudflare R2 direct S3 presigned upload
   try {
     const presignRes = await fetch('/api/r2-presign', {
@@ -403,15 +410,8 @@ async function uploadMediaFile(file, folder) {
     if (presignRes.ok) {
       const { uploadUrl, publicUrl } = await presignRes.json();
       if (uploadUrl && publicUrl) {
-        const uploadRes = await fetch(uploadUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': file.type },
-          body: file,
-        });
-        if (uploadRes.ok) {
-          return { url: publicUrl };
-        }
-        console.warn('R2 upload failed with status:', uploadRes.status, 'Falling back to blob.');
+        await putFile(uploadUrl, file, setUploadProgress);
+        return { url: publicUrl };
       }
     }
   } catch (r2Err) {
@@ -419,11 +419,15 @@ async function uploadMediaFile(file, folder) {
   }
 
   // 2. Fallback to Vercel Blob
+  setUploadProgress(0);
   const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '-');
   const blob = await upload(`${folder}/${Date.now()}-${safeName}`, file, {
     access: 'public',
     handleUploadUrl: '/api/blob-upload',
     contentType: file.type,
+    onUploadProgress: (progress) => {
+      setUploadProgress(progress.percentage / 100);
+    },
   });
   return { url: blob.url };
 }
