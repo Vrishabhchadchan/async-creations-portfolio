@@ -19,6 +19,16 @@ const uploadProgress = document.getElementById('uploadProgress');
 const uploadProgressBar = document.getElementById('uploadProgressBar');
 const uploadProgressLabel = document.getElementById('uploadProgressLabel');
 
+const previewModal = document.getElementById('previewModal');
+const previewModalCard = document.getElementById('previewModalCard');
+const closePreviewBtn = document.getElementById('closePreviewBtn');
+const previewMediaWrapper = document.getElementById('previewMediaWrapper');
+const previewCat = document.getElementById('previewCat');
+const previewTitle = document.getElementById('previewTitle');
+const previewAspectBtn = document.getElementById('previewAspectBtn');
+const previewCopyUrlBtn = document.getElementById('previewCopyUrlBtn');
+let currentPreviewItem = null;
+
 function setUploadProgress(fraction) {
   const pct = Math.round(fraction * 100);
   uploadProgressBar.style.width = pct + '%';
@@ -187,6 +197,16 @@ function renderGallery(items) {
       e.stopPropagation();
       if (btn.disabled) return;
       handleToggleHome(btn.getAttribute('data-id'), btn.getAttribute('data-on-home') !== 'true');
+    });
+  });
+  portalGallery.querySelectorAll('.gallery-item:not(.add-tile)').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.tile-drag-handle, .tile-visibility, .tile-home, .tile-delete')) {
+        return;
+      }
+      const id = card.getAttribute('data-id');
+      const item = currentItems.find((x) => x.id === id);
+      if (item) openPreviewModal(item);
     });
   });
   wireDragAndDrop();
@@ -370,24 +390,39 @@ photoFile.addEventListener('change', () => {
   const file = photoFile.files[0];
   const previewImg = document.getElementById('uploadPreviewImg');
   const previewVid = document.getElementById('uploadPreviewVid');
+  const sizeSelect = document.getElementById('photoSize');
   if (!file) {
     uploadPreview.hidden = true;
-    previewImg.style.display = 'none';
-    previewVid.style.display = 'none';
+    if (previewImg) previewImg.style.display = 'none';
+    if (previewVid) previewVid.style.display = 'none';
     return;
   }
   const isVideo = file.type.startsWith('video/');
   const objUrl = URL.createObjectURL(file);
   if (isVideo) {
-    previewImg.style.display = 'none';
-    previewImg.src = '';
-    previewVid.src = objUrl;
-    previewVid.style.display = 'block';
+    if (previewImg) { previewImg.style.display = 'none'; previewImg.src = ''; }
+    if (previewVid) {
+      previewVid.src = objUrl;
+      previewVid.style.display = 'block';
+      previewVid.onloadedmetadata = () => {
+        const isLandscape = previewVid.videoWidth >= previewVid.videoHeight;
+        if (sizeSelect) {
+          sizeSelect.value = isLandscape ? 'wide' : 'tall';
+        }
+      };
+    }
   } else {
-    previewVid.style.display = 'none';
-    previewVid.src = '';
-    previewImg.src = objUrl;
-    previewImg.style.display = 'block';
+    if (previewVid) { previewVid.style.display = 'none'; previewVid.pause(); previewVid.src = ''; }
+    if (previewImg) {
+      previewImg.src = objUrl;
+      previewImg.style.display = 'block';
+      previewImg.onload = () => {
+        const isLandscape = previewImg.naturalWidth >= previewImg.naturalHeight;
+        if (sizeSelect) {
+          sizeSelect.value = isLandscape ? 'wide' : 'tall';
+        }
+      };
+    }
   }
   uploadPreview.hidden = false;
 });
@@ -476,6 +511,103 @@ uploadForm.addEventListener('submit', async (e) => {
     uploadSubmitBtn.disabled = false;
     uploadSubmitBtn.textContent = 'Upload & Publish';
     uploadProgress.hidden = true;
+  }
+});
+
+// ===== Admin Preview Lightbox Modal =====
+function openPreviewModal(item) {
+  if (!previewModal) return;
+  currentPreviewItem = item;
+  if (previewCat) previewCat.textContent = item.categoryLabel || item.category;
+  if (previewTitle) previewTitle.textContent = item.title;
+
+  const isVideo = item.mediaType === 'video' || !!item.videoUrl;
+
+  if (isVideo) {
+    previewMediaWrapper.innerHTML = `
+      <video src="${escapeAttr(item.videoUrl)}" controls autoplay playsinline loop style="max-width:100%; max-height:68vh; object-fit:contain; background:#000;"></video>
+    `;
+    const vid = previewMediaWrapper.querySelector('video');
+    vid.onloadedmetadata = () => {
+      const isLandscape = vid.videoWidth >= vid.videoHeight;
+      if (previewModalCard) {
+        previewModalCard.classList.toggle('is-landscape', isLandscape);
+        previewModalCard.classList.toggle('is-portrait', !isLandscape);
+      }
+      if (previewAspectBtn) {
+        previewAspectBtn.textContent = isLandscape ? '📱 Switch to Portrait' : '⤢ Switch to Landscape';
+      }
+    };
+    if (previewAspectBtn) previewAspectBtn.style.display = 'inline-flex';
+  } else if (item.imageUrl) {
+    previewMediaWrapper.innerHTML = `
+      <img src="${escapeAttr(item.imageUrl)}" alt="${escapeAttr(item.title)}" style="max-width:100%; max-height:68vh; object-fit:contain;" />
+    `;
+    const img = previewMediaWrapper.querySelector('img');
+    img.onload = () => {
+      const isLandscape = img.naturalWidth >= img.naturalHeight;
+      if (previewModalCard) {
+        previewModalCard.classList.toggle('is-landscape', isLandscape);
+        previewModalCard.classList.toggle('is-portrait', !isLandscape);
+      }
+    };
+    if (previewAspectBtn) previewAspectBtn.style.display = 'none';
+  } else {
+    previewMediaWrapper.innerHTML = '<div style="color:var(--text-faint); padding:40px;">No media available</div>';
+    if (previewAspectBtn) previewAspectBtn.style.display = 'none';
+  }
+
+  previewModal.classList.add('open');
+}
+
+function closePreviewModal() {
+  if (!previewModal) return;
+  previewModal.classList.remove('open');
+  if (previewMediaWrapper) {
+    const vid = previewMediaWrapper.querySelector('video');
+    if (vid) {
+      vid.pause();
+      vid.src = '';
+    }
+    previewMediaWrapper.innerHTML = '';
+  }
+  currentPreviewItem = null;
+}
+
+if (closePreviewBtn) closePreviewBtn.addEventListener('click', closePreviewModal);
+if (previewModal) {
+  previewModal.addEventListener('click', (e) => {
+    if (e.target === previewModal) closePreviewModal();
+  });
+}
+
+if (previewAspectBtn) {
+  previewAspectBtn.addEventListener('click', () => {
+    if (!previewModalCard) return;
+    const isCurrentlyLandscape = previewModalCard.classList.contains('is-landscape');
+    previewModalCard.classList.toggle('is-landscape', !isCurrentlyLandscape);
+    previewModalCard.classList.toggle('is-portrait', isCurrentlyLandscape);
+    previewAspectBtn.textContent = isCurrentlyLandscape ? '⤢ Switch to Landscape' : '📱 Switch to Portrait';
+  });
+}
+
+if (previewCopyUrlBtn) {
+  previewCopyUrlBtn.addEventListener('click', () => {
+    if (!currentPreviewItem) return;
+    const url = currentPreviewItem.videoUrl || currentPreviewItem.imageUrl;
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Media URL copied to clipboard!');
+    }).catch(() => {
+      prompt('Copy URL:', url);
+    });
+  });
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+    closePreviewModal();
   }
 });
 

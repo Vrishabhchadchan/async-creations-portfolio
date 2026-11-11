@@ -19,14 +19,16 @@ const CATEGORY_TABS = [
   { key: 'realestate', label: 'Real Estate' },
 ];
 
-/** Dedicated Reel-sized modal player card that pops up on click */
+/** Dedicated Video & Reel modal player card that pops up on click with landscape/reel toggle and fit options */
 function ReelLightboxModal({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(true);
   const [muted, setMuted] = useState(true);
+  const [isLandscape, setIsLandscape] = useState<boolean>(() => item.size === 'wide');
+  const [fitMode, setFitMode] = useState<'contain' | 'cover'>('contain');
 
-  const togglePlay = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const togglePlay = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     const vid = videoRef.current;
     if (!vid) return;
     if (vid.paused) {
@@ -46,9 +48,36 @@ function ReelLightboxModal({ item, onClose }: { item: GalleryItem; onClose: () =
     setMuted(vid.muted);
   };
 
+  const toggleOrientation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsLandscape((prev) => !prev);
+  };
+
+  const toggleFit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFitMode((prev) => (prev === 'contain' ? 'cover' : 'contain'));
+  };
+
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const v = e.currentTarget;
+    if (v.videoWidth && v.videoHeight) {
+      // If width >= height, auto-switch to landscape mode
+      if (v.videoWidth >= v.videoHeight) {
+        setIsLandscape(true);
+      } else if (item.size !== 'wide') {
+        setIsLandscape(false);
+      }
+    }
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -56,7 +85,10 @@ function ReelLightboxModal({ item, onClose }: { item: GalleryItem; onClose: () =
 
   return (
     <div className="work-lightbox-backdrop" onClick={onClose}>
-      <div className="work-reel-modal-card" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`work-reel-modal-card ${isLandscape ? 'is-landscape' : 'is-portrait'}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           type="button"
           className="work-reel-close-btn"
@@ -66,7 +98,39 @@ function ReelLightboxModal({ item, onClose }: { item: GalleryItem; onClose: () =
           ✕
         </button>
 
-        <div className="work-reel-video-container" onClick={togglePlay}>
+        {/* Top Badges & Control Bar */}
+        <div className="work-video-top-bar">
+          <div className="work-video-top-badges">
+            <span className="work-reel-badge">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
+                <path d="M8 5v14l11-7L8 5z"/>
+              </svg>
+              {isLandscape ? 'CINEMA 16:9' : 'REEL 9:16'}
+            </span>
+
+            {/* Landscape / Portrait Toggle */}
+            <button
+              type="button"
+              className="work-mode-pill-btn"
+              onClick={toggleOrientation}
+              title={isLandscape ? 'Switch to Vertical Reel view' : 'Switch to Landscape Cinema view'}
+            >
+              {isLandscape ? '📱 Vertical' : '⤢ Landscape'}
+            </button>
+
+            {/* Fit / Fill Toggle */}
+            <button
+              type="button"
+              className="work-mode-pill-btn"
+              onClick={toggleFit}
+              title={fitMode === 'contain' ? 'Fill frame (slight crop)' : 'Fit whole video (no crop)'}
+            >
+              {fitMode === 'contain' ? 'Fit: Whole' : 'Fit: Fill'}
+            </button>
+          </div>
+        </div>
+
+        <div className="work-reel-video-container" onClick={() => togglePlay()}>
           <video
             ref={videoRef}
             src={item.videoUrl as string}
@@ -75,7 +139,8 @@ function ReelLightboxModal({ item, onClose }: { item: GalleryItem; onClose: () =
             playsInline
             loop
             muted={muted}
-            className="work-reel-video"
+            className={`work-reel-video ${fitMode}`}
+            onLoadedMetadata={handleLoadedMetadata}
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
           />
@@ -89,14 +154,6 @@ function ReelLightboxModal({ item, onClose }: { item: GalleryItem; onClose: () =
             </div>
           )}
 
-          {/* Reel Badge */}
-          <div className="work-reel-badge">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
-              <path d="M8 5v14l11-7L8 5z"/>
-            </svg>
-            REEL
-          </div>
-
           {/* Bottom Overlay with Metadata & Controls */}
           <div className="work-reel-bottom" onClick={(e) => e.stopPropagation()}>
             <div className="work-reel-meta">
@@ -108,7 +165,7 @@ function ReelLightboxModal({ item, onClose }: { item: GalleryItem; onClose: () =
               <button
                 type="button"
                 className="work-video-btn"
-                onClick={togglePlay}
+                onClick={(e) => togglePlay(e)}
                 aria-label={playing ? 'Pause' : 'Play'}
               >
                 {playing ? (
